@@ -40,7 +40,25 @@ export type MainTranslationKey =
   | 'textMode'
   | 'playerMode'
   | 'animationMode'
-  | 'createOwnMode';
+  | 'createOwnMode'
+  | 'visualizers'
+  | 'visualizerCatalogHeading'
+  | 'visualizerCatalogSubheading'
+  | 'visualizerCategoryAudio'
+  | 'visualizerCategoryAmbient'
+  | 'visualizerAudioCategoryDescription'
+  | 'visualizerAmbientCategoryDescription'
+  | 'visualizerOpenScene'
+  | 'visualizerBack'
+  | 'visualizerLaunchGuide'
+  | 'visualizerHighlights'
+  | 'visualizerHowToStart'
+  | 'visualizerCallouts'
+  | 'visualizerStartWithMic'
+  | 'visualizerStartWithSystem'
+  | 'visualizerStartAmbient'
+  | 'visualizerAudioMenuHint'
+  | 'visualizerAmbientMenuHint';
 
 export const mainTranslations: Record<Language, Record<MainTranslationKey, string>> = {
   ru: {
@@ -84,7 +102,28 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     textMode: 'Текст',
     playerMode: 'Видеоплеер',
     animationMode: 'Анимации',
-    createOwnMode: 'Добавить свою'
+    createOwnMode: 'Добавить свою',
+    visualizers: 'Визуализаторы',
+    visualizerCatalogHeading: 'Интерактивные визуализаторы',
+    visualizerCatalogSubheading:
+      'Запускайте аудио- и атмосферные сцены, созданные специально для ScreenSavy.',
+    visualizerCategoryAudio: 'Аудиореактивные',
+    visualizerCategoryAmbient: 'Атмосферные',
+    visualizerAudioCategoryDescription:
+      'Подключите микрофон или поделитесь системным звуком, чтобы музыка оживила сцену.',
+    visualizerAmbientCategoryDescription:
+      'Спокойные визуальные потоки, которые работают без звука — для атмосферы и фонового света.',
+    visualizerOpenScene: 'Открыть сцену',
+    visualizerBack: 'Назад',
+    visualizerLaunchGuide: 'Как запустить',
+    visualizerHighlights: 'Особенности',
+    visualizerHowToStart: 'Как начать',
+    visualizerCallouts: 'Полезно знать',
+    visualizerStartWithMic: 'Запустить с микрофоном',
+    visualizerStartWithSystem: 'Поделиться звуком системы',
+    visualizerStartAmbient: 'Запустить визуализатор',
+    visualizerAudioMenuHint: 'Миры, реагирующие на музыку',
+    visualizerAmbientMenuHint: 'Атмосферные заставки'
   },
   en: {
     welcome: 'Welcome to ScreenSavy.com!',
@@ -127,7 +166,28 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     textMode: 'Text',
     playerMode: 'Video player',
     animationMode: 'Animations',
-    createOwnMode: 'Add your own'
+    createOwnMode: 'Add your own',
+    visualizers: 'Visualizers',
+    visualizerCatalogHeading: 'Interactive Visualizers',
+    visualizerCatalogSubheading:
+      'Launch ambient scenes or music-reactive journeys built for ScreenSavy.',
+    visualizerCategoryAudio: 'Audio-reactive',
+    visualizerCategoryAmbient: 'Ambient',
+    visualizerAudioCategoryDescription:
+      'Feed live microphone input or share system audio to paint the scene with your music.',
+    visualizerAmbientCategoryDescription:
+      'Relaxing visuals that flow on their own—perfect for mood lighting and background ambience.',
+    visualizerOpenScene: 'Open scene',
+    visualizerBack: 'Back',
+    visualizerLaunchGuide: 'Launch guide',
+    visualizerHighlights: 'Highlights',
+    visualizerHowToStart: 'How to start',
+    visualizerCallouts: 'Good to know',
+    visualizerStartWithMic: 'Start with microphone',
+    visualizerStartWithSystem: 'Share system audio',
+    visualizerStartAmbient: 'Launch visualizer',
+    visualizerAudioMenuHint: 'Music-reactive worlds',
+    visualizerAmbientMenuHint: 'Ambient screenscapes'
   }
 };
 
