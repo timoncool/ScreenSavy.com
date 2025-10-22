@@ -1,5 +1,5 @@
-import VisualizerExperience from '@/components/screensavy/VisualizerExperience';
+import VisualizerWithOverlay from '@/components/screensavy/VisualizerWithOverlay';
 
 export default function VoyagerPage() {
-  return <VisualizerExperience slug="voyager" />;
+  return <VisualizerWithOverlay slug="voyager" />;
 }

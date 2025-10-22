@@ -1,5 +1,5 @@
-import VisualizerExperience from '@/components/screensavy/VisualizerExperience';
+import VisualizerWithOverlay from '@/components/screensavy/VisualizerWithOverlay';
 
 export default function CelestialPage() {
-  return <VisualizerExperience slug="celestial" />;
+  return <VisualizerWithOverlay slug="celestial" />;
 }

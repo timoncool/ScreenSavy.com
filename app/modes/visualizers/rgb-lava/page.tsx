@@ -1,5 +1,5 @@
-import VisualizerExperience from '@/components/screensavy/VisualizerExperience';
+import VisualizerWithOverlay from '@/components/screensavy/VisualizerWithOverlay';
 
 export default function RgbLavaPage() {
-  return <VisualizerExperience slug="rgb-lava" />;
+  return <VisualizerWithOverlay slug="rgb-lava" />;
 }

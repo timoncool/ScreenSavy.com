@@ -329,7 +329,11 @@ const MetaTags = ({ language }: { language: Language }) => {
   );
 };
 
-const MainExperience = () => {
+type MainExperienceProps = {
+  visualizerMode?: boolean;
+};
+
+const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) => {
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
   const [detectedLanguage, setDetectedLanguage] = useState<Language>("en");
@@ -886,7 +890,7 @@ const MainExperience = () => {
   };
 
   const backgroundStyle = {
-    backgroundColor: currentHex,
+    backgroundColor: visualizerMode ? "transparent" : currentHex,
     minHeight: "100vh",
     width: "100%",
     position: "relative" as const,
@@ -921,36 +925,40 @@ const MainExperience = () => {
           languageSetting={languageSetting}
           detected={detectedLanguage}
         />
-        {activeModes.includes("clock") && !interfaceHidden && (
+        {!visualizerMode && activeModes.includes("clock") && !interfaceHidden && (
           <Clock clockStyle={clockStyle} language={activeLanguage} />
         )}
-        {activeModes.includes("colorChange") &&
+        {!visualizerMode && activeModes.includes("colorChange") &&
           !interfaceHidden &&
           favorites.length > 1 && (
             <SpeedControl speed={speed} onChange={setSpeed} />
           )}
-        <ShadesPanel
-          rgb={rgb}
-          visible={showShades && !interfaceHidden}
-          hintsEnabled={hintsEnabled}
-          showHint={showShadesHint}
-          translation={getCommonText}
-          onCloseHint={() => setShowShadesHint(false)}
-          onSelectShade={(hex) => {
-            setCurrentHex(hex);
-            const parsed = hexToRgb(hex);
-            if (parsed) setRgb(parsed);
-          }}
-        />
-        <RgbPanel
-          hexValue={currentHex}
-          rgb={rgb}
-          show={showRgbPanel && !interfaceHidden}
-          onHexChange={handleHexChange}
-          onChannelChange={handleChannelChange}
-          onCopyHex={handleCopyHex}
-          copySuccess={copySuccess}
-        />
+        {!visualizerMode && (
+          <>
+            <ShadesPanel
+              rgb={rgb}
+              visible={showShades && !interfaceHidden}
+              hintsEnabled={hintsEnabled}
+              showHint={showShadesHint}
+              translation={getCommonText}
+              onCloseHint={() => setShowShadesHint(false)}
+              onSelectShade={(hex) => {
+                setCurrentHex(hex);
+                const parsed = hexToRgb(hex);
+                if (parsed) setRgb(parsed);
+              }}
+            />
+            <RgbPanel
+              hexValue={currentHex}
+              rgb={rgb}
+              show={showRgbPanel && !interfaceHidden}
+              onHexChange={handleHexChange}
+              onChannelChange={handleChannelChange}
+              onCopyHex={handleCopyHex}
+              copySuccess={copySuccess}
+            />
+          </>
+        )}
         <div
           className="top-buttons"
           style={{
@@ -961,6 +969,16 @@ const MainExperience = () => {
           <div className="top-buttons-row">
             {TOP_TOOLBAR_BUTTONS.map((key) => {
               const button = toolbarButtons[key];
+              const hideInVisualizerMode = visualizerMode && [
+                "randomColor",
+                "toggleShades",
+                "toggleRgb",
+                "toggleFavorites",
+                "picker",
+              ].includes(key);
+              
+              if (hideInVisualizerMode) return null;
+              
               return (
                 <IconButton
                   key={key}
@@ -998,28 +1016,30 @@ const MainExperience = () => {
             className={interfaceHidden ? "interface-toggle--inactive" : undefined}
           />
         </div>
-        <div
-          className={`clock-control-row ${activeModes.includes("clock") && !interfaceHidden ? "active" : ""}`}
-        >
-          <IconButton
-            icon="schedule"
-            onClick={() => setClockStyle("modern")}
-            title={getText("modernClock")}
-            active={clockStyle === "modern"}
-          />
-          <IconButton
-            icon="calendar_clock"
-            onClick={() => setClockStyle("full")}
-            title={getText("fullClock")}
-            active={clockStyle === "full"}
-          />
-          <IconButton
-            icon="history_toggle_off"
-            onClick={() => setClockStyle("minimal")}
-            title={getText("minimalClock")}
-            active={clockStyle === "minimal"}
-          />
-        </div>
+        {!visualizerMode && (
+          <div
+            className={`clock-control-row ${activeModes.includes("clock") && !interfaceHidden ? "active" : ""}`}
+          >
+            <IconButton
+              icon="schedule"
+              onClick={() => setClockStyle("modern")}
+              title={getText("modernClock")}
+              active={clockStyle === "modern"}
+            />
+            <IconButton
+              icon="calendar_clock"
+              onClick={() => setClockStyle("full")}
+              title={getText("fullClock")}
+              active={clockStyle === "full"}
+            />
+            <IconButton
+              icon="history_toggle_off"
+              onClick={() => setClockStyle("minimal")}
+              title={getText("minimalClock")}
+              active={clockStyle === "minimal"}
+            />
+          </div>
+        )}
         {menuOpen && (
           <div className="menu-container">
             <div className="menu-logo">
@@ -1195,26 +1215,30 @@ const MainExperience = () => {
             </div>
           </div>
         )}
-        <FavoritesPanel
-          favorites={favorites}
-          translation={getText}
-          hintsEnabled={hintsEnabled}
-          showHint={showColorsHint}
-          onCloseHint={() => setShowColorsHint(false)}
-          onAddFavorite={handleAddFavorite}
-          onClearFavorites={() => setFavorites([])}
-          onSelectFavorite={handleSelectFavorite}
-          onRemoveFavorite={handleRemoveFavorite}
-          interfaceHidden={interfaceHidden}
-          visible={showFavorites}
-        />
-        <PickerHint
-          visible={
-            pickerActive && !interfaceHidden && hintsEnabled && showPickerHint
-          }
-          translation={getText}
-          onClose={() => setShowPickerHint(false)}
-        />
+        {!visualizerMode && (
+          <FavoritesPanel
+            favorites={favorites}
+            translation={getText}
+            hintsEnabled={hintsEnabled}
+            showHint={showColorsHint}
+            onCloseHint={() => setShowColorsHint(false)}
+            onAddFavorite={handleAddFavorite}
+            onClearFavorites={() => setFavorites([])}
+            onSelectFavorite={handleSelectFavorite}
+            onRemoveFavorite={handleRemoveFavorite}
+            interfaceHidden={interfaceHidden}
+            visible={showFavorites}
+          />
+        )}
+        {!visualizerMode && (
+          <PickerHint
+            visible={
+              pickerActive && !interfaceHidden && hintsEnabled && showPickerHint
+            }
+            translation={getText}
+            onClose={() => setShowPickerHint(false)}
+          />
+        )}
       </div>
     </HelmetProvider>
   );

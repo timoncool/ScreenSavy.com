@@ -1,5 +1,5 @@
-import VisualizerExperience from '@/components/screensavy/VisualizerExperience';
+import VisualizerWithOverlay from '@/components/screensavy/VisualizerWithOverlay';
 
 export default function LavaLampPage() {
-  return <VisualizerExperience slug="lava-lamp" />;
+  return <VisualizerWithOverlay slug="lava-lamp" />;
 }

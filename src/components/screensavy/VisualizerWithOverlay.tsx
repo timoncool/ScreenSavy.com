@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { getVisualizerFile } from "@/lib/visualizers";
+import MainExperience from "./MainExperience";
 
-type VisualizerExperienceProps = {
+type VisualizerWithOverlayProps = {
   slug: string;
 };
 
-const VisualizerExperience = ({ slug }: VisualizerExperienceProps) => {
+const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,17 +75,37 @@ const VisualizerExperience = ({ slug }: VisualizerExperienceProps) => {
   }
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100vh",
-        margin: 0,
-        padding: 0,
-        overflow: "hidden",
-      }}
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
-    />
+    <div style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden" }}>
+      {/* Visualizer background */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+        }}
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
+      />
+      {/* MainExperience overlay with transparent background */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ pointerEvents: "auto" }}>
+          <MainExperience visualizerMode={true} />
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default VisualizerExperience;
+export default VisualizerWithOverlay;
