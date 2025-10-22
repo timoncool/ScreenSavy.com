@@ -1,31 +1,34 @@
 # ScreenSavy.com
 
-ScreenSavy.com is a curated home for movie and television discovery experiences. The project currently focuses on a streamlined
-single-page experience built with Next.js 14 and React 18, but the broader vision extends toward companion tooling for critics,
-curators, and casual viewers.
+ScreenSavy.com is a web experience for transforming any display into an ambient screen background. The app revives the nostalgia of classic screensavers and pairs it with modern controls so you can stage color washes, animated transitions, or functional overlays like clocks and typography on laptops, TVs, projectors, or tablets.
 
-## Product vision
+The project is actively developed in Russian and English and focuses on lightweight, offline-friendly visuals that run directly in the browser. ScreenSavy is ideal for mood lighting, photo shoots, home theater ambience, and creative workspaces where a tuned backdrop supports the moment.
 
-- **Personalized discovery** – provide dynamic content modules that surface films and series based on mood, availability, and
-  viewing history.
-- **Seamless modes** – offer alternative consumption modes (such as text-only and accessibility-first layouts) that adapt the
-  core experience to any context.
-- **Community insights** – lay the foundation for critic capsules, user lists, and editorial spotlights that help audiences make
-  confident decisions quickly.
+## Core experiences
 
-## Core features
+- **One Color mode** – set a single RGB tone across the entire screen. Perfect for monitor calibration, ambient lighting, or color therapy.
+- **Color Change mode** – build a palette of favorite shades and let ScreenSavy cycle through them with adjustable speed controls.
+- **Clock mode** – display modern, full, or minimal time readouts with automatic locale-aware day and date formatting.
+- **Favorites & palettes** – capture swatches to reuse later, explore tonal variations with the Shades panel, and fine-tune channels with numeric sliders.
+- **Text mode (/modes/text)** – craft typography-first layouts with adjustable fonts, weights, alignments, and color pairings for signage or event screens.
+- **Interface ergonomics** – toggle full-screen, hide controls for a clean presentation, and rely on contextual hints that guide first-time visitors.
 
-- **Hero carousel** showcasing highlighted titles and editorial picks.
-- **Content rails** for trending films, fresh releases, and curated collections sourced from partner APIs.
-- **Text mode** interface available at `/modes/text` for a lightweight, accessibility-friendly exploration path.
-- **Responsive layout system** tuned for large-format displays down to mobile breakpoints using Tailwind CSS.
+## Why people use ScreenSavy
 
-## Current limitations
+ScreenSavy surfaced on ProductRadar as a utility for:
 
-- **Limited data sources** – content is populated from mocked or cached fixtures until external API integrations are finalized.
-- **Minimal personalization** – user-specific recommendations and profiles are not yet implemented.
-- **Basic analytics** – event tracking is stubbed; meaningful engagement metrics still need instrumentation.
-- **No authentication** – browsing is anonymous; account creation and syncing across devices are future enhancements.
+- Setting the mood during movie nights without needing additional lighting equipment.
+- Verifying monitor color reproduction or comparing palettes for design projects.
+- Turning spare displays into dynamic clocks or informational panels.
+- Preparing backgrounds for photography and video shoots using a phone, tablet, or smart TV.
+- Creating atmospheric lighting in studios, classrooms, or hospitality spaces.
+
+## Technology stack
+
+- **Framework** – Next.js 14 with React 18 for a hybrid static/interactive experience.
+- **Styling** – Tailwind CSS alongside handcrafted utility classes tuned for full-screen layouts.
+- **State & storage** – Client-side React state with localStorage persistence for favorites, UI preferences, and animation settings.
+- **Internationalization** – Built-in Russian and English translations with automatic browser language detection.
 
 ## Getting started
 
@@ -42,8 +45,7 @@ Install dependencies once Node.js and npm are available:
 npm install
 ```
 
-> **Note:** The development environment used to create this project did not have external npm registry access. If you encounter
-> installation issues ensure the registry is reachable from your network.
+> **Note:** The development environment used to create this project did not have external npm registry access. If you encounter installation issues ensure the registry is reachable from your network.
 
 ### Development
 
@@ -53,8 +55,7 @@ Start the development server with hot reloading:
 npm run dev
 ```
 
-By default the app serves on [http://localhost:3000](http://localhost:3000). Navigate to `/` for the main experience or
-`/modes/text` for the text mode interface.
+By default the app serves on [http://localhost:3000](http://localhost:3000). Navigate to `/` for the main color experience or `/modes/text` for the text mode interface.
 
 ### Production build
 
@@ -87,11 +88,11 @@ Resolve any reported issues before committing changes.
 
 ## Roadmap highlights
 
-- **API integrations:** connect to external catalog services (e.g., TMDB) for live data feeds.
-- **Personalization:** introduce user accounts, watchlists, and tailored recommendations.
-- **Editorial tooling:** build internal dashboards for curators to manage spotlights and seasonal collections.
-- **Accessibility:** expand keyboard navigation, ARIA coverage, and alternative modes beyond text-only.
-- **Analytics & insights:** add privacy-aware tracking to understand feature engagement and inform future iterations.
+- **Expanded visual modes:** add gradients, particle systems, and sound-reactive scenes.
+- **Scheduling:** plan scene changes or timers for events and working sessions.
+- **Remote control:** mirror settings across devices and enable quick adjustments from a phone.
+- **Advanced typography:** presets for lyric videos, prompts, or workshop signage.
+- **Accessibility:** richer keyboard navigation, ARIA coverage, and high-contrast presets.
 
 ## Assets
 
