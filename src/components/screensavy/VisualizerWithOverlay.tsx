@@ -76,17 +76,19 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden" }}>
-      {/* Visualizer background */}
-      <div
+      {/* Visualizer background using iframe to execute scripts */}
+      <iframe
         style={{
           position: "absolute",
           top: 0,
           left: 0,
           width: "100%",
           height: "100%",
+          border: "none",
           zIndex: 0,
         }}
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
+        srcDoc={htmlContent}
+        title="Visualizer"
       />
       {/* MainExperience overlay with transparent background */}
       <div

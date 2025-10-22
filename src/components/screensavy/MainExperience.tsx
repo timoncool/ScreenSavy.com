@@ -899,11 +899,17 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
     cursor: pickerActive ? "crosshair" : "default",
     fontFamily:
       "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
+    pointerEvents: visualizerMode ? ("none" as const) : ("auto" as const),
   };
 
   return (
     <HelmetProvider>
-      <div ref={rootRef} style={backgroundStyle}>
+      <div 
+        ref={rootRef} 
+        style={backgroundStyle}
+        onClick={visualizerMode ? undefined : handleClick}
+        onMouseMove={visualizerMode ? undefined : handleMove}
+      >
         <MetaTags language={activeLanguage} />
         <noscript>
           <iframe
@@ -1038,6 +1044,45 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
               title={getText("minimalClock")}
               active={clockStyle === "minimal"}
             />
+          </div>
+        )}
+        {visualizerMode && !interfaceHidden && (
+          <div className="visualizer-control-row active">
+            <Link href="/modes/visualizers/celestial">
+              <IconButton
+                icon="graphic_eq"
+                title="Celestial Weaver"
+                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/celestial'}
+              />
+            </Link>
+            <Link href="/modes/visualizers/supernova">
+              <IconButton
+                icon="graphic_eq"
+                title="Super Nova"
+                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/supernova'}
+              />
+            </Link>
+            <Link href="/modes/visualizers/voyager">
+              <IconButton
+                icon="graphic_eq"
+                title="Voyager"
+                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/voyager'}
+              />
+            </Link>
+            <Link href="/modes/visualizers/lava-lamp">
+              <IconButton
+                icon="blur_on"
+                title="Lava Lamp"
+                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/lava-lamp'}
+              />
+            </Link>
+            <Link href="/modes/visualizers/rgb-lava">
+              <IconButton
+                icon="blur_on"
+                title="RGB Lava"
+                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/rgb-lava'}
+              />
+            </Link>
           </div>
         )}
         {menuOpen && (
