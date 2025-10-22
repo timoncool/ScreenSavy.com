@@ -1048,31 +1048,31 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
         {visualizerMode && !interfaceHidden && (
           <div className="visualizer-control-row active">
             <IconButton
-              icon="graphic_eq"
+              icon="auto_awesome"
               onClick={() => router.push('/modes/visualizers/celestial')}
               title="Celestial Weaver"
               active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/celestial'}
             />
             <IconButton
-              icon="graphic_eq"
+              icon="flare"
               onClick={() => router.push('/modes/visualizers/supernova')}
               title="Super Nova"
               active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/supernova'}
             />
             <IconButton
-              icon="graphic_eq"
+              icon="rocket_launch"
               onClick={() => router.push('/modes/visualizers/voyager')}
               title="Voyager"
               active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/voyager'}
             />
             <IconButton
-              icon="blur_on"
+              icon="water_drop"
               onClick={() => router.push('/modes/visualizers/lava-lamp')}
               title="Lava Lamp"
               active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/lava-lamp'}
             />
             <IconButton
-              icon="blur_on"
+              icon="gradient"
               onClick={() => router.push('/modes/visualizers/rgb-lava')}
               title="RGB Lava"
               active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/rgb-lava'}
