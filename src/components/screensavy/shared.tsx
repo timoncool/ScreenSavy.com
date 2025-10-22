@@ -102,6 +102,7 @@ export type ToolbarButtonKey =
   | "randomColor"
   | "toggleShades"
   | "toggleRgb"
+  | "toggleFavorites"
   | "picker"
   | "textOptions"
   | "toggleHints";
@@ -121,6 +122,7 @@ export const TOP_TOOLBAR_BUTTONS: ToolbarButtonKey[] = [
   "randomColor",
   "toggleShades",
   "toggleRgb",
+  "toggleFavorites",
   "picker",
   "textOptions",
   "toggleHints",
