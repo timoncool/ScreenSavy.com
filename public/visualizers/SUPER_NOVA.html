@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Super-Nova Music Visualiser</title>
+    <style>
+        body { margin: 0; background-color: #000; overflow: hidden; cursor: default; }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        #setup {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff; font-family: monospace; text-align: center;
+            border: 1px solid #fff; padding: 2em;
+            background-color: rgba(0,0,0,0.85);
+            max-width: 600px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            z-index: 10;
+        }
+        #setup h2 { 
+            margin-top: 0; 
+            font-size: 1.8em; 
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        #setup .description, #setup .instructions {
+            font-size: 0.95em;
+            line-height: 1.6;
+            text-align: left;
+            margin: 1.5em auto;
+            color: #ccc;
+        }
+        #setup h3 {
+             margin-top: 2em;
+             border-bottom: 1px solid #555;
+             padding-bottom: 0.5em;
+             color: #eee;
+        }
+        #setup strong { color: #fff; font-weight: bold; }
+        #setup ul {
+            padding-left: 20px;
+            text-align: left;
+        }
+        #setup li { margin-bottom: 0.5em; }
+        #setup select, #setup button {
+            display: block;
+            width: 100%;
+            margin-top: 1em;
+            padding: 0.8em;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #888;
+            font-family: monospace;
+            font-size: 1em;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+        #setup button:hover { 
+            background-color: #555; 
+        }
+        #setup button:disabled { background-color: #222; color: #666; cursor: not-allowed; }
+        .button-description {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 0.5em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="setup">
+        <h2>SUPER-NOVA VISUALISER</h2>
+        
+        <!-- [ВОССТАНОВЛЕНО] Полное описание проекта -->
+        <div class="description">
+            <p>Это <strong>интерактивный аудио-визуализатор</strong>, который в реальном времени преобразует звук в динамическую 3D-сцену. Он анализирует частотный спектр аудиопотока и использует эти данные для управления анимацией:</p>
+            <ul>
+                <li><strong>Центральное ядро:</strong> Пульсирует в такт басовым частотам.</li>
+                <li><strong>Вращающиеся кольца:
+</strong> Реагируют на средние и высокие частоты, получая импульсы вращения от резких звуков.</li>
+                <li><strong>Поле частиц:</strong> Его плотность и турбулентность зависят от общей громкости звука.</li>
+                <li><strong>Эффекты:</strong> Свечение (Bloom) и хроматическая аберрация усиливаются в зависимости от силы баса и верхов.</li>
+            </ul>
+        </div>
+
+        <!-- [ИСПРАВЛЕНО] Инструкция по использованию с учетом новой логики -->
+        <div class="instructions">
+            <h3>Инструкция по использованию</h3>
+            <p><strong>1. Микрофон:</strong><br>
+            Нажмите "Начать с микрофона". Браузер запросит доступ. Если доступ разрешен, появится список доступных микрофонов. Выберите нужный и нажмите "Подтвердить и запустить".</p>
+
+            <p><strong>2. Звук системы / вкладки:</strong><br>
+            Лучший вариант для музыки из YouTube, плееров и т.д.
+            Нажмите кнопку, и в появившемся окне браузера <strong>ОБЯЗАТЕЛЬНО ПОСТАВЬТЕ ГАЛОЧКУ</strong> "Поделиться звуком системы" (Share system audio) или "Поделиться звуком вкладки" (Share tab audio). Без этого визуализация не будет получать звук.</p>
+        </div>
+
+        <!-- [ИСПРАВЛЕНО] Логика выбора источника с предупреждениями и двухэтапным выбором для микрофона -->
+        <div id="mic-step-1">
+            <button id="init-mic">Начать с микрофона</button>
+            <p class="button-description">(Браузер запросит разрешение на использование микрофона)</p>
+        </div>
+        <div id="mic-step-2" style="display: none;">
+            <p>Выберите устройство:</p>
+            <select id="mic-select"></select>
+            <button id="start-mic-confirm">Подтвердить и запустить</button>
+        </div>
+        
+        <hr style="border-color: #444; margin: 2em 0;">
+
+        <div id="system-audio-step">
+            <button id="start-system">Начать со звука системы / вкладки</button>
+            <p class="button-description">(Браузер запросит разрешение на захват экрана/вкладки со звуком)</p>
+        </div>
+    </div>
+
+    <!-- Canvas будет создан здесь скриптом -->
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+
+        let scene, camera, renderer, analyser, composer, mainObject, ringsGroup, particles;
+        const visualGroup = new THREE.Group();
+        const clock = new THREE.Clock();
+        let waveformData;
+        let micPermissionStream = null; // [ИЗМЕНЕНО] Хранит поток, полученный при первом запросе разрешения
+
+        const setupDiv = document.getElementById('setup');
+        const micStep1Div = document.getElementById('mic-step-1');
+        const micStep2Div = document.getElementById('mic-step-2');
+        const initMicButton = document.getElementById('init-mic');
+        const micSelect = document.getElementById('mic-select');
+        const startMicConfirmButton = document.getElementById('start-mic-confirm');
+        const startSystemButton = document.getElementById('start-system');
+        
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 14;
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            scene.add(visualGroup);
+            createVisuals();
+            setupPostProcessing();
+            window.addEventListener('resize', onWindowResize);
+            animate();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            if (composer) composer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function connectAudio(stream) {
+            // Останавливаем все предыдущие активные потоки, чтобы избежать конфликтов и утечек
+            if (micPermissionStream) {
+                micPermissionStream.getTracks().forEach(track => track.stop());
+                micPermissionStream = null;
+            }
+            // Если переключаемся с системного звука, его тоже надо остановить
+            // (хотя getDisplayMedia обычно сам за этим следит при закрытии окна/вкладки)
+            // Но для надежности можно добавить логику для системного потока, если он где-то хранится.
+            
+            setupDiv.style.display = 'none';
+            document.body.style.cursor = 'none';
+
+            const listener = new THREE.AudioListener();
+            const source = listener.context.createMediaStreamSource(stream);
+            analyser = new THREE.AudioAnalyser(new THREE.Audio(listener), 1024);
+            waveformData = new Uint8Array(analyser.analyser.fftSize);
+            source.connect(analyser.analyser);
+        }
+        
+        // [ИСПРАВЛЕНО] Логика запроса и запуска микрофона - ОДИН запрос
+        initMicButton.addEventListener('click', async () => {
+            initMicButton.disabled = true; // Отключаем кнопку, чтобы избежать повторных кликов
+
+            try {
+                // [ВАЖНО] Это ЕДИНСТВЕННЫЙ вызов getUserMedia, который запросит разрешение.
+                // Полученный поток `stream` позволит `enumerateDevices` получить полные названия.
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                micPermissionStream = stream; // Сохраняем этот поток для дальнейшего использования
+                
+                // Теперь, когда разрешение есть, получаем полный список устройств с их названиями.
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const audioDevices = devices.filter(device => device.kind === 'audioinput');
+
+                micSelect.innerHTML = '';
+                if (audioDevices.length === 0) {
+                     alert("Микрофоны не найдены.");
+                     micPermissionStream.getTracks().forEach(track => track.stop()); // Останавливаем поток, если нечего выбрать
+                     micPermissionStream = null;
+                     initMicButton.disabled = false; // Включаем кнопку обратно
+                     return;
+                }
+                
+                // Заполняем список микрофонов
+                audioDevices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.textContent = device.label || `Микрофон ${micSelect.options.length + 1}`;
+                    micSelect.appendChild(option);
+                });
+
+                // Пытаемся выбрать в списке тот микрофон, который уже активен в `micPermissionStream`
+                const activeMicTrack = micPermissionStream.getAudioTracks()[0];
+                if (activeMicTrack && activeMicTrack.deviceId) {
+                    micSelect.value = activeMicTrack.deviceId;
+                }
+                
+                // Показываем второй шаг выбора микрофона
+                micStep1Div.style.display = 'none';
+                micStep2Div.style.display = 'block';
+
+            } catch (e) {
+                console.error('Ошибка доступа к микрофону:', e);
+                if (e.name === "NotAllowedError" || e.name === "PermissionDeniedError") {
+                    alert("Вы не предоставили доступ к микрофону. Визуализация не сможет использовать микрофон.");
+                } else {
+                    alert(`Не удалось получить доступ к микрофону. Ошибка: ${e.name}.`);
+                }
+                initMicButton.disabled = false; // Включаем кнопку обратно, если была ошибка
+            }
+        });
+        
+        startMicConfirmButton.addEventListener('click', async () => {
+            const selectedDeviceId = micSelect.value;
+            const currentActiveDeviceId = micPermissionStream?.getAudioTracks()[0]?.deviceId;
+
+            if (selectedDeviceId === currentActiveDeviceId) {
+                // Если выбран тот же микрофон, который уже активен в micPermissionStream,
+                // просто используем его. Нет необходимости в новом getUserMedia().
+                connectAudio(micPermissionStream);
+            } else {
+                // Если выбран другой микрофон, нужно получить новый поток.
+                // [ВАЖНО] Разрешение уже дано, поэтому getUserMedia не будет запрашивать его повторно.
+                // Используем deviceId напрямую, чтобы избежать OverconstrainedError.
+                try {
+                    const newStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: selectedDeviceId } });
+                    connectAudio(newStream);
+                    // Важно: старый micPermissionStream уже остановлен в connectAudio
+                    micPermissionStream = newStream; // Обновляем ссылку на текущий активный поток
+                } catch (e) {
+                    console.error('Не удалось запустить с выбранного микрофона:', e);
+                    alert(`Не удалось подключиться к выбранному микрофону. Возможно, он занят или был отключен. Ошибка: ${e.name}.`);
+                    
+                    // Если не удалось, возвращаем интерфейс выбора
+                    micStep1Div.style.display = 'block';
+                    micStep2Div.style.display = 'none';
+                    initMicButton.disabled = false; // Включаем кнопку "Начать с микрофона"
+                }
+            }
+        });
+        
+        startSystemButton.addEventListener('click', () => {
+            navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
+                .then(stream => {
+                    connectAudio(stream);
+                })
+                .catch(e => {
+                    if (e.name !== 'NotAllowedError' && e.name !== 'PermissionDeniedError') {
+                       console.error('Не удалось захватить звук системы/вкладки:', e);
+                    } else if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+                        alert('Вы не предоставили доступ к захвату экрана/вкладки. Визуализация не сможет получить звук системы.');
+                    }
+                });
+        });
+
+        const ChromaticAberrationShader = {
+            uniforms: { tDiffuse: { value: null }, uAmount: { value: 0.0 } },
+            vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+            fragmentShader: `uniform sampler2D tDiffuse; uniform float uAmount; varying vec2 vUv; void main() { vec2 offset = uAmount * 0.005 * (vUv - 0.5); vec4 cR = texture2D(tDiffuse, vUv + offset); vec4 cG = texture2D(tDiffuse, vUv); vec4 cB = texture2D(tDiffuse, vUv - offset); gl_FragColor = vec4(cR.r, cG.g, cB.b, cG.a); }`
+        };
+        
+        function getAvg(data, start, end) {
+            let sum = 0; for (let i = start; i < end; i++) { sum += data[i]; }
+            return (sum / (end - start)) / 255;
+        }
+
+        function createVisuals() {
+            const coreMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+            mainObject = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 8), coreMaterial);
+            mainObject.userData.initialVertices = mainObject.geometry.attributes.position.clone();
+            visualGroup.add(mainObject);
+
+            const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x555555, wireframe: true, transparent: true, opacity: 0.7 });
+            ringsGroup = new THREE.Group();
+            visualGroup.add(ringsGroup);
+            for (let i = 0; i < 4; i++) {
+                const ringGeo = new THREE.TorusGeometry(4.5 + i * 1.0, 0.015, 32, 200);
+                const ring = new THREE.Mesh(ringGeo, ringMaterial.clone());
+                ring.userData.initialVertices = ring.geometry.attributes.position.clone();
+                const pivot = new THREE.Group();
+                pivot.add(ring);
+                pivot.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+
+                const baseSpeedMagnitude = 0.015 - i * 0.004; 
+                const inertiaFactor = 1.0 + i * 1.5;
+
+                pivot.userData = { 
+                    baseSpeed: new THREE.Vector2(
+                         baseSpeedMagnitude * (Math.random() > 0.5 ? 1 : -1), 
+                         baseSpeedMagnitude * 0.5 * (Math.random() > 0.5 ? 1 : -1)
+                    ),
+                    impulseVelocity: new THREE.Vector2(), 
+                    inertia: inertiaFactor,
+                    cooldownTimer: 0
+                };
+                ringsGroup.add(pivot);
+            }
+
+            const particleCount = 15000;
+            const particleGeo = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const initialPositions = new Float32Array(particleCount * 3);
+            for (let i = 0; i < particleCount; i++) {
+                const r = 10 + Math.random() * 15;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                const x = r * Math.sin(phi) * Math.cos(theta);
+                const y = r * Math.sin(phi) * Math.sin(theta);
+                const z = r * Math.cos(phi);
+                positions[i*3] = x; initialPositions[i*3] = x;
+                positions[i*3+1] = y; initialPositions[i*3+1] = y;
+                positions[i*3+2] = z; initialPositions[i*3+2] = z;
+            }
+            particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.03, transparent: true, opacity: 0.4, sizeAttenuation: true }));
+            particles.userData.initialPositions = initialPositions;
+            visualGroup.add(particles);
+        }
+
+        function setupPostProcessing() {
+            composer = new EffectComposer(renderer);
+            composer.addPass(new RenderPass(scene, camera));
+            const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.4, 0.5, 0.1);
+            composer.addPass(bloomPass);
+            const chromaticPass = new ShaderPass(ChromaticAberrationShader);
+            composer.addPass(chromaticPass);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            visualGroup.rotation.y += 0.0005;
+            visualGroup.rotation.x += 0.0002;
+
+            ringsGroup.children.forEach((pivot) => {
+                pivot.rotation.x += pivot.userData.baseSpeed.x * delta * 60;
+                pivot.rotation.y += pivot.userData.baseSpeed.y * delta * 60;
+                pivot.userData.impulseVelocity.multiplyScalar(0.97);
+                pivot.rotation.x += pivot.userData.impulseVelocity.x;
+                pivot.rotation.y += pivot.userData.impulseVelocity.y;
+            });
+            
+            if (analyser) {
+                analyser.analyser.getByteTimeDomainData(waveformData); 
+                const freqData = analyser.getFrequencyData();
+                const bass = getAvg(freqData, 0, 5);
+                const highs = getAvg(freqData, 100, 256);
+                const overall = getAvg(freqData, 0, 256);
+                const ringFreqs = [ getAvg(freqData, 60, 100), getAvg(freqData, 20, 50), getAvg(freqData, 6, 15), getAvg(freqData, 1, 5) ];
+                
+                const corePositions = mainObject.geometry.attributes.position;
+                const coreInitial = mainObject.userData.initialVertices;
+                const noiseFactor = bass * 0.4;
+                for (let i = 0; i < corePositions.count; i++) {
+                    const p = new THREE.Vector3().fromBufferAttribute(coreInitial, i);
+                    p.add(p.clone().normalize().multiplyScalar(noiseFactor * (0.5 + Math.sin(time * 3 + i * 0.5))));
+                    corePositions.setXYZ(i, p.x, p.y, p.z);
+                }
+                corePositions.needsUpdate = true;
+                
+                ringsGroup.children.forEach((pivot, i) => {
+                    pivot.userData.cooldownTimer = Math.max(0, pivot.userData.cooldownTimer - delta);
+                    const freqPower = ringFreqs[i];
+                    if (freqPower > 0.35 && pivot.userData.cooldownTimer <= 0) {
+                        const impulseStrength = (freqPower - 0.2) * 0.22 / pivot.userData.inertia;
+                        pivot.userData.impulseVelocity.x += impulseStrength * Math.sign(pivot.userData.baseSpeed.x);
+                        pivot.userData.impulseVelocity.y += impulseStrength * 0.3 * (Math.random() - 0.5);
+                        pivot.userData.cooldownTimer = 0.075;
+                    }
+                    const ring = pivot.children[0];
+                    const ringPos = ring.geometry.attributes.position;
+                    const ringInitial = ring.userData.initialVertices;
+                    const normals = ring.geometry.attributes.normal;
+                    for (let j = 0; j < ringPos.count; j++) {
+                        const p = new THREE.Vector3().fromBufferAttribute(ringInitial, j);
+                        const n = new THREE.Vector3().fromBufferAttribute(normals, j);
+                        const uvx = ring.geometry.attributes.uv.getX(j);
+                        const waveIndex = Math.floor(uvx * (waveformData.length - 1));
+                        const displacement = (waveformData[waveIndex] / 128.0 - 1.0);
+                        p.add(n.multiplyScalar(displacement * 1.0));
+                        ringPos.setXYZ(j, p.x, p.y, p.z);
+                    }
+                    ringPos.needsUpdate = true;
+                });
+                
+                particles.material.size = 0.03 + overall * 0.05;
+                particles.material.opacity = 0.4 + overall * 0.4;
+                const particlePos = particles.geometry.attributes.position;
+                const particleInitial = particles.userData.initialPositions;
+                const turbulence = overall * 1.0; 
+                for (let i = 0; i < particlePos.count; i++) {
+                    const i3 = i * 3;
+                    particlePos.array[i3] = particleInitial[i3] + (Math.sin(time + i * 0.2)) * turbulence;
+                    particlePos.array[i3+1] = particleInitial[i3+1] + (Math.cos(time + i * 0.2)) * turbulence;
+                }
+                particlePos.needsUpdate = true;
+                composer.passes[1].strength = 0.35 + bass * 1.5;
+                if (composer.passes[2].uniforms['uAmount']) {
+                    composer.passes[2].uniforms['uAmount'].value = highs * 1.5;
+                }
+            } else {
+                 const idlePulse = Math.pow(Math.sin(time * 0.5) * 0.5 + 0.5, 2);
+                 const corePositions = mainObject.geometry.attributes.position;
+                 const coreInitial = mainObject.userData.initialVertices;
+                 const noiseFactor = idlePulse * 0.05;
+                 for (let i = 0; i < corePositions.count; i++) {
+                    const p = new THREE.Vector3().fromBufferAttribute(coreInitial, i);
+                    p.add(p.clone().normalize().multiplyScalar(noiseFactor));
+                    corePositions.setXYZ(i, p.x, p.y, p.z);
+                 }
+                 corePositions.needsUpdate = true;
+                 composer.passes[1].strength = 0.35 + idlePulse * 0.2;
+            }
+            composer.render();
+        }
+
+        init();
+    </script>
+</body>
+</html>

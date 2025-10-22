@@ -1086,6 +1086,60 @@ const MainExperience = () => {
               </div>
               {getText("clock")}
             </div>
+            <div className="menu-separator" />
+            <div className="menu-section-title">{getText("audioVisualizers")}</div>
+            <Link
+              href="/modes/visualizers/celestial"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">graphic_eq</i>
+              </div>
+              Celestial Weaver
+            </Link>
+            <Link
+              href="/modes/visualizers/supernova"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">graphic_eq</i>
+              </div>
+              Super Nova
+            </Link>
+            <Link
+              href="/modes/visualizers/voyager"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">graphic_eq</i>
+              </div>
+              Voyager
+            </Link>
+            <div className="menu-section-title">{getText("ambientVisualizers")}</div>
+            <Link
+              href="/modes/visualizers/lava-lamp"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">blur_on</i>
+              </div>
+              Lava Lamp
+            </Link>
+            <Link
+              href="/modes/visualizers/rgb-lava"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">blur_on</i>
+              </div>
+              RGB Lava
+            </Link>
+            <div className="menu-separator" />
             <div className="menu-item disabled">
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">tv_gen</i>

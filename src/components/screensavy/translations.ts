@@ -41,7 +41,10 @@ export type MainTranslationKey =
   | 'textMode'
   | 'playerMode'
   | 'animationMode'
-  | 'createOwnMode';
+  | 'createOwnMode'
+  | 'visualizers'
+  | 'audioVisualizers'
+  | 'ambientVisualizers';
 
 export const mainTranslations: Record<Language, Record<MainTranslationKey, string>> = {
   ru: {
@@ -86,7 +89,10 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     textMode: 'Текст',
     playerMode: 'Видеоплеер',
     animationMode: 'Анимации',
-    createOwnMode: 'Добавить свою'
+    createOwnMode: 'Добавить свою',
+    visualizers: 'Визуализаторы',
+    audioVisualizers: 'Аудио визуализаторы',
+    ambientVisualizers: 'Эмбиент визуализаторы'
   },
   en: {
     welcome: 'Welcome to ScreenSavy.com!',
@@ -130,7 +136,10 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     textMode: 'Text',
     playerMode: 'Video player',
     animationMode: 'Animations',
-    createOwnMode: 'Add your own'
+    createOwnMode: 'Add your own',
+    visualizers: 'Visualizers',
+    audioVisualizers: 'Audio Visualizers',
+    ambientVisualizers: 'Ambient Visualizers'
   }
 };
 
