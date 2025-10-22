@@ -67,6 +67,7 @@ export type IconButtonProps = {
   title: string;
   active?: boolean;
   label?: string;
+  className?: string;
 };
 
 export const IconButton = ({
@@ -75,11 +76,12 @@ export const IconButton = ({
   title,
   active,
   label,
+  className,
 }: IconButtonProps) => (
   <button
     type="button"
     onClick={onClick}
-    className={`icon-button${active ? " active" : ""}`}
+    className={`icon-button${active ? " active" : ""}${className ? ` ${className}` : ""}`}
     title={title}
   >
     {label ? (

@@ -1193,23 +1193,26 @@ const TextModeExperience = () => {
             />
           </div>
         </div>
-        <div
-          className="right-buttons"
-          style={{
-            opacity: interfaceHidden ? 0 : 1,
-            pointerEvents: interfaceHidden ? "none" : "auto",
-          }}
-        >
-          <IconButton
-            icon={isFullscreen ? "fullscreen_exit" : "fullscreen"}
-            onClick={toggleFullscreen}
-            title={getText(isFullscreen ? "exitFullscreen" : "fullscreen")}
-          />
+        <div className="right-buttons">
+          <div
+            className="right-buttons-group"
+            style={{
+              opacity: interfaceHidden ? 0 : 1,
+              pointerEvents: interfaceHidden ? "none" : "auto",
+            }}
+          >
+            <IconButton
+              icon={isFullscreen ? "fullscreen_exit" : "fullscreen"}
+              onClick={toggleFullscreen}
+              title={getText(isFullscreen ? "exitFullscreen" : "fullscreen")}
+            />
+          </div>
           <IconButton
             icon={interfaceHidden ? "lightbulb" : "light_off"}
             onClick={() => setInterfaceHidden((value) => !value)}
             title={getText(interfaceHidden ? "showInterface" : "hideInterface")}
             active={interfaceHidden}
+            className={interfaceHidden ? "interface-toggle--inactive" : undefined}
           />
         </div>
         {menuOpen && (
