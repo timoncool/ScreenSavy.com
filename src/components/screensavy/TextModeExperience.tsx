@@ -654,9 +654,66 @@ const TextModeExperience = () => {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedHex = localStorage.getItem("screensavy-text-color");
+    if (storedHex) {
+      setCurrentHex(storedHex);
+      const parsed = hexToRgb(storedHex);
+      if (parsed) {
+        setRgb(parsed);
+      }
+    }
+
+    const storedRgb = localStorage.getItem("screensavy-text-rgb");
+    if (storedRgb) {
+      try {
+        const parsed = JSON.parse(storedRgb) as Rgb;
+        if (
+          typeof parsed?.r === "number" &&
+          typeof parsed?.g === "number" &&
+          typeof parsed?.b === "number"
+        ) {
+          setRgb(parsed);
+          setCurrentHex(rgbToHex(parsed));
+        }
+      } catch (error) {
+        console.warn("Failed to parse stored text RGB", error);
+      }
+    }
+
+    const storedFavorites = localStorage.getItem("screensavy-text-favorites");
+    if (storedFavorites) {
+      try {
+        const parsed = JSON.parse(storedFavorites);
+        if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+          setFavorites(parsed);
+        }
+      } catch (error) {
+        console.warn("Failed to parse stored text favorites", error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (languageSetting !== "auto") return;
     setDetectedLanguage(detectBrowserLanguage());
   }, [languageSetting]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("screensavy-text-color", currentHex);
+  }, [currentHex]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("screensavy-text-rgb", JSON.stringify(rgb));
+  }, [rgb]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("screensavy-text-favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
   useEffect(() => {
     if (!activeModes.includes("colorChange") || favorites.length <= 1) {
