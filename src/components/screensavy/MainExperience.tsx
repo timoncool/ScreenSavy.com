@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import {
   clampChannel,
@@ -334,6 +334,7 @@ type MainExperienceProps = {
 };
 
 const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) => {
+  const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
   const [detectedLanguage, setDetectedLanguage] = useState<Language>("en");
@@ -907,8 +908,6 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
       <div 
         ref={rootRef} 
         style={backgroundStyle}
-        onClick={visualizerMode ? undefined : handleClick}
-        onMouseMove={visualizerMode ? undefined : handleMove}
       >
         <MetaTags language={activeLanguage} />
         <noscript>
@@ -1048,41 +1047,36 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
         )}
         {visualizerMode && !interfaceHidden && (
           <div className="visualizer-control-row active">
-            <Link href="/modes/visualizers/celestial">
-              <IconButton
-                icon="graphic_eq"
-                title="Celestial Weaver"
-                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/celestial'}
-              />
-            </Link>
-            <Link href="/modes/visualizers/supernova">
-              <IconButton
-                icon="graphic_eq"
-                title="Super Nova"
-                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/supernova'}
-              />
-            </Link>
-            <Link href="/modes/visualizers/voyager">
-              <IconButton
-                icon="graphic_eq"
-                title="Voyager"
-                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/voyager'}
-              />
-            </Link>
-            <Link href="/modes/visualizers/lava-lamp">
-              <IconButton
-                icon="blur_on"
-                title="Lava Lamp"
-                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/lava-lamp'}
-              />
-            </Link>
-            <Link href="/modes/visualizers/rgb-lava">
-              <IconButton
-                icon="blur_on"
-                title="RGB Lava"
-                active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/rgb-lava'}
-              />
-            </Link>
+            <IconButton
+              icon="graphic_eq"
+              onClick={() => router.push('/modes/visualizers/celestial')}
+              title="Celestial Weaver"
+              active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/celestial'}
+            />
+            <IconButton
+              icon="graphic_eq"
+              onClick={() => router.push('/modes/visualizers/supernova')}
+              title="Super Nova"
+              active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/supernova'}
+            />
+            <IconButton
+              icon="graphic_eq"
+              onClick={() => router.push('/modes/visualizers/voyager')}
+              title="Voyager"
+              active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/voyager'}
+            />
+            <IconButton
+              icon="blur_on"
+              onClick={() => router.push('/modes/visualizers/lava-lamp')}
+              title="Lava Lamp"
+              active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/lava-lamp'}
+            />
+            <IconButton
+              icon="blur_on"
+              onClick={() => router.push('/modes/visualizers/rgb-lava')}
+              title="RGB Lava"
+              active={typeof window !== 'undefined' && window.location.pathname === '/modes/visualizers/rgb-lava'}
+            />
           </div>
         )}
         {menuOpen && (
@@ -1114,16 +1108,18 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
               </button>
             </div>
             <div className="menu-separator" />
-            <Link
-              href="/modes/text"
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                setMenuOpen(false);
+                router.push("/modes/text");
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">text_fields</i>
               </div>
               {getText("textMode")}
-            </Link>
+            </div>
             <div
               className={`menu-item ${activeModes.includes("oneColor") ? "active" : ""}`}
               onClick={() => toggleMode("oneColor")}
@@ -1153,57 +1149,67 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
             </div>
             <div className="menu-separator" />
             <div className="menu-section-title">{getText("audioVisualizers")}</div>
-            <Link
-              href="/modes/visualizers/celestial"
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                setMenuOpen(false);
+                router.push("/modes/visualizers/celestial");
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">graphic_eq</i>
               </div>
               Celestial Weaver
-            </Link>
-            <Link
-              href="/modes/visualizers/supernova"
+            </div>
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                setMenuOpen(false);
+                router.push("/modes/visualizers/supernova");
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">graphic_eq</i>
               </div>
               Super Nova
-            </Link>
-            <Link
-              href="/modes/visualizers/voyager"
+            </div>
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                setMenuOpen(false);
+                router.push("/modes/visualizers/voyager");
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">graphic_eq</i>
               </div>
               Voyager
-            </Link>
+            </div>
             <div className="menu-section-title">{getText("ambientVisualizers")}</div>
-            <Link
-              href="/modes/visualizers/lava-lamp"
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                setMenuOpen(false);
+                router.push("/modes/visualizers/lava-lamp");
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">blur_on</i>
               </div>
               Lava Lamp
-            </Link>
-            <Link
-              href="/modes/visualizers/rgb-lava"
+            </div>
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                setMenuOpen(false);
+                router.push("/modes/visualizers/rgb-lava");
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">blur_on</i>
               </div>
               RGB Lava
-            </Link>
+            </div>
             <div className="menu-separator" />
             <div className="menu-item disabled">
               <div className="menu-item-icon">
