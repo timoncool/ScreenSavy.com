@@ -1510,6 +1510,14 @@ body::-webkit-scrollbar {
   align-items: center;
   flex-shrink: 0;
 }
+.welcome-icon .menu-logo-image {
+  margin: 0;
+}
+.welcome-icon .menu-logo-image img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
 .welcome-text {
   flex: 1;
 }

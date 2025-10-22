@@ -450,7 +450,12 @@ export const WelcomeNotification = ({
       <div className="welcome-content">
         <div className="welcome-icon">
           <div className="menu-logo-image">
-            <div className="menu-logo-inner" />
+            <img
+              src="/favicon.svg"
+              alt="ScreenSavy Logo"
+              width={24}
+              height={24}
+            />
           </div>
         </div>
         <div className="welcome-text">
