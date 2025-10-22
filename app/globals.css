@@ -575,8 +575,7 @@ body::-webkit-scrollbar {
   margin-top: 2px;
 }
 
-.visualizers-page,
-.visualizer-detail-page {
+.visualizers-page {
   min-height: 100vh;
   height: 100vh;
   background:
@@ -934,186 +933,31 @@ body::-webkit-scrollbar {
   color: rgba(255, 255, 255, 0.9);
 }
 
-.visualizer-detail-header {
-  padding: 32px 5vw 0;
-  margin-bottom: 0;
-}
-
-.visualizer-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.visualizer-detail-content {
-  flex: 1;
-  display: grid;
-  grid-template-columns: minmax(300px, 420px) 1fr;
-  gap: 32px;
-  padding: 24px 5vw 48px;
-  overflow-y: auto;
-}
-
-.visualizer-detail-content--collapsed {
-  grid-template-columns: 1fr;
-}
-
-.visualizer-detail-content--collapsed .visualizer-frame {
-  min-height: max(360px, calc(100vh - 168px));
-}
-
-.visualizer-detail-content--collapsed .visualizer-frame iframe {
-  height: 100%;
-}
-
-.visualizer-overlay-panel {
-  background: rgba(15, 18, 40, 0.82);
-  border: 1px solid rgba(110, 226, 255, 0.18);
-  border-radius: 20px;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-height: calc(100vh - 136px);
-  overflow-y: auto;
-  backdrop-filter: blur(18px);
-}
-
-.visualizer-overlay-header h1 {
-  margin: 12px 0 8px;
-  font-size: clamp(28px, 3.6vw, 38px);
-}
-
-.visualizer-summary {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.72);
-  line-height: 1.6;
-}
-
-.visualizer-overlay-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.visualizer-overlay-section h2,
-.visualizer-overlay-section h3 {
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.visualizer-overlay-section p,
-.visualizer-overlay-section span,
-.visualizer-overlay-section li {
-  color: rgba(255, 255, 255, 0.78);
-  line-height: 1.6;
-}
-
-.visualizer-overlay-section ul,
-.visualizer-overlay-section ol {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.visualizer-overlay-section ol li {
-  margin-bottom: 10px;
-}
-
-.visualizer-overlay-section ol li strong {
-  display: block;
-  margin-bottom: 4px;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.visualizer-action-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.visualizer-action-button {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  padding: 14px 16px;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.92);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.visualizer-action-button small {
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.4;
-}
-
-.visualizer-action-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(110, 226, 255, 0.2);
-}
-
-.visualizer-action-button--microphone {
-  border-color: rgba(110, 226, 255, 0.4);
-  background: rgba(110, 226, 255, 0.12);
-}
-
-.visualizer-action-button--systemAudio {
-  border-color: rgba(186, 104, 255, 0.35);
-  background: rgba(186, 104, 255, 0.12);
-}
-
-.visualizer-action-button--ambient {
-  border-color: rgba(0, 229, 255, 0.3);
-  background: rgba(0, 229, 255, 0.1);
-}
-
-.visualizer-frame {
+.visualizer-embed {
   position: relative;
-  border-radius: 28px;
-  overflow: hidden;
-  min-height: 460px;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
   background: #000;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
 }
 
-.visualizer-frame iframe {
+.visualizer-embed iframe {
+  flex: 1;
   width: 100%;
   height: 100%;
   border: none;
 }
 
 @media (max-width: 1024px) {
-  .visualizer-detail-content {
-    grid-template-columns: 1fr;
-  }
-
-  .visualizer-overlay-panel {
-    max-height: none;
-  }
-
-  .visualizer-frame {
-    min-height: 360px;
+  .visualizer-embed {
+    min-height: 320px;
   }
 }
 
 @media (max-width: 720px) {
   .visualizers-shell {
     padding: 24px 24px 40px;
-  }
-
-  .visualizer-detail-header {
-    padding: 24px 24px 0;
-  }
-
-  .visualizer-detail-content {
-    padding: 16px 24px 40px;
   }
 
   .visualizer-tabs {
@@ -1128,8 +972,8 @@ body::-webkit-scrollbar {
     padding: 20px;
   }
 
-  .visualizer-overlay-panel {
-    padding: 22px;
+  .visualizer-embed {
+    min-height: 280px;
   }
 }
 .coming-soon-badge {
