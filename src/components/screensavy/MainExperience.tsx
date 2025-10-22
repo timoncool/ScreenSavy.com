@@ -41,6 +41,7 @@ import {
   useAnimationFrame,
 } from "./shared";
 import VisualizersCatalog from "./VisualizersCatalog";
+import InlineVisualizerPlayer from "./InlineVisualizerPlayer";
 
 type ModeKey = "oneColor" | "colorChange" | "clock";
 type ClockStyle = "modern" | "full" | "minimal";
@@ -361,6 +362,19 @@ const MainExperience = () => {
   const [selectedVisualizerSlug, setSelectedVisualizerSlug] =
     useState<string | null>(null);
   const [uiHydrated, setUiHydrated] = useState(false);
+
+  useEffect(() => {
+    if (!selectedVisualizerSlug) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedVisualizerSlug(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedVisualizerSlug]);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const colorChangeTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -805,12 +819,14 @@ const MainExperience = () => {
     [],
   );
 
-  const handleVisualizerOpen = useCallback((slug: string) => {
-    setSelectedVisualizerSlug(slug);
-    if (typeof window !== "undefined") {
-      window.open(`/modes/visualizers/${slug}`, "_blank", "noopener,noreferrer");
-    }
-  }, []);
+  const handleVisualizerOpen = useCallback(
+    (slug: string) => {
+      setSelectedVisualizerSlug(slug);
+      setVisualizersOverlayOpen(false);
+      setMenuOpen(false);
+    },
+    [],
+  );
 
   const handleAddToBookmarks = useCallback(() => {
     try {
@@ -951,6 +967,16 @@ const MainExperience = () => {
           languageSetting={languageSetting}
           detected={detectedLanguage}
         />
+        {selectedVisualizerSlug && (
+          <div className="inline-visualizer-overlay">
+            <InlineVisualizerPlayer
+              slug={selectedVisualizerSlug}
+              language={activeLanguage}
+              translation={getText}
+              onClose={() => setSelectedVisualizerSlug(null)}
+            />
+          </div>
+        )}
         {activeModes.includes("clock") && !interfaceHidden && (
           <Clock clockStyle={clockStyle} language={activeLanguage} />
         )}

@@ -1,11 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
 import { visualizers, type VisualizerCategory } from "@/lib/visualizers";
 import type { Language, MainTranslationKey } from "./translations";
-import { mainTranslations } from "./translations";
-import { detectBrowserLanguage } from "./shared";
 
 type VisualizersCatalogProps = {
   open: boolean;
@@ -193,69 +190,6 @@ const VisualizersCatalog = ({
           </section>
         </div>
       </div>
-    </div>
-  );
-};
-
-export const VisualizersCatalogStandalone = ({
-  initialCategory,
-}: {
-  initialCategory?: VisualizerCategory;
-}) => {
-  const router = useRouter();
-  const [language, setLanguage] = useState<Language>("en");
-  const [activeCategory, setActiveCategory] = useState<VisualizerCategory>(
-    initialCategory ?? "audio",
-  );
-
-  useEffect(() => {
-    setLanguage(detectBrowserLanguage());
-  }, []);
-
-  useEffect(() => {
-    if (!initialCategory) return;
-    setActiveCategory(initialCategory);
-  }, [initialCategory]);
-
-  const translation = useCallback(
-    (key: MainTranslationKey) =>
-      mainTranslations[language]?.[key] ?? mainTranslations.en[key],
-    [language],
-  );
-
-  const handleSelectCategory = useCallback(
-    (category: VisualizerCategory) => {
-      setActiveCategory(category);
-      router.replace(
-        category === "audio"
-          ? "/modes/visualizers"
-          : `/modes/visualizers?category=${category}`,
-        { scroll: false },
-      );
-    },
-    [router],
-  );
-
-  const handleToggleLanguage = useCallback(() => {
-    setLanguage((current) => (current === "ru" ? "en" : "ru"));
-  }, []);
-
-  return (
-    <div className="visualizers-page">
-      <VisualizersCatalog
-        open
-        standalone
-        activeCategory={activeCategory}
-        language={language}
-        translation={translation}
-        onClose={() => router.push("/")}
-        onSelectCategory={handleSelectCategory}
-        onSelectVisualizer={(slug) =>
-          router.push(`/modes/visualizers/${slug}`)
-        }
-        showLanguageToggle
-        onToggleLanguage={handleToggleLanguage}
-      />
     </div>
   );
 };
