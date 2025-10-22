@@ -1031,6 +1031,16 @@ const MainExperience = () => {
               </button>
             </div>
             <div className="menu-separator" />
+            <Link
+              href="/modes/text"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">text_fields</i>
+              </div>
+              {getText("textMode")}
+            </Link>
             <div
               className={`menu-item ${activeModes.includes("oneColor") ? "active" : ""}`}
               onClick={() => toggleMode("oneColor")}
@@ -1058,16 +1068,6 @@ const MainExperience = () => {
               </div>
               {getText("clock")}
             </div>
-            <Link
-              href="/modes/text"
-              className="menu-item"
-              onClick={() => setMenuOpen(false)}
-            >
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">text_fields</i>
-              </div>
-              {getText("textMode")}
-            </Link>
             <div className="menu-item disabled">
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">tv_gen</i>
