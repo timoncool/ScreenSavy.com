@@ -358,6 +358,16 @@ const STYLE_PRESETS: Record<
 
 const fontOptions = Object.keys(fontFamilies);
 
+const STYLE_PRESET_LABELS: Record<string, TextTranslationKey> = {
+  neon: "presetNeon",
+  classic: "presetClassic",
+  minimal: "presetMinimal",
+  nature: "presetNature",
+  romantic: "presetRomantic",
+  retro: "presetRetro",
+  cyber: "presetCyber",
+};
+
 type TextOptionsPanelProps = {
   visible: boolean;
   translation: (key: TextTranslationKey) => string;
@@ -439,7 +449,7 @@ const TextOptionsPanel = ({
         />
       </div>
       <div className="text-option-group">
-        <label>Style Presets</label>
+        <label>{translation("stylePresets")}</label>
         <div className="preset-chips">
           {Object.keys(presets).map((preset) => (
             <div
@@ -447,7 +457,9 @@ const TextOptionsPanel = ({
               className={`preset-chip ${preset}`}
               onClick={() => onApplyPreset(preset)}
             >
-              {preset.charAt(0).toUpperCase() + preset.slice(1)}
+              {STYLE_PRESET_LABELS[preset]
+                ? translation(STYLE_PRESET_LABELS[preset])
+                : preset.charAt(0).toUpperCase() + preset.slice(1)}
             </div>
           ))}
         </div>
@@ -493,7 +505,7 @@ const TextOptionsPanel = ({
         </select>
       </div>
       <div className="text-option-group">
-        <label>Text Color</label>
+        <label>{translation("textColor")}</label>
         <input
           type="color"
           value={textColor}
@@ -502,7 +514,7 @@ const TextOptionsPanel = ({
         />
       </div>
       <div className="text-option-group">
-        <label>Text Outline</label>
+        <label>{translation("textOutline")}</label>
         <div className="stroke-controls">
           <div className="stroke-toggle">
             <label className="switch">
@@ -515,13 +527,13 @@ const TextOptionsPanel = ({
               />
               <span className="slider round" />
             </label>
-            <span>Enable Outline</span>
+            <span>{translation("outlineEnable")}</span>
           </div>
           <div
             className={`stroke-options ${outline.enabled ? "" : "disabled"}`}
           >
             <div className="stroke-option">
-              <label>Color</label>
+              <label>{translation("outlineColor")}</label>
               <input
                 type="color"
                 value={outline.color}
@@ -533,7 +545,9 @@ const TextOptionsPanel = ({
               />
             </div>
             <div className="stroke-option">
-              <label>Width: {outline.width}px</label>
+              <label>
+                {translation("outlineWidth")}: {outline.width}px
+              </label>
               <input
                 type="range"
                 min={1}
@@ -631,7 +645,9 @@ const TextModeExperience = () => {
   const [showShadesHint, setShowShadesHint] = useState(true);
   const [showTextHint, setShowTextHint] = useState(true);
   const [showPickerHint, setShowPickerHint] = useState(true);
-  const [textValue, setTextValue] = useState("Your custom text here");
+  const [textValue, setTextValue] = useState(() =>
+    getTextTranslation(languageSetting, detectedLanguage, "textDefault"),
+  );
   const [fontSize, setFontSize] = useState<TextFontSize>("medium");
   const [fontFamily, setFontFamily] = useState("Inter");
   const [textStyles, setTextStyles] = useState({
@@ -724,6 +740,16 @@ const TextModeExperience = () => {
       isTextTranslationKey(key) ? getText(key) : getMainText(key),
     [getText, getMainText],
   );
+
+  useEffect(() => {
+    const defaultText = getText("textDefault");
+    if (
+      textValue === textTranslations.en.textDefault ||
+      textValue === textTranslations.ru.textDefault
+    ) {
+      setTextValue(defaultText);
+    }
+  }, [getText, textValue]);
 
   useEffect(() => {
     setDetectedLanguage(detectBrowserLanguage());

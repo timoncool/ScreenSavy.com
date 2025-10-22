@@ -18,6 +18,7 @@ export type TextTranslationKey =
   | 'exitFullscreen'
   | 'aboutTitle'
   | 'textOptions'
+  | 'stylePresets'
   | 'fontFamily'
   | 'fontSize'
   | 'textAlign'
@@ -25,12 +26,25 @@ export type TextTranslationKey =
   | 'italic'
   | 'underline'
   | 'enterText'
+  | 'textDefault'
   | 'small'
   | 'medium'
   | 'large'
   | 'alignLeft'
   | 'alignCenter'
   | 'alignRight'
+  | 'textColor'
+  | 'textOutline'
+  | 'outlineEnable'
+  | 'outlineColor'
+  | 'outlineWidth'
+  | 'presetNeon'
+  | 'presetClassic'
+  | 'presetMinimal'
+  | 'presetNature'
+  | 'presetRomantic'
+  | 'presetRetro'
+  | 'presetCyber'
   | 'hideInterface'
   | 'showInterface'
   | 'addToFavorites'
@@ -61,6 +75,7 @@ export const textTranslations: Record<Language, Record<TextTranslationKey, strin
     exitFullscreen: 'Выход из полного экрана',
     aboutTitle: 'О проекте ScreenSavy.com',
     textOptions: 'Настройки текста',
+    stylePresets: 'Готовые стили',
     fontFamily: 'Шрифт',
     fontSize: 'Размер',
     textAlign: 'Выравнивание',
@@ -68,12 +83,25 @@ export const textTranslations: Record<Language, Record<TextTranslationKey, strin
     italic: 'Курсив',
     underline: 'Подчеркнутый',
     enterText: 'Введите текст...',
+    textDefault: 'Ваш текст здесь',
     small: 'Маленький',
     medium: 'Средний',
     large: 'Большой',
     alignLeft: 'По левому краю',
     alignCenter: 'По центру',
     alignRight: 'По правому краю',
+    textColor: 'Цвет текста',
+    textOutline: 'Контур текста',
+    outlineEnable: 'Включить контур',
+    outlineColor: 'Цвет контура',
+    outlineWidth: 'Толщина контура',
+    presetNeon: 'Неон',
+    presetClassic: 'Классика',
+    presetMinimal: 'Минимализм',
+    presetNature: 'Природа',
+    presetRomantic: 'Романтика',
+    presetRetro: 'Ретро',
+    presetCyber: 'Кибер',
     hideInterface: 'Скрыть интерфейс',
     showInterface: 'Показать интерфейс',
     addToFavorites: 'Добавить в избранное',
@@ -103,6 +131,7 @@ export const textTranslations: Record<Language, Record<TextTranslationKey, strin
     exitFullscreen: 'Exit Fullscreen',
     aboutTitle: 'About ScreenSavy.com',
     textOptions: 'Text Options',
+    stylePresets: 'Style Presets',
     fontFamily: 'Font',
     fontSize: 'Size',
     textAlign: 'Alignment',
@@ -110,12 +139,25 @@ export const textTranslations: Record<Language, Record<TextTranslationKey, strin
     italic: 'Italic',
     underline: 'Underline',
     enterText: 'Enter text...',
+    textDefault: 'Your custom text here',
     small: 'Small',
     medium: 'Medium',
     large: 'Large',
     alignLeft: 'Left',
     alignCenter: 'Center',
     alignRight: 'Right',
+    textColor: 'Text Color',
+    textOutline: 'Text Outline',
+    outlineEnable: 'Enable Outline',
+    outlineColor: 'Outline Color',
+    outlineWidth: 'Outline Width',
+    presetNeon: 'Neon',
+    presetClassic: 'Classic',
+    presetMinimal: 'Minimal',
+    presetNature: 'Nature',
+    presetRomantic: 'Romantic',
+    presetRetro: 'Retro',
+    presetCyber: 'Cyber',
     hideInterface: 'Hide Interface',
     showInterface: 'Show Interface',
     addToFavorites: 'Add to favorites',
