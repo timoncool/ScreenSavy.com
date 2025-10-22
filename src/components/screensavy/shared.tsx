@@ -69,6 +69,7 @@ export type IconButtonProps = {
   label?: string;
   disabled?: boolean;
   hidden?: boolean;
+  className?: string;
 };
 
 export const IconButton = ({
@@ -79,11 +80,12 @@ export const IconButton = ({
   label,
   disabled,
   hidden,
+  className,
 }: IconButtonProps) => (
   <button
     type="button"
     onClick={onClick}
-    className={`icon-button${active ? " active" : ""}${hidden ? " hidden" : ""}`}
+    className={`icon-button${active ? " active" : ""}${hidden ? " hidden" : ""}${className ? ` ${className}` : ""}`}
     title={title}
     disabled={disabled}
   >
