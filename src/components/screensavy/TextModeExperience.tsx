@@ -1034,8 +1034,8 @@ const TextModeExperience = () => {
 
   const backgroundStyle: React.CSSProperties = {
     backgroundColor: currentHex,
-    height: "100vh",
-    width: "100vw",
+    minHeight: "100vh",
+    width: "100%",
     position: "relative",
     overflow: "hidden",
     transition: "background-color 0.3s ease",
