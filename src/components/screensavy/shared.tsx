@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Rgb } from "@/lib/color";
 import { clampChannel, generateShadeSets } from "@/lib/color";
 import type {
@@ -623,6 +623,180 @@ export const AboutModal = ({
         <button type="button" className="modal-button" onClick={onClose}>
           {translation("close")}
         </button>
+      </div>
+    </div>
+  );
+};
+
+export type VisualizerSetupModalProps = {
+  visualizerSlug: string;
+  visualizerName: string;
+  visualizerNameRu: string;
+  onStartMicrophone: (deviceId: string) => void;
+  onStartSystem: () => void;
+  language: "ru" | "en";
+};
+
+export const VisualizerSetupModal = ({
+  visualizerSlug,
+  visualizerName,
+  visualizerNameRu,
+  onStartMicrophone,
+  onStartSystem,
+  language,
+}: VisualizerSetupModalProps) => {
+  const [step, setStep] = React.useState<"initial" | "selectDevice">("initial");
+  const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = React.useState<string>("");
+  const [error, setError] = React.useState<string>("");
+
+  const handleInitMicrophone = async () => {
+    try {
+      setError("");
+      const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      tempStream.getTracks().forEach(track => track.stop());
+      
+      const allDevices = await navigator.mediaDevices.enumerateDevices();
+      const audioDevices = allDevices.filter(d => d.kind === 'audioinput');
+      
+      if (audioDevices.length === 0) {
+        setError(language === "ru" ? "Микрофоны не найдены" : "No microphones found");
+        return;
+      }
+      
+      setDevices(audioDevices);
+      setSelectedDeviceId(audioDevices[0].deviceId);
+      setStep("selectDevice");
+    } catch (err) {
+      setError(language === "ru" 
+        ? `Ошибка доступа к микрофону: ${(err as Error).message}` 
+        : `Microphone access error: ${(err as Error).message}`);
+    }
+  };
+
+  const handleConfirmMicrophone = () => {
+    onStartMicrophone(selectedDeviceId);
+  };
+
+  const handleStartSystem = () => {
+    onStartSystem();
+  };
+
+  const displayName = language === "ru" ? visualizerNameRu : visualizerName;
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      zIndex: 40,
+      pointerEvents: "auto"
+    }}>
+      <div className="modal-content" style={{ maxWidth: "600px" }}>
+        <div className="modal-header">
+          <h2>{displayName}</h2>
+        </div>
+        
+        {step === "initial" && (
+          <>
+            <div style={{ marginBottom: "1.5em", lineHeight: "1.6" }}>
+              <p>
+                {language === "ru" 
+                  ? "Интерактивный аудио-визуализатор, который в реальном времени преобразует звук в динамическую визуализацию."
+                  : "Interactive audio visualizer that transforms sound into dynamic visualization in real-time."}
+              </p>
+            </div>
+            
+            <div style={{ marginBottom: "1.5em", lineHeight: "1.6", fontSize: "0.95em" }}>
+              <h3 style={{ marginTop: "2em", borderBottom: "1px solid rgba(255,255,255,0.2)", paddingBottom: "0.5em" }}>
+                {language === "ru" ? "Инструкция" : "Instructions"}
+              </h3>
+              <p>
+                <strong>{language === "ru" ? "1. Микрофон:" : "1. Microphone:"}</strong>{" "}
+                {language === "ru" 
+                  ? 'Нажмите "Начать с микрофона". Браузер запросит доступ. Выберите устройство и нажмите "Подтвердить".'
+                  : 'Click "Start with microphone". Browser will request access. Select device and click "Confirm".'}
+              </p>
+              <p>
+                <strong>{language === "ru" ? "2. Звук системы/вкладки:" : "2. System/tab audio:"}</strong>{" "}
+                {language === "ru" 
+                  ? 'Нажмите кнопку и в окне браузера обязательно поставьте галочку "Поделиться звуком".'
+                  : 'Click the button and make sure to check "Share audio" in the browser dialog.'}
+              </p>
+            </div>
+
+            {error && (
+              <div style={{ 
+                padding: "1em", 
+                marginBottom: "1em", 
+                background: "rgba(255,100,100,0.2)", 
+                border: "1px solid rgba(255,100,100,0.5)",
+                borderRadius: "8px",
+                color: "#ffcccc"
+              }}>
+                {error}
+              </div>
+            )}
+
+            <button 
+              type="button" 
+              className="modal-button" 
+              onClick={handleInitMicrophone}
+              style={{ marginBottom: "1em" }}
+            >
+              {language === "ru" ? "Начать с микрофона" : "Start with microphone"}
+            </button>
+            
+            <hr style={{ borderColor: "#444", margin: "2em 0" }} />
+            
+            <button 
+              type="button" 
+              className="modal-button" 
+              onClick={handleStartSystem}
+            >
+              {language === "ru" ? "Начать со звука системы" : "Start with system audio"}
+            </button>
+          </>
+        )}
+
+        {step === "selectDevice" && (
+          <>
+            <p style={{ marginBottom: "1em" }}>
+              {language === "ru" ? "Выберите устройство:" : "Select device:"}
+            </p>
+            
+            <select 
+              value={selectedDeviceId}
+              onChange={(e) => setSelectedDeviceId(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.8em",
+                marginBottom: "1em",
+                background: "rgba(255,255,255,0.1)",
+                color: "white",
+                border: "1px solid rgba(255,255,255,0.3)",
+                borderRadius: "8px",
+                fontSize: "1em",
+                fontFamily: "inherit"
+              }}
+            >
+              {devices.map((device, index) => (
+                <option key={device.deviceId} value={device.deviceId}>
+                  {device.label || `${language === "ru" ? "Микрофон" : "Microphone"} ${index + 1}`}
+                </option>
+              ))}
+            </select>
+            
+            <button 
+              type="button" 
+              className="modal-button" 
+              onClick={handleConfirmMicrophone}
+            >
+              {language === "ru" ? "Подтвердить и запустить" : "Confirm and start"}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

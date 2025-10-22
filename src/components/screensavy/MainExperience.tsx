@@ -35,6 +35,7 @@ import {
   ToolbarButtonState,
   ToolbarButtonKey,
   WelcomeNotification,
+  VisualizerSetupModal,
   dayNames,
   detectBrowserLanguage,
   useAnimationFrame,
@@ -331,9 +332,17 @@ const MetaTags = ({ language }: { language: Language }) => {
 
 type MainExperienceProps = {
   visualizerMode?: boolean;
+  visualizerSlug?: string;
+  visualizerCategory?: "audio" | "ambient";
+  iframeRef?: React.RefObject<HTMLIFrameElement>;
 };
 
-const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) => {
+const MainExperience = ({ 
+  visualizerMode = false,
+  visualizerSlug,
+  visualizerCategory,
+  iframeRef
+}: MainExperienceProps = {}) => {
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
@@ -359,6 +368,7 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
   const [showShadesHint, setShowShadesHint] = useState(true);
   const [showPickerHint, setShowPickerHint] = useState(true);
   const [uiHydrated, setUiHydrated] = useState(false);
+  const [showVisualizerModal, setShowVisualizerModal] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const colorChangeTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -682,6 +692,33 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
     };
   }, []);
 
+  useEffect(() => {
+    if (visualizerMode && visualizerCategory === "audio") {
+      setShowVisualizerModal(true);
+    }
+  }, [visualizerMode, visualizerCategory]);
+
+  const handleStartMicrophone = useCallback(async (deviceId: string) => {
+    if (iframeRef?.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage({
+        type: "START_AUDIO",
+        source: "microphone",
+        deviceId
+      }, "*");
+    }
+    setShowVisualizerModal(false);
+  }, [iframeRef]);
+
+  const handleStartSystem = useCallback(async () => {
+    if (iframeRef?.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage({
+        type: "START_AUDIO",
+        source: "system"
+      }, "*");
+    }
+    setShowVisualizerModal(false);
+  }, [iframeRef]);
+
   const handleHexChange = useCallback((value: string) => {
     if (!/^#?[0-9A-Fa-f]{0,6}$/.test(value)) return;
     const normalized = value.startsWith("#")
@@ -907,6 +944,7 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
       <div 
         ref={rootRef} 
         style={backgroundStyle}
+        className={visualizerMode ? "visualizer-mode-root" : ""}
       >
         <MetaTags language={activeLanguage} />
         <noscript>
@@ -1287,6 +1325,16 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
             }
             translation={getText}
             onClose={() => setShowPickerHint(false)}
+          />
+        )}
+        {visualizerMode && showVisualizerModal && visualizerSlug && (
+          <VisualizerSetupModal
+            visualizerSlug={visualizerSlug}
+            visualizerName={visualizerSlug}
+            visualizerNameRu={visualizerSlug}
+            onStartMicrophone={handleStartMicrophone}
+            onStartSystem={handleStartSystem}
+            language={activeLanguage}
           />
         )}
       </div>

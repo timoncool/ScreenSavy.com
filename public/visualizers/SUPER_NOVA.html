@@ -73,51 +73,6 @@
     </style>
 </head>
 <body>
-    <div id="setup">
-        <h2>SUPER-NOVA VISUALISER</h2>
-        
-        <!-- [ВОССТАНОВЛЕНО] Полное описание проекта -->
-        <div class="description">
-            <p>Это <strong>интерактивный аудио-визуализатор</strong>, который в реальном времени преобразует звук в динамическую 3D-сцену. Он анализирует частотный спектр аудиопотока и использует эти данные для управления анимацией:</p>
-            <ul>
-                <li><strong>Центральное ядро:</strong> Пульсирует в такт басовым частотам.</li>
-                <li><strong>Вращающиеся кольца:
-</strong> Реагируют на средние и высокие частоты, получая импульсы вращения от резких звуков.</li>
-                <li><strong>Поле частиц:</strong> Его плотность и турбулентность зависят от общей громкости звука.</li>
-                <li><strong>Эффекты:</strong> Свечение (Bloom) и хроматическая аберрация усиливаются в зависимости от силы баса и верхов.</li>
-            </ul>
-        </div>
-
-        <!-- [ИСПРАВЛЕНО] Инструкция по использованию с учетом новой логики -->
-        <div class="instructions">
-            <h3>Инструкция по использованию</h3>
-            <p><strong>1. Микрофон:</strong><br>
-            Нажмите "Начать с микрофона". Браузер запросит доступ. Если доступ разрешен, появится список доступных микрофонов. Выберите нужный и нажмите "Подтвердить и запустить".</p>
-
-            <p><strong>2. Звук системы / вкладки:</strong><br>
-            Лучший вариант для музыки из YouTube, плееров и т.д.
-            Нажмите кнопку, и в появившемся окне браузера <strong>ОБЯЗАТЕЛЬНО ПОСТАВЬТЕ ГАЛОЧКУ</strong> "Поделиться звуком системы" (Share system audio) или "Поделиться звуком вкладки" (Share tab audio). Без этого визуализация не будет получать звук.</p>
-        </div>
-
-        <!-- [ИСПРАВЛЕНО] Логика выбора источника с предупреждениями и двухэтапным выбором для микрофона -->
-        <div id="mic-step-1">
-            <button id="init-mic">Начать с микрофона</button>
-            <p class="button-description">(Браузер запросит разрешение на использование микрофона)</p>
-        </div>
-        <div id="mic-step-2" style="display: none;">
-            <p>Выберите устройство:</p>
-            <select id="mic-select"></select>
-            <button id="start-mic-confirm">Подтвердить и запустить</button>
-        </div>
-        
-        <hr style="border-color: #444; margin: 2em 0;">
-
-        <div id="system-audio-step">
-            <button id="start-system">Начать со звука системы / вкладки</button>
-            <p class="button-description">(Браузер запросит разрешение на захват экрана/вкладки со звуком)</p>
-        </div>
-    </div>
-
     <!-- Canvas будет создан здесь скриптом -->
 
     <script type="importmap">
@@ -141,14 +96,6 @@
         let waveformData;
         let micPermissionStream = null; // [ИЗМЕНЕНО] Хранит поток, полученный при первом запросе разрешения
 
-        const setupDiv = document.getElementById('setup');
-        const micStep1Div = document.getElementById('mic-step-1');
-        const micStep2Div = document.getElementById('mic-step-2');
-        const initMicButton = document.getElementById('init-mic');
-        const micSelect = document.getElementById('mic-select');
-        const startMicConfirmButton = document.getElementById('start-mic-confirm');
-        const startSystemButton = document.getElementById('start-system');
-        
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -171,16 +118,11 @@
         }
 
         function connectAudio(stream) {
-            // Останавливаем все предыдущие активные потоки, чтобы избежать конфликтов и утечек
             if (micPermissionStream) {
                 micPermissionStream.getTracks().forEach(track => track.stop());
                 micPermissionStream = null;
             }
-            // Если переключаемся с системного звука, его тоже надо остановить
-            // (хотя getDisplayMedia обычно сам за этим следит при закрытии окна/вкладки)
-            // Но для надежности можно добавить логику для системного потока, если он где-то хранится.
             
-            setupDiv.style.display = 'none';
             document.body.style.cursor = 'none';
 
             const listener = new THREE.AudioListener();
@@ -190,99 +132,28 @@
             source.connect(analyser.analyser);
         }
         
-        // [ИСПРАВЛЕНО] Логика запроса и запуска микрофона - ОДИН запрос
-        initMicButton.addEventListener('click', async () => {
-            initMicButton.disabled = true; // Отключаем кнопку, чтобы избежать повторных кликов
-
-            try {
-                // [ВАЖНО] Это ЕДИНСТВЕННЫЙ вызов getUserMedia, который запросит разрешение.
-                // Полученный поток `stream` позволит `enumerateDevices` получить полные названия.
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                micPermissionStream = stream; // Сохраняем этот поток для дальнейшего использования
-                
-                // Теперь, когда разрешение есть, получаем полный список устройств с их названиями.
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const audioDevices = devices.filter(device => device.kind === 'audioinput');
-
-                micSelect.innerHTML = '';
-                if (audioDevices.length === 0) {
-                     alert("Микрофоны не найдены.");
-                     micPermissionStream.getTracks().forEach(track => track.stop()); // Останавливаем поток, если нечего выбрать
-                     micPermissionStream = null;
-                     initMicButton.disabled = false; // Включаем кнопку обратно
-                     return;
-                }
-                
-                // Заполняем список микрофонов
-                audioDevices.forEach(device => {
-                    const option = document.createElement('option');
-                    option.value = device.deviceId;
-                    option.textContent = device.label || `Микрофон ${micSelect.options.length + 1}`;
-                    micSelect.appendChild(option);
-                });
-
-                // Пытаемся выбрать в списке тот микрофон, который уже активен в `micPermissionStream`
-                const activeMicTrack = micPermissionStream.getAudioTracks()[0];
-                if (activeMicTrack && activeMicTrack.deviceId) {
-                    micSelect.value = activeMicTrack.deviceId;
-                }
-                
-                // Показываем второй шаг выбора микрофона
-                micStep1Div.style.display = 'none';
-                micStep2Div.style.display = 'block';
-
-            } catch (e) {
-                console.error('Ошибка доступа к микрофону:', e);
-                if (e.name === "NotAllowedError" || e.name === "PermissionDeniedError") {
-                    alert("Вы не предоставили доступ к микрофону. Визуализация не сможет использовать микрофон.");
-                } else {
-                    alert(`Не удалось получить доступ к микрофону. Ошибка: ${e.name}.`);
-                }
-                initMicButton.disabled = false; // Включаем кнопку обратно, если была ошибка
-            }
-        });
-        
-        startMicConfirmButton.addEventListener('click', async () => {
-            const selectedDeviceId = micSelect.value;
-            const currentActiveDeviceId = micPermissionStream?.getAudioTracks()[0]?.deviceId;
-
-            if (selectedDeviceId === currentActiveDeviceId) {
-                // Если выбран тот же микрофон, который уже активен в micPermissionStream,
-                // просто используем его. Нет необходимости в новом getUserMedia().
-                connectAudio(micPermissionStream);
-            } else {
-                // Если выбран другой микрофон, нужно получить новый поток.
-                // [ВАЖНО] Разрешение уже дано, поэтому getUserMedia не будет запрашивать его повторно.
-                // Используем deviceId напрямую, чтобы избежать OverconstrainedError.
-                try {
-                    const newStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: selectedDeviceId } });
-                    connectAudio(newStream);
-                    // Важно: старый micPermissionStream уже остановлен в connectAudio
-                    micPermissionStream = newStream; // Обновляем ссылку на текущий активный поток
-                } catch (e) {
-                    console.error('Не удалось запустить с выбранного микрофона:', e);
-                    alert(`Не удалось подключиться к выбранному микрофону. Возможно, он занят или был отключен. Ошибка: ${e.name}.`);
-                    
-                    // Если не удалось, возвращаем интерфейс выбора
-                    micStep1Div.style.display = 'block';
-                    micStep2Div.style.display = 'none';
-                    initMicButton.disabled = false; // Включаем кнопку "Начать с микрофона"
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'START_AUDIO') {
+                if (event.data.source === 'microphone') {
+                    const audioPromise = navigator.mediaDevices.getUserMedia({ 
+                        audio: { deviceId: event.data.deviceId }, 
+                        video: false 
+                    });
+                    audioPromise.then(stream => connectAudio(stream)).catch(err => {
+                        console.error("Не удалось запустить визуализацию:", err);
+                        alert(`Ошибка: ${err.message}. Убедитесь, что вы предоставили все необходимые разрешения.`);
+                    });
+                } else if (event.data.source === 'system') {
+                    const audioPromise = navigator.mediaDevices.getDisplayMedia({ 
+                        video: true, 
+                        audio: true 
+                    });
+                    audioPromise.then(stream => connectAudio(stream)).catch(err => {
+                        console.error("Не удалось запустить визуализацию:", err);
+                        alert(`Ошибка: ${err.message}. Убедитесь, что вы предоставили все необходимые разрешения.`);
+                    });
                 }
             }
-        });
-        
-        startSystemButton.addEventListener('click', () => {
-            navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
-                .then(stream => {
-                    connectAudio(stream);
-                })
-                .catch(e => {
-                    if (e.name !== 'NotAllowedError' && e.name !== 'PermissionDeniedError') {
-                       console.error('Не удалось захватить звук системы/вкладки:', e);
-                    } else if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
-                        alert('Вы не предоставили доступ к захвату экрана/вкладки. Визуализация не сможет получить звук системы.');
-                    }
-                });
         });
 
         const ChromaticAberrationShader = {

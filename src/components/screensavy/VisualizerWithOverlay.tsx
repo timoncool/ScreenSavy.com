@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getVisualizerFile } from "@/lib/visualizers";
+import { useEffect, useState, useRef } from "react";
+import { getVisualizerFile, getVisualizerBySlug } from "@/lib/visualizers";
 import MainExperience from "./MainExperience";
 
 type VisualizerWithOverlayProps = {
@@ -12,6 +12,9 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  
+  const visualizer = getVisualizerBySlug(slug);
 
   useEffect(() => {
     const fileName = getVisualizerFile(slug);
@@ -36,7 +39,8 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
         setError(err.message);
         setLoading(false);
       });
-  }, [slug]);
+  }, [slug, visualizer]);
+
 
   if (loading) {
     return (
@@ -76,8 +80,8 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden" }}>
-      {/* Visualizer background using iframe to execute scripts */}
       <iframe
+        ref={iframeRef}
         style={{
           position: "absolute",
           top: 0,
@@ -90,7 +94,6 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
         srcDoc={htmlContent}
         title="Visualizer"
       />
-      {/* MainExperience overlay with transparent background */}
       <div
         style={{
           position: "absolute",
@@ -101,7 +104,12 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
           zIndex: 1,
         }}
       >
-        <MainExperience visualizerMode={true} />
+        <MainExperience 
+          visualizerMode={true}
+          visualizerSlug={slug}
+          visualizerCategory={visualizer?.category}
+          iframeRef={iframeRef}
+        />
       </div>
     </div>
   );

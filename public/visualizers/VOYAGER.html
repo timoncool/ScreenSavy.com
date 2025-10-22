@@ -12,79 +12,11 @@
         }
         body { margin: 0; background-color: var(--bg); color: var(--text); font-family: monospace; overflow: hidden; }
         
-        /* НОВОЕ: Стили для стартовой панели */
-        #setup {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            border: 1px solid var(--highlight); padding: 2em;
-            background-color: rgba(1, 0, 10, 0.9);
-            max-width: 600px;
-            box-shadow: 0 0 20px var(--highlight);
-            z-index: 100;
-            transition: opacity 0.5s ease-out;
-        }
-        #setup.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #setup h2 { 
-            margin-top: 0; font-size: 1.8em; color: var(--highlight);
-            text-shadow: 0 0 10px var(--highlight); text-align: center;
-        }
-        #setup .description, #setup .instructions {
-            font-size: 0.95em; line-height: 1.6; text-align: left;
-            margin: 1.5em auto;
-        }
-        #setup h3 {
-             margin-top: 2em; border-bottom: 1px solid var(--panel-border);
-             padding-bottom: 0.5em;
-        }
-        #setup strong { color: var(--highlight); font-weight: bold; }
-        #setup ul { padding-left: 20px; text-align: left; }
-        #setup li { margin-bottom: 0.5em; }
-        #setup select, #setup button {
-            display: block; width: 100%; margin-top: 1em; padding: 0.8em;
-            background-color: black; color: var(--highlight);
-            border: 1px solid var(--highlight); font-family: monospace;
-            font-size: 1em; cursor: pointer; box-sizing: border-box;
-            transition: all 0.2s;
-        }
-        #setup button:hover { background-color: #111111; box-shadow: 0 0 10px var(--highlight); }
-        #setup button:disabled { background-color: #222; color: #666; cursor: not-allowed; box-shadow: none; border-color: #666; }
-        #setup hr { border-color: var(--panel-border); margin: 2em 0; }
-        
         .dg.ac { opacity: 0.15; transition: opacity 0.3s ease; }
         .dg.ac:hover { opacity: 1; }
     </style>
 </head>
 <body>
-    <!-- НОВОЕ: Полностью переработанный стартовый экран -->
-    <div id="setup">
-        <h2>RETROWAVE VOYAGER</h2>
-        <div class="description">
-             <p>Интерактивный аудио-визуализатор, который в реальном времени преобразует музыку в твою личную бесконечную поездку по неоновому шоссе.</p>
-            <ul>
-                <li><strong>Адаптивная скорость:</strong> Машина сама подстраивает скорость под темп трека.</li>
-                <li><strong>Динамическое окружение:</strong> Горы, здания и пальмы пульсируют в ритме музыки.</li>
-                <li><strong>Система ускорения:</strong> Накопи энергию от мощных басов, чтобы активировать буст и ворваться в гиперпространство.</li>
-            </ul>
-        </div>
-        <div class="instructions">
-            <h3>Как начать</h3>
-            <p><strong>Микрофон:</strong> Нажми "Начать с микрофона". Браузер запросит доступ. Выбери устройство и подтверди.</p>
-            <p><strong>Звук системы:</strong> Нажми "Начать со звука системы" и в окне браузера <strong>обязательно поставь галочку "Поделиться звуком"</strong>.</p>
-        </div>
-        <div id="mic-step-1"><button id="init-mic">Начать с микрофона</button></div>
-        <div id="mic-step-2" style="display: none;">
-            <p>Выберите устройство:</p>
-            <select id="mic-select"></select>
-            <button id="start-mic-confirm">Подтвердить и запустить</button>
-        </div>
-        <hr>
-        <div id="system-audio-step"><button id="start-system">Начать со звука системы</button></div>
-    </div>
-    
-    <!-- Остальной HTML без изменений -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.110.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
@@ -227,71 +159,35 @@
         function visualize(delta, elapsed) { if (!analyserL || !analyserR) return; analyserL.getByteFrequencyData(frequencyDataL);analyserR.getByteFrequencyData(frequencyDataR); const bassL=(frequencyDataL[1]+frequencyDataL[2]+frequencyDataL[3])/3/255;const bassR=(frequencyDataR[1]+frequencyDataR[2]+frequencyDataR[3])/3/255;const bass=(bassL+bassR)/2; const midsL=(frequencyDataL[20]+frequencyDataL[25]+frequencyDataL[40])/3/255;const midsR=(frequencyDataR[20]+frequencyDataR[25]+frequencyDataR[40])/3/255;const mids=(midsL+midsR)/2; const highs=((frequencyDataL[60]+frequencyDataL[80]+frequencyDataL[100])/3+(frequencyDataR[60]+frequencyDataR[80]+frequencyDataR[100])/3)/2/255; const overall=(frequencyDataL.reduce((a,b)=>a+b)+frequencyDataR.reduce((a,b)=>a+b))/(frequencyDataL.length+frequencyDataR.length)/255; const bassAttack=bass-lastBass; energyBuffer.push(overall); if (energyBuffer.length > ENERGY_BUFFER_SIZE) { energyBuffer.shift(); } const smoothedOverallEnergy = energyBuffer.reduce((a, b) => a + b, 0) / energyBuffer.length; adaptiveBaseSpeed = Viz.minSpeed + (smoothedOverallEnergy * Viz.speedReactivity); bassBuffer.push(bass); if (bassBuffer.length > BASS_BUFFER_SIZE) { bassBuffer.shift(); } const averageBass = bassBuffer.reduce((a, b) => a + b, 0) / bassBuffer.length; if (bass > Viz.bassSustainThreshold && averageBass > (Viz.bassSustainThreshold * 0.8)) { boostEnergy += delta * (bass - Viz.bassSustainThreshold); } boostEnergy = Math.max(0, boostEnergy - Viz.energyDecayRate * delta); if (boostState === 'normal') { targetSpeed = adaptiveBaseSpeed; if (boostEnergy > Viz.boostThreshold) { boostState = 'boosting'; stateTimer = elapsed + Viz.boostDuration; boostEnergy = 0; } } else if (boostState === 'boosting') { targetSpeed = adaptiveBaseSpeed * Viz.boostMultiplier; if (elapsed > stateTimer) { boostState = 'cooldown'; stateTimer = elapsed + Viz.cooldownDuration; } } else if (boostState === 'cooldown') { targetSpeed = adaptiveBaseSpeed * 0.6; if (elapsed > stateTimer) { boostState = 'normal'; } } if (boostState === 'cooldown') { let targetColor = new THREE.Color().setRGB(Viz.brakeLightIntensity, 0, 0); if (bassAttack > 0.04) { targetColor.setRGB(25, 0.1, 0.1); } car.taillightL.material.color.lerp(targetColor, 0.5); car.taillightR.material.color.lerp(targetColor, 0.5); } else { let targetColor = new THREE.Color(0.8, 0, 0); if (bassAttack > 0.05) { targetColor.setRGB(10, 0.1, 0.1); } car.taillightL.material.color.lerp(targetColor, 0.1); car.taillightR.material.color.lerp(targetColor, 0.1); } sun.scale.setScalar(1+bass*Viz.sunPulse);road.material.uniforms.uGlow.value=0.8+overall*1.5; if(stars){stars.material.opacity=0.2+overall*0.8;stars.material.size=0.4+overall*0.3;} if (bassAttack > 0.05) { car.interiorPeakGlow = 18.0 * Viz.interiorGlowMultiplier; car.cabinHue = (car.cabinHue + 0.07) % 1; } car.interiorPeakGlow = THREE.Math.lerp(car.interiorPeakGlow, 0, 0.15); const baseGlow = (bass * 1.5) * Viz.interiorGlowMultiplier; car.interiorGlowMaterial.emissiveIntensity = baseGlow + car.interiorPeakGlow; car.interiorGlowMaterial.emissive.setHSL(car.cabinHue, 0.9, 0.5); car.interiorGlowMaterial.color.setHSL(car.cabinHue, 0.9, 0.5); const hL=midsL*Viz.headlightIntensity;const hR=midsR*Viz.headlightIntensity; car.headlightL.intensity=hL;car.headlightR.intensity=hR; car.headlightLensMaterialL.emissiveIntensity=hL*0.2;car.headlightLensMaterialR.emissiveIntensity=hR*0.2; car.headlightBeamL.material.uniforms.uOpacity.value=Math.min(0.5,hL*0.1); car.headlightBeamR.material.uniforms.uOpacity.value=Math.min(0.5,hR*0.1); if(bassAttack>Viz.laneChangeThreshold && !isBlinking){ let c=LANE_POSITIONS.indexOf(targetLaneX);let n=c; while(n===c){n=Math.floor(Math.random()*LANE_POSITIONS.length);} targetLaneX=LANE_POSITIONS[n]; isBlinking=true; blinkTimer=elapsed+1.0; } if(isBlinking){ const b = Math.sin(elapsed * 20) > 0; car.turnSignalL.material.emissiveIntensity = 0.0; car.turnSignalR.material.emissiveIntensity = 0.0; if (targetLaneX < car.position.x) { car.turnSignalL.material.emissiveIntensity = b ? 8.0 : 0.0; } else { car.turnSignalR.material.emissiveIntensity = b ? 8.0 : 0.0; } if(elapsed > blinkTimer){ isBlinking = false; } } else { car.turnSignalL.material.emissiveIntensity = 0.0; car.turnSignalR.material.emissiveIntensity = 0.0; } if(sceneryGroup){sceneryGroup.children.forEach(o=>{if(o.isMesh&&o.material.isShaderMaterial){o.material.uniforms.uTime.value=elapsed;switch(o.userData.type){case 0:o.material.uniforms.uAudioValue.value=bass;break;case 1:o.material.uniforms.uAudioValue.value=mids;break;case 2:o.material.uniforms.uAudioValue.value=highs;break;}}});} updateMountain(mountainGroup.children[0],frequencyDataL,false);updateMountain(mountainGroup.children[1],frequencyDataR,true); palmGroup.children.forEach(p=>{if(p.isGroup){const l=p.children[1];if(l&&l.material){l.material.emissiveIntensity=mids*Viz.palmGlow;}}}); lastBass=bass; }
         function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);composer.setSize(window.innerWidth,window.innerHeight);}
         
-        // --- НОВЫЙ БЛОК: УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ И ЗАПУСКОМ ---
-        function setupUI() {
-            const setupPanel = document.getElementById('setup');
-            const micStep1 = document.getElementById('mic-step-1');
-            const micStep2 = document.getElementById('mic-step-2');
-            const initMicBtn = document.getElementById('init-mic');
-            const micSelect = document.getElementById('mic-select');
-            const startMicConfirmBtn = document.getElementById('start-mic-confirm');
-            const startSystemBtn = document.getElementById('start-system');
-
-            initMicBtn.addEventListener('click', async () => {
-                initMicBtn.disabled = true;
-                try {
-                    // Запрашиваем разрешение и получаем поток, чтобы разблокировать enumerateDevices
-                    activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                    const audioDevices = devices.filter(d => d.kind === 'audioinput');
-                    micSelect.innerHTML = '';
-                    if (audioDevices.length === 0) { alert("Микрофоны не найдены."); return; }
-                    
-                    audioDevices.forEach(d => {
-                        const option = document.createElement('option');
-                        option.value = d.deviceId;
-                        option.textContent = d.label || `Микрофон ${micSelect.options.length + 1}`;
-                        micSelect.appendChild(option);
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'START_AUDIO') {
+                if (event.data.source === 'microphone') {
+                    navigator.mediaDevices.getUserMedia({ 
+                        audio: { deviceId: event.data.deviceId }, 
+                        video: false 
+                    }).then(stream => {
+                        if (activeStream) { activeStream.getTracks().forEach(track => track.stop()); }
+                        activeStream = stream;
+                        startVisualization(stream);
+                    }).catch(err => {
+                        console.error("Не удалось запустить визуализацию:", err);
+                        alert(`Ошибка: ${err.message}. Убедитесь, что вы предоставили все необходимые разрешения.`);
                     });
-                    micStep1.style.display = 'none';
-                    micStep2.style.display = 'block';
-                } catch (e) {
-                    alert("Ошибка доступа к микрофону: " + e.message);
-                    initMicBtn.disabled = false;
-                    if(activeStream) { activeStream.getTracks().forEach(track => track.stop()); activeStream = null; }
+                } else if (event.data.source === 'system') {
+                    navigator.mediaDevices.getDisplayMedia({ 
+                        video: true, 
+                        audio: true 
+                    }).then(stream => {
+                        if (activeStream) { activeStream.getTracks().forEach(track => track.stop()); }
+                        activeStream = stream;
+                        startVisualization(stream);
+                    }).catch(err => {
+                        console.error("Не удалось запустить визуализацию:", err);
+                        alert(`Ошибка: ${err.message}. Убедитесь, что вы предоставили все необходимые разрешения.`);
+                    });
                 }
-            });
-
-            startMicConfirmBtn.addEventListener('click', async () => {
-                const deviceId = micSelect.value;
-                const currentDeviceId = activeStream?.getAudioTracks()[0]?.deviceId;
-
-                // Если выбран другой микрофон, получаем новый поток
-                if (deviceId !== currentDeviceId) {
-                    activeStream.getTracks().forEach(track => track.stop()); // Останавливаем старый
-                    try {
-                       activeStream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId } });
-                    } catch (e) {
-                         alert("Не удалось переключиться на выбранный микрофон. " + e.message);
-                         return;
-                    }
-                }
-                startVisualization(activeStream);
-            });
-
-            startSystemBtn.addEventListener('click', async () => {
-                try {
-                    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-                     if (activeStream) { activeStream.getTracks().forEach(track => track.stop()); }
-                    activeStream = stream;
-                    startVisualization(stream);
-                } catch(err) {
-                    console.error("Ошибка захвата:", err);
-                    if (err.name !== 'NotAllowedError') alert("Не удалось захватить экран/вкладку.");
-                }
-            });
-        }
+            }
+        });
 
         function startVisualization(stream) {
             if (vizInitialized) return;
@@ -318,7 +214,6 @@
             frequencyDataR = new Uint8Array(analyserR.frequencyBinCount);
             
             vizInitialized = true;
-            document.getElementById('setup').classList.add('hidden');
         }
 
         // Запуск
