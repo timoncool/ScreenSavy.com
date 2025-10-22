@@ -620,7 +620,8 @@ body::-webkit-scrollbar {
   color: rgba(255, 255, 255, 0.95);
 }
 
-.visualizer-language-toggle {
+.visualizer-language-toggle,
+.visualizer-overlay-toggle {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -633,9 +634,17 @@ body::-webkit-scrollbar {
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.visualizer-language-toggle:hover {
+.visualizer-language-toggle:hover,
+.visualizer-overlay-toggle:hover {
   background: rgba(255, 255, 255, 0.16);
   color: #fff;
+}
+
+.visualizer-overlay-toggle {
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
 }
 
 .visualizers-intro h1 {
@@ -771,6 +780,12 @@ body::-webkit-scrollbar {
   margin-bottom: 0;
 }
 
+.visualizer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .visualizer-detail-content {
   flex: 1;
   display: grid;
@@ -778,6 +793,18 @@ body::-webkit-scrollbar {
   gap: 32px;
   padding: 24px 5vw 48px;
   overflow-y: auto;
+}
+
+.visualizer-detail-content--collapsed {
+  grid-template-columns: 1fr;
+}
+
+.visualizer-detail-content--collapsed .visualizer-frame {
+  min-height: max(360px, calc(100vh - 168px));
+}
+
+.visualizer-detail-content--collapsed .visualizer-frame iframe {
+  height: 100%;
 }
 
 .visualizer-overlay-panel {

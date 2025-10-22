@@ -55,6 +55,8 @@ export type MainTranslationKey =
   | 'visualizerHighlights'
   | 'visualizerHowToStart'
   | 'visualizerCallouts'
+  | 'visualizerHideDetails'
+  | 'visualizerShowDetails'
   | 'visualizerStartWithMic'
   | 'visualizerStartWithSystem'
   | 'visualizerStartAmbient'
@@ -121,6 +123,8 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     visualizerHighlights: 'Особенности',
     visualizerHowToStart: 'Как начать',
     visualizerCallouts: 'Полезно знать',
+    visualizerHideDetails: 'Скрыть панель',
+    visualizerShowDetails: 'Показать панель',
     visualizerStartWithMic: 'Запустить с микрофоном',
     visualizerStartWithSystem: 'Поделиться звуком системы',
     visualizerStartAmbient: 'Запустить визуализатор',
@@ -186,6 +190,8 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     visualizerHighlights: 'Highlights',
     visualizerHowToStart: 'How to start',
     visualizerCallouts: 'Good to know',
+    visualizerHideDetails: 'Hide panel',
+    visualizerShowDetails: 'Show panel',
     visualizerStartWithMic: 'Start with microphone',
     visualizerStartWithSystem: 'Share system audio',
     visualizerStartAmbient: 'Launch visualizer',
