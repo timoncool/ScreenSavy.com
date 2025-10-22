@@ -67,6 +67,8 @@ export type IconButtonProps = {
   title: string;
   active?: boolean;
   label?: string;
+  disabled?: boolean;
+  hidden?: boolean;
 };
 
 export const IconButton = ({
@@ -75,12 +77,15 @@ export const IconButton = ({
   title,
   active,
   label,
+  disabled,
+  hidden,
 }: IconButtonProps) => (
   <button
     type="button"
     onClick={onClick}
-    className={`icon-button${active ? " active" : ""}`}
+    className={`icon-button${active ? " active" : ""}${hidden ? " hidden" : ""}`}
     title={title}
+    disabled={disabled}
   >
     {label ? (
       <span className="text-button">{label}</span>
@@ -89,6 +94,35 @@ export const IconButton = ({
     )}
   </button>
 );
+
+export type ToolbarButtonKey =
+  | "menu"
+  | "randomColor"
+  | "toggleShades"
+  | "toggleRgb"
+  | "picker"
+  | "textOptions"
+  | "toggleHints";
+
+export type ToolbarButtonState = {
+  icon: string;
+  title: string;
+  onClick: () => void;
+  active?: boolean;
+  label?: string;
+  disabled?: boolean;
+  hidden?: boolean;
+};
+
+export const TOP_TOOLBAR_BUTTONS: ToolbarButtonKey[] = [
+  "menu",
+  "randomColor",
+  "toggleShades",
+  "toggleRgb",
+  "picker",
+  "textOptions",
+  "toggleHints",
+];
 
 export const useAnimationFrame = () => {
   const frameRef = useRef<number | null>(null);
