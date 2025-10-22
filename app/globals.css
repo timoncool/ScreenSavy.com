@@ -203,6 +203,7 @@ body::-webkit-scrollbar {
   right: 0;
   width: 100%;
   z-index: 20;
+  pointer-events: auto;
 }
 .shade-container {
   display: flex;
@@ -317,6 +318,7 @@ body::-webkit-scrollbar {
   display: flex;
   gap: 10px;
   z-index: 50;
+  pointer-events: auto;
 }
 .top-buttons-row {
   display: flex;
@@ -329,6 +331,7 @@ body::-webkit-scrollbar {
   display: flex;
   gap: 10px;
   z-index: 50;
+  pointer-events: auto;
 }
 .icon-button {
   background: rgba(255, 255, 255, 0.15);
@@ -423,6 +426,7 @@ body::-webkit-scrollbar {
   gap: 10px;
   transition: opacity 0.3s ease;
   z-index: 15;
+  pointer-events: auto;
 }
 .favorite-buttons {
   display: flex;
@@ -504,6 +508,7 @@ body::-webkit-scrollbar {
   padding: 10px;
   z-index: 100;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
 }
 .menu-logo {
   display: flex;
@@ -654,6 +659,7 @@ body::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   padding: 40px 5vw;
+  pointer-events: auto;
 }
 
 .visualizer-inline-overlay__backdrop {
@@ -1322,6 +1328,7 @@ body::-webkit-scrollbar {
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   backdrop-filter: blur(3px);
+  pointer-events: auto;
 }
 .modal-content {
   background: rgba(30, 30, 30, 0.95);
@@ -1464,6 +1471,7 @@ body::-webkit-scrollbar {
   padding: 15px 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
+  pointer-events: auto;
   z-index: 200;
   width: 90%;
   max-width: 700px;
@@ -1834,6 +1842,7 @@ body::-webkit-scrollbar {
   right: 0;
   width: 100%;
   z-index: 20;
+  pointer-events: auto;
 }
 .shade-container {
   display: flex;
@@ -1948,6 +1957,7 @@ body::-webkit-scrollbar {
   display: flex;
   gap: 10px;
   z-index: 50;
+  pointer-events: auto;
 }
 .top-buttons-row {
   display: flex;
@@ -1960,6 +1970,7 @@ body::-webkit-scrollbar {
   display: flex;
   gap: 10px;
   z-index: 50;
+  pointer-events: auto;
 }
 .icon-button {
   background: rgba(255, 255, 255, 0.15);
@@ -2033,6 +2044,7 @@ body::-webkit-scrollbar {
   gap: 10px;
   transition: opacity 0.3s ease;
   z-index: 15;
+  pointer-events: auto;
 }
 .favorite-buttons {
   display: flex;
@@ -2114,6 +2126,7 @@ body::-webkit-scrollbar {
   padding: 10px;
   z-index: 100;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
 }
 .menu-logo {
   display: flex;
@@ -2308,6 +2321,7 @@ body::-webkit-scrollbar {
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   backdrop-filter: blur(3px);
+  pointer-events: auto;
 }
 .modal-content {
   background: rgba(30, 30, 30, 0.95);
@@ -2373,6 +2387,7 @@ body::-webkit-scrollbar {
   padding: 15px 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
+  pointer-events: auto;
   z-index: 200;
   width: 90%;
   max-width: 700px;
