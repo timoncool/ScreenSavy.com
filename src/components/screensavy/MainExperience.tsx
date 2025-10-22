@@ -1670,7 +1670,14 @@ const MainExperience = ({
             <div className="menu-separator" />
             <div
               className={`menu-item ${activeModes.includes("text") ? "active" : ""}`}
-              onClick={() => toggleMode("text")}
+              onClick={() => {
+                if (visualizerMode) {
+                  setMenuOpen(false);
+                  router.push("/?mode=text");
+                } else {
+                  toggleMode("text");
+                }
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">text_fields</i>
@@ -1679,7 +1686,14 @@ const MainExperience = ({
             </div>
             <div
               className={`menu-item ${activeModes.includes("clock") ? "active" : ""}`}
-              onClick={() => toggleMode("clock")}
+              onClick={() => {
+                if (visualizerMode) {
+                  setMenuOpen(false);
+                  router.push("/?mode=clock");
+                } else {
+                  toggleMode("clock");
+                }
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">schedule</i>
@@ -1689,7 +1703,14 @@ const MainExperience = ({
             <div className="menu-separator" />
             <div
               className={`menu-item ${activeModes.includes("oneColor") ? "active" : ""}`}
-              onClick={() => toggleMode("oneColor")}
+              onClick={() => {
+                if (visualizerMode) {
+                  setMenuOpen(false);
+                  router.push("/?mode=oneColor");
+                } else {
+                  toggleMode("oneColor");
+                }
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">colors</i>
@@ -1698,7 +1719,14 @@ const MainExperience = ({
             </div>
             <div
               className={`menu-item ${activeModes.includes("colorChange") ? "active" : ""}`}
-              onClick={() => toggleMode("colorChange")}
+              onClick={() => {
+                if (visualizerMode) {
+                  setMenuOpen(false);
+                  router.push("/?mode=colorChange");
+                } else {
+                  toggleMode("colorChange");
+                }
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">model_training</i>
