@@ -149,6 +149,28 @@ body::-webkit-scrollbar {
   transform: translateY(0);
   pointer-events: auto;
 }
+.visualizer-control-row {
+  position: absolute;
+  top: 70px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 40;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+.visualizer-control-row.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.visualizer-control-row a {
+  text-decoration: none;
+}
 .clock-style-button {
   width: 44px;
   height: 44px;
