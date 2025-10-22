@@ -1475,29 +1475,31 @@ const MainExperience = ({
           favorites.length > 1 && (
             <SpeedControl speed={speed} onChange={setSpeed} />
           )}
-        <TextOptionsPanel
-          visible={textOptionsOpen && !interfaceHidden}
-          translation={getText}
-          showHint={hintsEnabled && showTextHint}
-          onCloseHint={() => setShowTextHint(false)}
-          textValue={textValue}
-          onTextChange={handleTextChange}
-          textInputRef={textInputRef}
-          presets={STYLE_PRESETS}
-          onApplyPreset={applyPreset}
-          fontSize={fontSize}
-          onFontSizeChange={setFontSize}
-          fontFamily={fontFamily}
-          onFontFamilyChange={setFontFamily}
-          textColor={textColor}
-          onTextColorChange={setTextColor}
-          outline={outline}
-          onOutlineChange={setOutline}
-          alignment={alignment}
-          onAlignmentChange={setAlignment}
-          styles={textStyles}
-          onToggleStyle={handleToggleStyle}
-        />
+        {!visualizerMode && activeModes.includes("text") && (
+          <TextOptionsPanel
+            visible={textOptionsOpen && !interfaceHidden}
+            translation={getText}
+            showHint={hintsEnabled && showTextHint}
+            onCloseHint={() => setShowTextHint(false)}
+            textValue={textValue}
+            onTextChange={handleTextChange}
+            textInputRef={textInputRef}
+            presets={STYLE_PRESETS}
+            onApplyPreset={applyPreset}
+            fontSize={fontSize}
+            onFontSizeChange={setFontSize}
+            fontFamily={fontFamily}
+            onFontFamilyChange={setFontFamily}
+            textColor={textColor}
+            onTextColorChange={setTextColor}
+            outline={outline}
+            onOutlineChange={setOutline}
+            alignment={alignment}
+            onAlignmentChange={setAlignment}
+            styles={textStyles}
+            onToggleStyle={handleToggleStyle}
+          />
+        )}
         {!visualizerMode && (
           <>
             <ShadesPanel
@@ -1669,39 +1671,6 @@ const MainExperience = ({
             </div>
             <div className="menu-separator" />
             <div
-              className={`menu-item ${activeModes.includes("text") ? "active" : ""}`}
-              onClick={() => {
-                if (visualizerMode) {
-                  setMenuOpen(false);
-                  router.push("/?mode=text");
-                } else {
-                  toggleMode("text");
-                }
-              }}
-            >
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">text_fields</i>
-              </div>
-              {getText("textMode")}
-            </div>
-            <div
-              className={`menu-item ${activeModes.includes("clock") ? "active" : ""}`}
-              onClick={() => {
-                if (visualizerMode) {
-                  setMenuOpen(false);
-                  router.push("/?mode=clock");
-                } else {
-                  toggleMode("clock");
-                }
-              }}
-            >
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">schedule</i>
-              </div>
-              {getText("clock")}
-            </div>
-            <div className="menu-separator" />
-            <div
               className={`menu-item ${activeModes.includes("oneColor") ? "active" : ""}`}
               onClick={() => {
                 if (visualizerMode) {
@@ -1732,6 +1701,39 @@ const MainExperience = ({
                 <i className="material-symbols-outlined">model_training</i>
               </div>
               {getText("colorChange")}
+            </div>
+            <div className="menu-separator" />
+            <div
+              className={`menu-item ${activeModes.includes("text") ? "active" : ""}`}
+              onClick={() => {
+                if (visualizerMode) {
+                  setMenuOpen(false);
+                  router.push("/?mode=text");
+                } else {
+                  toggleMode("text");
+                }
+              }}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">text_fields</i>
+              </div>
+              {getText("textMode")}
+            </div>
+            <div
+              className={`menu-item ${activeModes.includes("clock") ? "active" : ""}`}
+              onClick={() => {
+                if (visualizerMode) {
+                  setMenuOpen(false);
+                  router.push("/?mode=clock");
+                } else {
+                  toggleMode("clock");
+                }
+              }}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">schedule</i>
+              </div>
+              {getText("clock")}
             </div>
             <div className="menu-separator" />
             <div className="menu-section-title">{getText("audioVisualizers")}</div>
