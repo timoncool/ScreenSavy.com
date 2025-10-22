@@ -320,6 +320,15 @@ body::-webkit-scrollbar {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
 }
+.icon-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+.icon-button.hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
 .icon-button:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);

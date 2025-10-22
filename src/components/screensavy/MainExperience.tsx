@@ -25,6 +25,9 @@ import {
   ShadesPanel,
   SliderChannel,
   SpeedControl,
+  TOP_TOOLBAR_BUTTONS,
+  ToolbarButtonState,
+  ToolbarButtonKey,
   WelcomeNotification,
   dayNames,
   detectBrowserLanguage,
@@ -688,6 +691,74 @@ const MainExperience = () => {
   const activeLanguage =
     languageSetting === "auto" ? detectedLanguage : languageSetting;
 
+  const toolbarButtons: Record<ToolbarButtonKey, ToolbarButtonState> = {
+    menu: {
+      icon: "menu",
+      onClick: () => setMenuOpen((value) => !value),
+      title: activeLanguage === "ru" ? "Меню" : "Menu",
+      active: menuOpen,
+    },
+    randomColor: {
+      icon: "cached",
+      onClick: () => {
+        const random = {
+          r: Math.floor(Math.random() * 256),
+          g: Math.floor(Math.random() * 256),
+          b: Math.floor(Math.random() * 256),
+        };
+        setRgb(random);
+        setCurrentHex(rgbToHex(random));
+      },
+      title: activeLanguage === "ru" ? "Случайный цвет" : "Random color",
+    },
+    toggleShades: {
+      icon: "palette",
+      onClick: () => setShowShades((value) => !value),
+      title:
+        activeLanguage === "ru"
+          ? "Палитра оттенков"
+          : "Color palette",
+      active: showShades,
+    },
+    toggleRgb: {
+      icon: "",
+      label: "RGB",
+      onClick: () => setShowRgbPanel((value) => !value),
+      title: activeLanguage === "ru" ? "RGB настройки" : "RGB settings",
+      active: showRgbPanel,
+    },
+    picker: {
+      icon: "web_traffic",
+      onClick: () => {
+        setPickerActive((value) => !value);
+        if (!pickerActive) {
+          setShowPickerHint(true);
+        }
+      },
+      title:
+        activeLanguage === "ru"
+          ? "Режим выбора цвета"
+          : "Color picker mode",
+      active: pickerActive,
+    },
+    textOptions: {
+      icon: "webhook",
+      onClick: () => {},
+      title:
+        activeLanguage === "ru"
+          ? "Настройки текста недоступны"
+          : "Text options unavailable",
+      disabled: true,
+      hidden: true,
+    },
+    toggleHints: {
+      icon: "help",
+      onClick: toggleHints,
+      title: getText("toggleHints"),
+      active: hintsEnabled,
+    },
+  };
+
   const backgroundStyle = {
     backgroundColor: currentHex,
     minHeight: "100vh",
@@ -762,63 +833,21 @@ const MainExperience = () => {
           }}
         >
           <div className="top-buttons-row">
-            <IconButton
-              icon="menu"
-              onClick={() => setMenuOpen((value) => !value)}
-              title={activeLanguage === "ru" ? "Меню" : "Menu"}
-              active={menuOpen}
-            />
-            <IconButton
-              icon="cached"
-              onClick={() => {
-                const random = {
-                  r: Math.floor(Math.random() * 256),
-                  g: Math.floor(Math.random() * 256),
-                  b: Math.floor(Math.random() * 256),
-                };
-                setRgb(random);
-                setCurrentHex(rgbToHex(random));
-              }}
-              title={
-                activeLanguage === "ru" ? "Случайный цвет" : "Random color"
-              }
-            />
-            <IconButton
-              icon="palette"
-              onClick={() => setShowShades((value) => !value)}
-              title={
-                activeLanguage === "ru" ? "Палитра оттенков" : "Color palette"
-              }
-              active={showShades}
-            />
-            <IconButton
-              icon=""
-              label="RGB"
-              onClick={() => setShowRgbPanel((value) => !value)}
-              title={activeLanguage === "ru" ? "RGB настройки" : "RGB settings"}
-              active={showRgbPanel}
-            />
-            <IconButton
-              icon="web_traffic"
-              onClick={() => {
-                setPickerActive((value) => !value);
-                if (!pickerActive) {
-                  setShowPickerHint(true);
-                }
-              }}
-              title={
-                activeLanguage === "ru"
-                  ? "Режим выбора цвета"
-                  : "Color picker mode"
-              }
-              active={pickerActive}
-            />
-            <IconButton
-              icon="help"
-              onClick={toggleHints}
-              title={getText("toggleHints")}
-              active={hintsEnabled}
-            />
+            {TOP_TOOLBAR_BUTTONS.map((key) => {
+              const button = toolbarButtons[key];
+              return (
+                <IconButton
+                  key={key}
+                  icon={button.icon}
+                  label={button.label}
+                  onClick={button.onClick}
+                  title={button.title}
+                  active={button.active}
+                  disabled={button.disabled}
+                  hidden={button.hidden}
+                />
+              );
+            })}
           </div>
         </div>
         <div className="right-buttons">
