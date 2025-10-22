@@ -48,3 +48,9 @@ export const getVisualizerFile = (slug: string): string => {
   };
   return fileMap[slug] || '';
 };
+
+export const getVisualizerBySlug = (slug: string): Visualizer | undefined => {
+  return visualizers.find(v => v.slug === slug);
+};
+
+export type VisualizerCategory = 'audio' | 'ambient';
