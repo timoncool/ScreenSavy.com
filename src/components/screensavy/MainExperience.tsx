@@ -1,20 +1,22 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import {
+  clampChannel,
   getSpeedDelay,
   hexToRgb,
   rgbToHex,
-  type Rgb
-} from '@/lib/color';
+  type Rgb,
+} from "@/lib/color";
 import {
   getTranslation,
   type Language,
   type LanguageSetting,
-  type MainTranslationKey
-} from './translations';
+  type MainTranslationKey,
+} from "./translations";
+import type { TextTranslationKey } from "./textTranslations";
 import {
   AboutModal,
   IconButton,
@@ -26,11 +28,11 @@ import {
   WelcomeNotification,
   dayNames,
   detectBrowserLanguage,
-  useAnimationFrame
-} from './shared';
+  useAnimationFrame,
+} from "./shared";
 
-type ModeKey = 'oneColor' | 'colorChange' | 'clock';
-type ClockStyle = 'modern' | 'full' | 'minimal';
+type ModeKey = "oneColor" | "colorChange" | "clock";
+type ClockStyle = "modern" | "full" | "minimal";
 
 type ClockProps = {
   clockStyle: ClockStyle;
@@ -45,15 +47,15 @@ const Clock = ({ clockStyle, language }: ClockProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  const date = now.getDate().toString().padStart(2, '0');
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  const seconds = now.getSeconds().toString().padStart(2, "0");
+  const date = now.getDate().toString().padStart(2, "0");
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
   const year = now.getFullYear();
   const day = dayNames[language][now.getDay()];
 
-  if (clockStyle === 'modern') {
+  if (clockStyle === "modern") {
     return (
       <div className="clock modern">
         <div className="time">
@@ -65,7 +67,7 @@ const Clock = ({ clockStyle, language }: ClockProps) => {
     );
   }
 
-  if (clockStyle === 'full') {
+  if (clockStyle === "full") {
     return (
       <div className="clock full">
         <div className="time-fixed-container">
@@ -88,7 +90,7 @@ const Clock = ({ clockStyle, language }: ClockProps) => {
     );
   }
 
-  if (clockStyle === 'minimal') {
+  if (clockStyle === "minimal") {
     return (
       <div className="clock minimal">
         <div className="time">
@@ -125,16 +127,23 @@ const FavoritesPanel = ({
   onClearFavorites,
   onSelectFavorite,
   onRemoveFavorite,
-  interfaceHidden
+  interfaceHidden,
 }: FavoritesPanelProps) => (
   <div
     className="saved-colors"
-    style={{ opacity: interfaceHidden ? 0 : 1, pointerEvents: interfaceHidden ? 'none' : 'auto' }}
+    style={{
+      opacity: interfaceHidden ? 0 : 1,
+      pointerEvents: interfaceHidden ? "none" : "auto",
+    }}
   >
     {hintsEnabled && showHint && (
       <div className="colors-hint hint">
-        <p>{translation('colorsHint')}</p>
-        <button type="button" className="hint-close-button" onClick={onCloseHint}>
+        <p>{translation("colorsHint")}</p>
+        <button
+          type="button"
+          className="hint-close-button"
+          onClick={onCloseHint}
+        >
           <i className="material-symbols-outlined">close</i>
         </button>
       </div>
@@ -143,7 +152,7 @@ const FavoritesPanel = ({
       <div
         className="add-to-favorites-button"
         onClick={onAddFavorite}
-        title={translation('addToFavorites')}
+        title={translation("addToFavorites")}
         role="button"
       >
         <i className="material-symbols-outlined">favorite</i>
@@ -151,7 +160,7 @@ const FavoritesPanel = ({
       <div
         className="clear-favorites-button"
         onClick={onClearFavorites}
-        title={translation('clearFavorites')}
+        title={translation("clearFavorites")}
         role="button"
       >
         <i className="material-symbols-outlined">delete_forever</i>
@@ -164,11 +173,14 @@ const FavoritesPanel = ({
           style={{ backgroundColor: favorite }}
           onClick={() => onSelectFavorite(favorite)}
         />
-        <div className="delete-color" onClick={(event) => {
-          event.stopPropagation();
-          onRemoveFavorite(favorite);
-        }}>
-          <i className="material-symbols-outlined" style={{ fontSize: '12px' }}>
+        <div
+          className="delete-color"
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemoveFavorite(favorite);
+          }}
+        >
+          <i className="material-symbols-outlined" style={{ fontSize: "12px" }}>
             close
           </i>
         </div>
@@ -188,7 +200,7 @@ const PickerHint = ({ visible, translation, onClose }: PickerHintProps) => {
 
   return (
     <div className="picker-info hint">
-      <p>{translation('pickerHint')}</p>
+      <p>{translation("pickerHint")}</p>
       <button type="button" className="hint-close-button" onClick={onClose}>
         <i className="material-symbols-outlined">close</i>
       </button>
@@ -197,21 +209,25 @@ const PickerHint = ({ visible, translation, onClose }: PickerHintProps) => {
 };
 
 const MetaTags = ({ language }: { language: Language }) => {
-  const title = language === 'ru'
-    ? 'ScreenSavy.com - Интерактивные заставки для экрана'
-    : 'ScreenSavy.com - Interactive Screen Backgrounds';
+  const title =
+    language === "ru"
+      ? "ScreenSavy.com - Интерактивные заставки для экрана"
+      : "ScreenSavy.com - Interactive Screen Backgrounds";
 
-  const description = language === 'ru'
-    ? 'ScreenSavy.com - веб-платформа для создания цветовых фонов, заставок и скринсейверов. Настраивайте цвета экрана, анимации и часы для любого устройства.'
-    : 'ScreenSavy.com - web platform for creating color backgrounds, screensavers and visual effects. Customize screen colors, animations and clocks for any device.';
+  const description =
+    language === "ru"
+      ? "ScreenSavy.com - веб-платформа для создания цветовых фонов, заставок и скринсейверов. Настраивайте цвета экрана, анимации и часы для любого устройства."
+      : "ScreenSavy.com - web platform for creating color backgrounds, screensavers and visual effects. Customize screen colors, animations and clocks for any device.";
 
-  const keywords = language === 'ru'
-    ? 'скринсейвер, заставка экрана, цветовой фон, цветовой пикер, подсветка комнаты, часы для экрана, анимация экрана, фон для монитора, RGB цвета, тестирование монитора'
-    : 'screensaver, screen background, color picker, room lighting, screen clock, screen animation, monitor background, RGB colors, monitor testing, color utility';
+  const keywords =
+    language === "ru"
+      ? "скринсейвер, заставка экрана, цветовой фон, цветовой пикер, подсветка комнаты, часы для экрана, анимация экрана, фон для монитора, RGB цвета, тестирование монитора"
+      : "screensaver, screen background, color picker, room lighting, screen clock, screen animation, monitor background, RGB colors, monitor testing, color utility";
 
-  const ogDescription = language === 'ru'
-    ? 'Создавайте красивые цветовые фоны, заставки и визуальные эффекты для вашего экрана'
-    : 'Create beautiful color backgrounds, screensavers and visual effects for your screen';
+  const ogDescription =
+    language === "ru"
+      ? "Создавайте красивые цветовые фоны, заставки и визуальные эффекты для вашего экрана"
+      : "Create beautiful color backgrounds, screensavers and visual effects for your screen";
 
   return (
     <Helmet>
@@ -240,13 +256,19 @@ const MetaTags = ({ language }: { language: Language }) => {
       <meta property="og:image" content="https://screensavy.com/og-image.jpg" />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:locale" content={language === 'ru' ? 'ru_RU' : 'en_US'} />
+      <meta
+        property="og:locale"
+        content={language === "ru" ? "ru_RU" : "en_US"}
+      />
       <meta property="og:site_name" content="ScreenSavy.com" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content="https://screensavy.com" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={ogDescription} />
-      <meta name="twitter:image" content="https://screensavy.com/twitter-image.jpg" />
+      <meta
+        name="twitter:image"
+        content="https://screensavy.com/twitter-image.jpg"
+      />
       <script type="application/ld+json">
         {`
           {
@@ -254,7 +276,7 @@ const MetaTags = ({ language }: { language: Language }) => {
             "@type": "WebApplication",
             "name": "ScreenSavy",
             "url": "https://screensavy.com",
-            "description": "${language === 'ru' ? 'Веб-платформа для создания цветовых фонов, заставок и скринсейверов.' : 'Web platform for creating color backgrounds, screensavers and visual effects.'}",
+            "description": "${language === "ru" ? "Веб-платформа для создания цветовых фонов, заставок и скринсейверов." : "Web platform for creating color backgrounds, screensavers and visual effects."}",
             "applicationCategory": "UtilitiesApplication",
             "operatingSystem": "Any",
             "offers": {
@@ -271,7 +293,10 @@ const MetaTags = ({ language }: { language: Language }) => {
       <meta name="generator" content="React" />
       <meta name="format-detection" content="telephone=no" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+      />
       <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
@@ -281,19 +306,20 @@ const MetaTags = ({ language }: { language: Language }) => {
 };
 
 const MainExperience = () => {
-  const [languageSetting, setLanguageSetting] = useState<LanguageSetting>('auto');
-  const [detectedLanguage, setDetectedLanguage] = useState<Language>('en');
-  const [currentHex, setCurrentHex] = useState('#5508FD');
+  const [languageSetting, setLanguageSetting] =
+    useState<LanguageSetting>("auto");
+  const [detectedLanguage, setDetectedLanguage] = useState<Language>("en");
+  const [currentHex, setCurrentHex] = useState("#5508FD");
   const [rgb, setRgb] = useState<Rgb>({ r: 85, g: 8, b: 253 });
   const [showShades, setShowShades] = useState(true);
   const [showRgbPanel, setShowRgbPanel] = useState(true);
   const [favorites, setFavorites] = useState<string[]>(INITIAL_FAVORITES);
   const [interfaceHidden, setInterfaceHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeModes, setActiveModes] = useState<ModeKey[]>(['oneColor']);
+  const [activeModes, setActiveModes] = useState<ModeKey[]>(["oneColor"]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [speed, setSpeed] = useState(5);
-  const [clockStyle, setClockStyle] = useState<ClockStyle>('modern');
+  const [clockStyle, setClockStyle] = useState<ClockStyle>("modern");
   const [pickerActive, setPickerActive] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -311,8 +337,15 @@ const MainExperience = () => {
   const animationFrame = useAnimationFrame();
 
   const getText = useCallback(
-    (key: MainTranslationKey) => getTranslation(languageSetting, detectedLanguage, key),
-    [languageSetting, detectedLanguage]
+    (key: MainTranslationKey) =>
+      getTranslation(languageSetting, detectedLanguage, key),
+    [languageSetting, detectedLanguage],
+  );
+
+  const getCommonText = useCallback(
+    (key: MainTranslationKey | TextTranslationKey) =>
+      getText(key as MainTranslationKey),
+    [getText],
   );
 
   useEffect(() => {
@@ -320,12 +353,12 @@ const MainExperience = () => {
   }, []);
 
   useEffect(() => {
-    if (languageSetting !== 'auto') return;
+    if (languageSetting !== "auto") return;
     setDetectedLanguage(detectBrowserLanguage());
   }, [languageSetting]);
 
   useEffect(() => {
-    if (!activeModes.includes('colorChange') || favorites.length <= 1) {
+    if (!activeModes.includes("colorChange") || favorites.length <= 1) {
       if (colorChangeTimerRef.current) {
         clearTimeout(colorChangeTimerRef.current);
         colorChangeTimerRef.current = null;
@@ -334,7 +367,9 @@ const MainExperience = () => {
     }
 
     let current = hexToRgb(favorites[transitionIndexRef.current]);
-    let next = hexToRgb(favorites[(transitionIndexRef.current + 1) % favorites.length]);
+    let next = hexToRgb(
+      favorites[(transitionIndexRef.current + 1) % favorites.length],
+    );
     if (!current || !next) return;
 
     nextColorRef.current = next;
@@ -342,24 +377,34 @@ const MainExperience = () => {
     const step = () => {
       transitionProgressRef.current += 0.01;
       if (transitionProgressRef.current >= 1) {
-        transitionIndexRef.current = (transitionIndexRef.current + 1) % favorites.length;
+        transitionIndexRef.current =
+          (transitionIndexRef.current + 1) % favorites.length;
         current = hexToRgb(favorites[transitionIndexRef.current]) ?? current;
-        next = hexToRgb(favorites[(transitionIndexRef.current + 1) % favorites.length]) ?? next;
+        next =
+          hexToRgb(
+            favorites[(transitionIndexRef.current + 1) % favorites.length],
+          ) ?? next;
         transitionProgressRef.current = 0;
         nextColorRef.current = next;
       }
 
       const progress = transitionProgressRef.current;
+      if (!current || !next) {
+        return;
+      }
       const interpolated: Rgb = {
         r: Math.round(current.r + progress * (next.r - current.r)),
         g: Math.round(current.g + progress * (next.g - current.g)),
-        b: Math.round(current.b + progress * (next.b - current.b))
+        b: Math.round(current.b + progress * (next.b - current.b)),
       };
 
       setRgb(interpolated);
       setCurrentHex(rgbToHex(interpolated));
 
-      colorChangeTimerRef.current = setTimeout(step, getSpeedDelay(speed) / 100);
+      colorChangeTimerRef.current = setTimeout(
+        step,
+        getSpeedDelay(speed) / 100,
+      );
     };
 
     colorChangeTimerRef.current = setTimeout(step, 50);
@@ -373,15 +418,15 @@ const MainExperience = () => {
   }, [activeModes, favorites, speed]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const visited = localStorage.getItem('screensavy-visited');
+    if (typeof window === "undefined") return;
+    const visited = localStorage.getItem("screensavy-visited");
     if (visited) {
       setShowWelcome(false);
       setShowPickerHint(false);
       setShowColorsHint(false);
       setShowShadesHint(false);
     } else {
-      localStorage.setItem('screensavy-visited', 'true');
+      localStorage.setItem("screensavy-visited", "true");
     }
   }, []);
 
@@ -406,12 +451,12 @@ const MainExperience = () => {
       setPickerActive(false);
     };
 
-    element.addEventListener('mousemove', handleMove);
-    element.addEventListener('click', handleClick);
+    element.addEventListener("mousemove", handleMove);
+    element.addEventListener("click", handleClick);
 
     return () => {
-      element.removeEventListener('mousemove', handleMove);
-      element.removeEventListener('click', handleClick);
+      element.removeEventListener("mousemove", handleMove);
+      element.removeEventListener("click", handleClick);
       animationFrame.cancel();
     };
   }, [pickerActive, animationFrame]);
@@ -421,22 +466,42 @@ const MainExperience = () => {
       setIsFullscreen(Boolean(document.fullscreenElement));
     };
 
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange as EventListener);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange as EventListener);
-    document.addEventListener('MSFullscreenChange', handleFullscreenChange as EventListener);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener(
+      "webkitfullscreenchange",
+      handleFullscreenChange as EventListener,
+    );
+    document.addEventListener(
+      "mozfullscreenchange",
+      handleFullscreenChange as EventListener,
+    );
+    document.addEventListener(
+      "MSFullscreenChange",
+      handleFullscreenChange as EventListener,
+    );
 
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange as EventListener);
-      document.removeEventListener('mozfullscreenchange', handleFullscreenChange as EventListener);
-      document.removeEventListener('MSFullscreenChange', handleFullscreenChange as EventListener);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFullscreenChange as EventListener,
+      );
+      document.removeEventListener(
+        "mozfullscreenchange",
+        handleFullscreenChange as EventListener,
+      );
+      document.removeEventListener(
+        "MSFullscreenChange",
+        handleFullscreenChange as EventListener,
+      );
     };
   }, []);
 
   const handleHexChange = useCallback((value: string) => {
     if (!/^#?[0-9A-Fa-f]{0,6}$/.test(value)) return;
-    const normalized = value.startsWith('#') ? value.toUpperCase() : `#${value.toUpperCase()}`;
+    const normalized = value.startsWith("#")
+      ? value.toUpperCase()
+      : `#${value.toUpperCase()}`;
     setCurrentHex(normalized);
     if (/^#[0-9A-F]{6}$/i.test(normalized)) {
       const parsed = hexToRgb(normalized);
@@ -446,16 +511,21 @@ const MainExperience = () => {
     }
   }, []);
 
-  const handleChannelChange = useCallback((channel: SliderChannel, value: number) => {
-    setRgb((previous) => {
-      const next = { ...previous, [channel]: clampChannel(value) } as Rgb;
-      setCurrentHex(rgbToHex(next));
-      return next;
-    });
-  }, []);
+  const handleChannelChange = useCallback(
+    (channel: SliderChannel, value: number) => {
+      setRgb((previous) => {
+        const next = { ...previous, [channel]: clampChannel(value) } as Rgb;
+        setCurrentHex(rgbToHex(next));
+        return next;
+      });
+    },
+    [],
+  );
 
   const handleAddFavorite = useCallback(() => {
-    setFavorites((current) => (current.includes(currentHex) ? current : [...current, currentHex]));
+    setFavorites((current) =>
+      current.includes(currentHex) ? current : [...current, currentHex],
+    );
   }, [currentHex]);
 
   const handleRemoveFavorite = useCallback((hex: string) => {
@@ -476,12 +546,12 @@ const MainExperience = () => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      console.error("Failed to copy:", error);
     }
   }, [currentHex]);
 
   const toggleFullscreen = useCallback(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
     if (document.fullscreenElement) {
       document.exitFullscreen?.();
     } else {
@@ -491,10 +561,10 @@ const MainExperience = () => {
 
   const toggleLanguage = useCallback(() => {
     setLanguageSetting((previous) => {
-      if (previous === 'auto') {
-        return detectedLanguage === 'ru' ? 'en' : 'ru';
+      if (previous === "auto") {
+        return detectedLanguage === "ru" ? "en" : "ru";
       }
-      return previous === 'ru' ? 'en' : 'ru';
+      return previous === "ru" ? "en" : "ru";
     });
   }, [detectedLanguage]);
 
@@ -521,45 +591,56 @@ const MainExperience = () => {
     setActiveModes((current) => {
       if (current.includes(mode)) {
         const filtered = current.filter((value) => value !== mode);
-        return filtered.length === 0 ? ['oneColor'] : filtered;
+        return filtered.length === 0 ? ["oneColor"] : filtered;
       }
-      if (mode === 'oneColor') {
-        return ['oneColor'];
+      if (mode === "oneColor") {
+        return ["oneColor"];
       }
-      return current.includes('oneColor')
-        ? [...current.filter((value) => value !== 'oneColor'), mode]
+      return current.includes("oneColor")
+        ? [...current.filter((value) => value !== "oneColor"), mode]
         : [...current, mode];
     });
   }, []);
 
   const handleAddToBookmarks = useCallback(() => {
     try {
-      if (window.sidebar && typeof window.sidebar.addPanel === 'function') {
-        window.sidebar.addPanel(document.title, window.location.href, '');
-      } else if (window.external && 'AddFavorite' in window.external) {
+      const { sidebar } = window as typeof window & {
+        sidebar?: {
+          addPanel?: (title: string, url: string, panel?: string) => void;
+        };
+      };
+
+      if (sidebar && typeof sidebar.addPanel === "function") {
+        sidebar.addPanel(document.title, window.location.href, "");
+      } else if (
+        typeof window.external === "object" &&
+        window.external &&
+        "AddFavorite" in window.external
+      ) {
         // @ts-expect-error legacy IE API
         window.external.AddFavorite(window.location.href, document.title);
       } else {
-        alert(getText('bookmarkError'));
+        alert(getText("bookmarkError"));
       }
       setMenuOpen(false);
     } catch {
-      alert(getText('bookmarkError'));
+      alert(getText("bookmarkError"));
     }
   }, [getText]);
 
-  const activeLanguage = languageSetting === 'auto' ? detectedLanguage : languageSetting;
+  const activeLanguage =
+    languageSetting === "auto" ? detectedLanguage : languageSetting;
 
   const backgroundStyle = {
     backgroundColor: currentHex,
-    height: '100vh',
-    width: '100vw',
-    position: 'relative' as const,
-    overflow: 'hidden',
-    transition: 'background-color 0.3s ease',
-    cursor: pickerActive ? 'crosshair' : 'default',
+    height: "100vh",
+    width: "100vw",
+    position: "relative" as const,
+    overflow: "hidden",
+    transition: "background-color 0.3s ease",
+    cursor: pickerActive ? "crosshair" : "default",
     fontFamily:
-      "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif"
+      "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
   };
 
   return (
@@ -571,12 +652,12 @@ const MainExperience = () => {
             src="https://www.googletagmanager.com/ns.html?id=GTM-5DXQTQ6C"
             height="0"
             width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
+            style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
         <WelcomeNotification
           visible={hintsEnabled && showWelcome}
-          translation={getText}
+          translation={getCommonText}
           onClose={() => setShowWelcome(false)}
         />
         <AboutModal
@@ -586,18 +667,20 @@ const MainExperience = () => {
           languageSetting={languageSetting}
           detected={detectedLanguage}
         />
-        {activeModes.includes('clock') && !interfaceHidden && (
+        {activeModes.includes("clock") && !interfaceHidden && (
           <Clock clockStyle={clockStyle} language={activeLanguage} />
         )}
-        {activeModes.includes('colorChange') && !interfaceHidden && favorites.length > 1 && (
-          <SpeedControl speed={speed} onChange={setSpeed} />
-        )}
+        {activeModes.includes("colorChange") &&
+          !interfaceHidden &&
+          favorites.length > 1 && (
+            <SpeedControl speed={speed} onChange={setSpeed} />
+          )}
         <ShadesPanel
           rgb={rgb}
           visible={showShades && !interfaceHidden}
           hintsEnabled={hintsEnabled}
           showHint={showShadesHint}
-          translation={getText}
+          translation={getCommonText}
           onCloseHint={() => setShowShadesHint(false)}
           onSelectShade={(hex) => {
             setCurrentHex(hex);
@@ -616,13 +699,16 @@ const MainExperience = () => {
         />
         <div
           className="top-buttons"
-          style={{ opacity: interfaceHidden ? 0 : 1, pointerEvents: interfaceHidden ? 'none' : 'auto' }}
+          style={{
+            opacity: interfaceHidden ? 0 : 1,
+            pointerEvents: interfaceHidden ? "none" : "auto",
+          }}
         >
           <div className="top-buttons-row">
             <IconButton
               icon="menu"
               onClick={() => setMenuOpen((value) => !value)}
-              title={activeLanguage === 'ru' ? 'Меню' : 'Menu'}
+              title={activeLanguage === "ru" ? "Меню" : "Menu"}
               active={menuOpen}
             />
             <IconButton
@@ -631,24 +717,28 @@ const MainExperience = () => {
                 const random = {
                   r: Math.floor(Math.random() * 256),
                   g: Math.floor(Math.random() * 256),
-                  b: Math.floor(Math.random() * 256)
+                  b: Math.floor(Math.random() * 256),
                 };
                 setRgb(random);
                 setCurrentHex(rgbToHex(random));
               }}
-              title={activeLanguage === 'ru' ? 'Случайный цвет' : 'Random color'}
+              title={
+                activeLanguage === "ru" ? "Случайный цвет" : "Random color"
+              }
             />
             <IconButton
               icon="palette"
               onClick={() => setShowShades((value) => !value)}
-              title={activeLanguage === 'ru' ? 'Палитра оттенков' : 'Color palette'}
+              title={
+                activeLanguage === "ru" ? "Палитра оттенков" : "Color palette"
+              }
               active={showShades}
             />
             <IconButton
               icon=""
               label="RGB"
               onClick={() => setShowRgbPanel((value) => !value)}
-              title={activeLanguage === 'ru' ? 'RGB настройки' : 'RGB settings'}
+              title={activeLanguage === "ru" ? "RGB настройки" : "RGB settings"}
               active={showRgbPanel}
             />
             <IconButton
@@ -659,51 +749,60 @@ const MainExperience = () => {
                   setShowPickerHint(true);
                 }
               }}
-              title={activeLanguage === 'ru' ? 'Режим выбора цвета' : 'Color picker mode'}
+              title={
+                activeLanguage === "ru"
+                  ? "Режим выбора цвета"
+                  : "Color picker mode"
+              }
               active={pickerActive}
             />
             <IconButton
               icon="help"
               onClick={toggleHints}
-              title={getText('toggleHints')}
+              title={getText("toggleHints")}
               active={hintsEnabled}
             />
           </div>
         </div>
         <div
           className="right-buttons"
-          style={{ opacity: interfaceHidden ? 0 : 1, pointerEvents: interfaceHidden ? 'none' : 'auto' }}
+          style={{
+            opacity: interfaceHidden ? 0 : 1,
+            pointerEvents: interfaceHidden ? "none" : "auto",
+          }}
         >
           <IconButton
-            icon={isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
+            icon={isFullscreen ? "fullscreen_exit" : "fullscreen"}
             onClick={toggleFullscreen}
-            title={getText(isFullscreen ? 'exitFullscreen' : 'fullscreen')}
+            title={getText(isFullscreen ? "exitFullscreen" : "fullscreen")}
           />
           <IconButton
-            icon={interfaceHidden ? 'lightbulb' : 'light_off'}
+            icon={interfaceHidden ? "lightbulb" : "light_off"}
             onClick={() => setInterfaceHidden((value) => !value)}
-            title={getText(interfaceHidden ? 'showInterface' : 'hideInterface')}
+            title={getText(interfaceHidden ? "showInterface" : "hideInterface")}
             active={interfaceHidden}
           />
         </div>
-        <div className={`clock-control-row ${activeModes.includes('clock') && !interfaceHidden ? 'active' : ''}`}>
+        <div
+          className={`clock-control-row ${activeModes.includes("clock") && !interfaceHidden ? "active" : ""}`}
+        >
           <IconButton
             icon="schedule"
-            onClick={() => setClockStyle('modern')}
-            title={getText('modernClock')}
-            active={clockStyle === 'modern'}
+            onClick={() => setClockStyle("modern")}
+            title={getText("modernClock")}
+            active={clockStyle === "modern"}
           />
           <IconButton
             icon="calendar_clock"
-            onClick={() => setClockStyle('full')}
-            title={getText('fullClock')}
-            active={clockStyle === 'full'}
+            onClick={() => setClockStyle("full")}
+            title={getText("fullClock")}
+            active={clockStyle === "full"}
           />
           <IconButton
             icon="history_toggle_off"
-            onClick={() => setClockStyle('minimal')}
-            title={getText('minimalClock')}
-            active={clockStyle === 'minimal'}
+            onClick={() => setClockStyle("minimal")}
+            title={getText("minimalClock")}
+            active={clockStyle === "minimal"}
           />
         </div>
         {menuOpen && (
@@ -711,58 +810,76 @@ const MainExperience = () => {
             <div className="menu-logo">
               <div className="menu-logo-left">
                 <div className="menu-logo-image">
-                  <img src="/favicon.svg" alt="ScreenSavy Logo" width={24} height={24} />
+                  <img
+                    src="/favicon.svg"
+                    alt="ScreenSavy Logo"
+                    width={24}
+                    height={24}
+                  />
                 </div>
                 <span className="menu-logo-text">
                   ScreenSavy
                   <span className="menu-logo-domain">.com</span>
                 </span>
               </div>
-              <button type="button" className="bookmark-button" onClick={handleAddToBookmarks} title={getText('bookmarkSite')}>
-                <i className="material-symbols-outlined favorite-filled">favorite</i>
+              <button
+                type="button"
+                className="bookmark-button"
+                onClick={handleAddToBookmarks}
+                title={getText("bookmarkSite")}
+              >
+                <i className="material-symbols-outlined favorite-filled">
+                  favorite
+                </i>
               </button>
             </div>
             <div className="menu-separator" />
             <div
-              className={`menu-item ${activeModes.includes('oneColor') ? 'active' : ''}`}
-              onClick={() => toggleMode('oneColor')}
+              className={`menu-item ${activeModes.includes("oneColor") ? "active" : ""}`}
+              onClick={() => toggleMode("oneColor")}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">colors</i>
               </div>
-              {getText('oneColor')}
+              {getText("oneColor")}
             </div>
             <div
-              className={`menu-item ${activeModes.includes('colorChange') ? 'active' : ''}`}
-              onClick={() => toggleMode('colorChange')}
+              className={`menu-item ${activeModes.includes("colorChange") ? "active" : ""}`}
+              onClick={() => toggleMode("colorChange")}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">model_training</i>
               </div>
-              {getText('colorChange')}
+              {getText("colorChange")}
             </div>
             <div
-              className={`menu-item ${activeModes.includes('clock') ? 'active' : ''}`}
-              onClick={() => toggleMode('clock')}
+              className={`menu-item ${activeModes.includes("clock") ? "active" : ""}`}
+              onClick={() => toggleMode("clock")}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">schedule</i>
               </div>
-              {getText('clock')}
+              {getText("clock")}
             </div>
-            <Link href="/modes/text" className="menu-item" onClick={() => setMenuOpen(false)}>
+            <Link
+              href="/modes/text"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">text_fields</i>
               </div>
-              {getText('textMode')}
+              {getText("textMode")}
             </Link>
             <div className="menu-item disabled">
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">tv_gen</i>
               </div>
               <div className="menu-item-content">
-                <div>{getText('playerMode')}</div>
-                <span className="coming-soon-badge">{getText('comingSoon')}</span>
+                <div>{getText("playerMode")}</div>
+                <span className="coming-soon-badge">
+                  {getText("comingSoon")}
+                </span>
               </div>
             </div>
             <div className="menu-item disabled">
@@ -770,8 +887,10 @@ const MainExperience = () => {
                 <i className="material-symbols-outlined">animation</i>
               </div>
               <div className="menu-item-content">
-                <div>{getText('animationMode')}</div>
-                <span className="coming-soon-badge">{getText('comingSoon')}</span>
+                <div>{getText("animationMode")}</div>
+                <span className="coming-soon-badge">
+                  {getText("comingSoon")}
+                </span>
               </div>
             </div>
             <div className="menu-item disabled">
@@ -779,8 +898,10 @@ const MainExperience = () => {
                 <i className="material-symbols-outlined">publish</i>
               </div>
               <div className="menu-item-content">
-                <div>{getText('createOwnMode')}</div>
-                <span className="coming-soon-badge">{getText('comingSoon')}</span>
+                <div>{getText("createOwnMode")}</div>
+                <span className="coming-soon-badge">
+                  {getText("comingSoon")}
+                </span>
               </div>
             </div>
             <div className="menu-separator" />
@@ -788,13 +909,20 @@ const MainExperience = () => {
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">language</i>
               </div>
-              {getText('language')}: {languageSetting === 'auto' ? (detectedLanguage === 'ru' ? 'Русский (auto)' : 'English (auto)') : languageSetting === 'ru' ? 'Русский' : 'English'}
+              {getText("language")}:{" "}
+              {languageSetting === "auto"
+                ? detectedLanguage === "ru"
+                  ? "Русский (auto)"
+                  : "English (auto)"
+                : languageSetting === "ru"
+                  ? "Русский"
+                  : "English"}
             </div>
             <div className="menu-item" onClick={() => setAboutOpen(true)}>
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">info</i>
               </div>
-              {getText('about')}
+              {getText("about")}
             </div>
           </div>
         )}
@@ -811,7 +939,9 @@ const MainExperience = () => {
           interfaceHidden={interfaceHidden}
         />
         <PickerHint
-          visible={pickerActive && !interfaceHidden && hintsEnabled && showPickerHint}
+          visible={
+            pickerActive && !interfaceHidden && hintsEnabled && showPickerHint
+          }
           translation={getText}
           onClose={() => setShowPickerHint(false)}
         />
