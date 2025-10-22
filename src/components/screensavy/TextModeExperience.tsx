@@ -1409,33 +1409,32 @@ const TextModeExperience = () => {
               </button>
             </div>
             <div className="menu-separator" />
-            <div
-              className={`menu-item ${activeModes.includes("text") ? "active" : ""}`}
-              onClick={() => toggleMode("text")}
-            >
+            <div className="menu-item active">
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">text_fields</i>
               </div>
-              {getText("text")}
+              {getMainText("textMode")}
             </div>
-            <div
-              className={`menu-item ${activeModes.includes("oneColor") ? "active" : ""}`}
-              onClick={() => toggleMode("oneColor")}
+            <Link
+              href="/"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">colors</i>
               </div>
-              {getText("oneColor")}
-            </div>
-            <div
-              className={`menu-item ${activeModes.includes("colorChange") ? "active" : ""}`}
-              onClick={() => toggleMode("colorChange")}
+              {getMainText("oneColor")}
+            </Link>
+            <Link
+              href="/"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">model_training</i>
               </div>
-              {getText("colorChange")}
-            </div>
+              {getMainText("colorChange")}
+            </Link>
             <Link
               href="/"
               className="menu-item"
@@ -1446,6 +1445,60 @@ const TextModeExperience = () => {
               </div>
               {getMainText("clock")}
             </Link>
+            <div className="menu-separator" />
+            <div className="menu-section-title">{getMainText("audioVisualizers")}</div>
+            <Link
+              href="/modes/visualizers/celestial"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">graphic_eq</i>
+              </div>
+              Celestial Weaver
+            </Link>
+            <Link
+              href="/modes/visualizers/supernova"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">graphic_eq</i>
+              </div>
+              Super Nova
+            </Link>
+            <Link
+              href="/modes/visualizers/voyager"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">graphic_eq</i>
+              </div>
+              Voyager
+            </Link>
+            <div className="menu-section-title">{getMainText("ambientVisualizers")}</div>
+            <Link
+              href="/modes/visualizers/lava-lamp"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">blur_on</i>
+              </div>
+              Lava Lamp
+            </Link>
+            <Link
+              href="/modes/visualizers/rgb-lava"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">blur_on</i>
+              </div>
+              RGB Lava
+            </Link>
+            <div className="menu-separator" />
             <div className="menu-item disabled">
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">tv_gen</i>
