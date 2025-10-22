@@ -117,6 +117,17 @@ export const generateShadeSets = (color: Rgb) => {
   };
 };
 
-export const getSpeedDelay = (speed: number) => 5500 - clamp(speed, 1, 10) * 500;
+export const SPEED_MIN = 0;
+export const SPEED_MAX = 10;
+
+const SLOWEST_DELAY = 15000;
+const FASTEST_DELAY = 500;
+
+export const getSpeedDelay = (speed: number) => {
+  const clamped = clamp(speed, SPEED_MIN, SPEED_MAX);
+  const progress = (clamped - SPEED_MIN) / (SPEED_MAX - SPEED_MIN);
+
+  return Math.round(SLOWEST_DELAY - progress * (SLOWEST_DELAY - FASTEST_DELAY));
+};
 
 export const clampChannel = (value: number) => clamp(Math.round(value), 0, 255);

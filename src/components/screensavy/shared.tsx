@@ -2,7 +2,12 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Rgb } from "@/lib/color";
-import { clampChannel, generateShadeSets } from "@/lib/color";
+import {
+  SPEED_MAX,
+  SPEED_MIN,
+  clampChannel,
+  generateShadeSets,
+} from "@/lib/color";
 import type {
   Language,
   LanguageSetting,
@@ -241,6 +246,10 @@ export type SpeedControlProps = {
   onChange: (value: number) => void;
 };
 
+const SPEED_RANGE = SPEED_MAX - SPEED_MIN;
+const LOW_SPEED_THRESHOLD = SPEED_MIN + 3;
+const HIGH_SPEED_THRESHOLD = SPEED_MAX - 2;
+
 export const SpeedControl = ({ speed, onChange }: SpeedControlProps) => {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -254,7 +263,8 @@ export const SpeedControl = ({ speed, onChange }: SpeedControlProps) => {
         Math.max((clientX - rect.left) / rect.width, 0),
         1,
       );
-      onChange(Math.round(ratio * 9) + 1);
+      const nextSpeed = Math.round(ratio * SPEED_RANGE) + SPEED_MIN;
+      onChange(nextSpeed);
     },
     [onChange],
   );
@@ -276,13 +286,17 @@ export const SpeedControl = ({ speed, onChange }: SpeedControlProps) => {
     };
   }, [dragging, handleClientX]);
 
-  const percentage = ((speed - 1) / 9) * 100;
+  const clampedSpeed = Math.min(Math.max(speed, SPEED_MIN), SPEED_MAX);
+  const percentage =
+    SPEED_RANGE === 0
+      ? 0
+      : ((clampedSpeed - SPEED_MIN) / SPEED_RANGE) * 100;
 
   return (
     <div className="speed-control">
       <div
         className="speed-icon slow"
-        style={{ opacity: speed <= 3 ? 1 : 0.7 }}
+        style={{ opacity: clampedSpeed <= LOW_SPEED_THRESHOLD ? 1 : 0.7 }}
       >
         <i className="material-symbols-outlined">speed</i>
       </div>
@@ -300,7 +314,7 @@ export const SpeedControl = ({ speed, onChange }: SpeedControlProps) => {
       </div>
       <div
         className="speed-icon fast"
-        style={{ opacity: speed >= 8 ? 1 : 0.7 }}
+        style={{ opacity: clampedSpeed >= HIGH_SPEED_THRESHOLD ? 1 : 0.7 }}
       >
         <i className="material-symbols-outlined">history_toggle_off</i>
       </div>

@@ -10,6 +10,8 @@ import {
 import { useRouter } from "next/navigation";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import {
+  SPEED_MAX,
+  SPEED_MIN,
   clampChannel,
   getSpeedDelay,
   hexToRgb,
@@ -157,6 +159,8 @@ const STYLE_PRESETS: Record<
 };
 
 const fontOptions = Object.keys(fontFamilies);
+
+const DEFAULT_SPEED = Math.max(SPEED_MIN, SPEED_MAX - 2);
 
 const STYLE_PRESET_LABELS: Record<string, MainTranslationKey> = {
   neon: "presetNeon",
@@ -771,7 +775,7 @@ const MainExperience = ({
     initialMode ? [initialMode] : ["oneColor"]
   );
   const [copySuccess, setCopySuccess] = useState(false);
-  const [speed, setSpeed] = useState(5);
+  const [speed, setSpeed] = useState(DEFAULT_SPEED);
   const [clockStyle, setClockStyle] = useState<ClockStyle>("modern");
   const [pickerActive, setPickerActive] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -964,6 +968,8 @@ const MainExperience = ({
 
     nextColorRef.current = next;
 
+    const stepDelay = getSpeedDelay(speed) / 100;
+
     const step = () => {
       transitionProgressRef.current += 0.01;
       if (transitionProgressRef.current >= 1) {
@@ -991,13 +997,10 @@ const MainExperience = ({
       setRgb(interpolated);
       setCurrentHex(rgbToHex(interpolated));
 
-      colorChangeTimerRef.current = setTimeout(
-        step,
-        getSpeedDelay(speed) / 100,
-      );
+      colorChangeTimerRef.current = setTimeout(step, stepDelay);
     };
 
-    colorChangeTimerRef.current = setTimeout(step, 50);
+    colorChangeTimerRef.current = setTimeout(step, stepDelay);
 
     return () => {
       if (colorChangeTimerRef.current) {
