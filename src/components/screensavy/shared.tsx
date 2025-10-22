@@ -588,7 +588,7 @@ export const AboutModal = ({
           <p>
             <strong>
               <a
-                href="https://t.me/neuro_art0"
+                href="https://t.me/nerual_dreming"
                 target="_blank"
                 rel="noopener noreferrer"
               >
