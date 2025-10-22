@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import {
@@ -41,6 +48,16 @@ type ClockStyle = "modern" | "full" | "minimal";
 
 type TextFontSize = "small" | "medium" | "large";
 type TextAlignment = "left" | "center" | "right";
+
+const TEXT_UI_STORAGE_KEY = "screensavy-text-ui";
+const TEXT_UI_DEFAULTS = {
+  showShades: true,
+  showRgbPanel: true,
+  menuOpen: false,
+  hintsEnabled: true,
+  aboutOpen: false,
+  textOptionsOpen: false,
+};
 
 const isTextTranslationKey = (
   key: CommonTranslationKey,
@@ -623,6 +640,7 @@ const TextModeExperience = () => {
   const [alignment, setAlignment] = useState<TextAlignment>("center");
   const [textOptionsOpen, setTextOptionsOpen] = useState(false);
   const [restoreColorChange, setRestoreColorChange] = useState(false);
+  const [uiHydrated, setUiHydrated] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const textInputRef = useRef<HTMLInputElement | null>(null);
@@ -630,6 +648,52 @@ const TextModeExperience = () => {
   const transitionIndexRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const animationFrame = useAnimationFrame();
+
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") {
+      setUiHydrated(true);
+      return;
+    }
+
+    try {
+      const stored = window.localStorage.getItem(TEXT_UI_STORAGE_KEY);
+      if (!stored) {
+        return;
+      }
+
+      const parsed = JSON.parse(stored) as Partial<{
+        showShades: boolean;
+        showRgbPanel: boolean;
+        menuOpen: boolean;
+        hintsEnabled: boolean;
+        aboutOpen: boolean;
+        textOptionsOpen: boolean;
+      }>;
+
+      if (typeof parsed.showShades === "boolean") {
+        setShowShades(parsed.showShades);
+      }
+      if (typeof parsed.showRgbPanel === "boolean") {
+        setShowRgbPanel(parsed.showRgbPanel);
+      }
+      if (typeof parsed.menuOpen === "boolean") {
+        setMenuOpen(parsed.menuOpen);
+      }
+      if (typeof parsed.hintsEnabled === "boolean") {
+        setHintsEnabled(parsed.hintsEnabled);
+      }
+      if (typeof parsed.aboutOpen === "boolean") {
+        setAboutOpen(parsed.aboutOpen);
+      }
+      if (typeof parsed.textOptionsOpen === "boolean") {
+        setTextOptionsOpen(parsed.textOptionsOpen);
+      }
+    } catch (error) {
+      console.error("Failed to restore text UI state", error);
+    } finally {
+      setUiHydrated(true);
+    }
+  }, []);
 
   const getText = useCallback(
     (key: TextTranslationKey) =>
@@ -756,6 +820,46 @@ const TextModeExperience = () => {
       animationFrame.cancel();
     };
   }, [pickerActive, animationFrame]);
+
+  useEffect(() => {
+    if (!uiHydrated || typeof window === "undefined") {
+      return;
+    }
+
+    const uiState = {
+      showShades,
+      showRgbPanel,
+      menuOpen,
+      hintsEnabled,
+      aboutOpen,
+      textOptionsOpen,
+    };
+
+    const isDefault =
+      uiState.showShades === TEXT_UI_DEFAULTS.showShades &&
+      uiState.showRgbPanel === TEXT_UI_DEFAULTS.showRgbPanel &&
+      uiState.menuOpen === TEXT_UI_DEFAULTS.menuOpen &&
+      uiState.hintsEnabled === TEXT_UI_DEFAULTS.hintsEnabled &&
+      uiState.aboutOpen === TEXT_UI_DEFAULTS.aboutOpen &&
+      uiState.textOptionsOpen === TEXT_UI_DEFAULTS.textOptionsOpen;
+
+    if (isDefault) {
+      window.localStorage.removeItem(TEXT_UI_STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(
+        TEXT_UI_STORAGE_KEY,
+        JSON.stringify(uiState),
+      );
+    }
+  }, [
+    aboutOpen,
+    hintsEnabled,
+    menuOpen,
+    showRgbPanel,
+    showShades,
+    textOptionsOpen,
+    uiHydrated,
+  ]);
 
   useEffect(() => {
     const handleFullscreenChange = () =>
