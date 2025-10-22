@@ -24,6 +24,7 @@ export type MainTranslationKey =
   | 'donate'
   | 'subscription'
   | 'youtube'
+  | 'github'
   | 'hideInterface'
   | 'showInterface'
   | 'addToFavorites'
@@ -68,6 +69,7 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     donate: 'Отправить донат',
     subscription: 'Поддержать на Boosty',
     youtube: 'YouTube канал',
+    github: 'GitHub',
     hideInterface: 'Скрыть интерфейс',
     showInterface: 'Показать интерфейс',
     addToFavorites: 'Добавить в избранное',
@@ -111,6 +113,7 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     donate: 'Send donation',
     subscription: 'Support on Boosty',
     youtube: 'YouTube Channel',
+    github: 'GitHub',
     hideInterface: 'Hide Interface',
     showInterface: 'Show Interface',
     addToFavorites: 'Add to favorites',
