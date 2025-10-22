@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import {
@@ -36,6 +43,16 @@ import {
 
 type ModeKey = "oneColor" | "colorChange" | "clock";
 type ClockStyle = "modern" | "full" | "minimal";
+
+const MAIN_UI_STORAGE_KEY = "screensavy-main-ui";
+const MAIN_UI_DEFAULTS = {
+  showShades: true,
+  showRgbPanel: true,
+  menuOpen: false,
+  hintsEnabled: true,
+  aboutOpen: false,
+  clockStyle: "modern" as ClockStyle,
+};
 
 type ClockProps = {
   clockStyle: ClockStyle;
@@ -331,6 +348,7 @@ const MainExperience = () => {
   const [showColorsHint, setShowColorsHint] = useState(true);
   const [showShadesHint, setShowShadesHint] = useState(true);
   const [showPickerHint, setShowPickerHint] = useState(true);
+  const [uiHydrated, setUiHydrated] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const colorChangeTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -338,6 +356,56 @@ const MainExperience = () => {
   const transitionProgressRef = useRef(0);
   const nextColorRef = useRef<Rgb | null>(null);
   const animationFrame = useAnimationFrame();
+
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") {
+      setUiHydrated(true);
+      return;
+    }
+
+    try {
+      const stored = window.localStorage.getItem(MAIN_UI_STORAGE_KEY);
+      if (!stored) {
+        return;
+      }
+
+      const parsed = JSON.parse(stored) as Partial<{
+        showShades: boolean;
+        showRgbPanel: boolean;
+        menuOpen: boolean;
+        hintsEnabled: boolean;
+        aboutOpen: boolean;
+        clockStyle: ClockStyle;
+      }>;
+
+      if (typeof parsed.showShades === "boolean") {
+        setShowShades(parsed.showShades);
+      }
+      if (typeof parsed.showRgbPanel === "boolean") {
+        setShowRgbPanel(parsed.showRgbPanel);
+      }
+      if (typeof parsed.menuOpen === "boolean") {
+        setMenuOpen(parsed.menuOpen);
+      }
+      if (typeof parsed.hintsEnabled === "boolean") {
+        setHintsEnabled(parsed.hintsEnabled);
+      }
+      if (typeof parsed.aboutOpen === "boolean") {
+        setAboutOpen(parsed.aboutOpen);
+      }
+      if (
+        parsed.clockStyle === "modern" ||
+        parsed.clockStyle === "full" ||
+        parsed.clockStyle === "minimal"
+      ) {
+        setClockStyle(parsed.clockStyle);
+      }
+    } catch (error) {
+      console.error("Failed to restore main UI state", error);
+    } finally {
+      setUiHydrated(true);
+    }
+  }, []);
 
   const getText = useCallback(
     (key: MainTranslationKey) =>
@@ -520,6 +588,46 @@ const MainExperience = () => {
       animationFrame.cancel();
     };
   }, [pickerActive, animationFrame]);
+
+  useEffect(() => {
+    if (!uiHydrated || typeof window === "undefined") {
+      return;
+    }
+
+    const uiState = {
+      showShades,
+      showRgbPanel,
+      menuOpen,
+      hintsEnabled,
+      aboutOpen,
+      clockStyle,
+    };
+
+    const isDefault =
+      uiState.showShades === MAIN_UI_DEFAULTS.showShades &&
+      uiState.showRgbPanel === MAIN_UI_DEFAULTS.showRgbPanel &&
+      uiState.menuOpen === MAIN_UI_DEFAULTS.menuOpen &&
+      uiState.hintsEnabled === MAIN_UI_DEFAULTS.hintsEnabled &&
+      uiState.aboutOpen === MAIN_UI_DEFAULTS.aboutOpen &&
+      uiState.clockStyle === MAIN_UI_DEFAULTS.clockStyle;
+
+    if (isDefault) {
+      window.localStorage.removeItem(MAIN_UI_STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(
+        MAIN_UI_STORAGE_KEY,
+        JSON.stringify(uiState),
+      );
+    }
+  }, [
+    aboutOpen,
+    clockStyle,
+    hintsEnabled,
+    menuOpen,
+    showRgbPanel,
+    showShades,
+    uiHydrated,
+  ]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
