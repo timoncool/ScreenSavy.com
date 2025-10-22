@@ -1,0 +1,15 @@
+{
+  "name": "ScreenSavy",
+  "short_name": "ScreenSavy",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#10B981",
+  "theme_color": "#10B981",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
