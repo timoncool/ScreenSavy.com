@@ -44,7 +44,29 @@ export type MainTranslationKey =
   | 'createOwnMode'
   | 'visualizers'
   | 'audioVisualizers'
-  | 'ambientVisualizers';
+  | 'ambientVisualizers'
+  | 'textHint'
+  | 'textOptions'
+  | 'enterText'
+  | 'stylePresets'
+  | 'fontSize'
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'fontFamily'
+  | 'textColor'
+  | 'textOutline'
+  | 'outlineEnable'
+  | 'outlineColor'
+  | 'outlineWidth'
+  | 'textAlign'
+  | 'presetNeon'
+  | 'presetClassic'
+  | 'presetMinimal'
+  | 'presetNature'
+  | 'presetRomantic'
+  | 'presetRetro'
+  | 'presetCyber';
 
 export const mainTranslations: Record<Language, Record<MainTranslationKey, string>> = {
   ru: {
@@ -92,7 +114,29 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     createOwnMode: 'Добавить свою',
     visualizers: 'Визуализаторы',
     audioVisualizers: 'Аудио визуализаторы',
-    ambientVisualizers: 'Эмбиент визуализаторы'
+    ambientVisualizers: 'Эмбиент визуализаторы',
+    textHint: 'Настройте текст, его размер и стиль с помощью панели опций',
+    textOptions: 'Настройки текста',
+    enterText: 'Введите текст',
+    stylePresets: 'Стили',
+    fontSize: 'Размер шрифта',
+    small: 'Маленький',
+    medium: 'Средний',
+    large: 'Большой',
+    fontFamily: 'Шрифт',
+    textColor: 'Цвет текста',
+    textOutline: 'Обводка текста',
+    outlineEnable: 'Включить обводку',
+    outlineColor: 'Цвет обводки',
+    outlineWidth: 'Толщина обводки',
+    textAlign: 'Выравнивание',
+    presetNeon: 'Неон',
+    presetClassic: 'Классика',
+    presetMinimal: 'Минимализм',
+    presetNature: 'Природа',
+    presetRomantic: 'Романтика',
+    presetRetro: 'Ретро',
+    presetCyber: 'Кибер'
   },
   en: {
     welcome: 'Welcome to ScreenSavy.com!',
@@ -139,7 +183,29 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     createOwnMode: 'Add your own',
     visualizers: 'Visualizers',
     audioVisualizers: 'Audio Visualizers',
-    ambientVisualizers: 'Ambient Visualizers'
+    ambientVisualizers: 'Ambient Visualizers',
+    textHint: 'Customize text, size and style using the options panel',
+    textOptions: 'Text Options',
+    enterText: 'Enter text',
+    stylePresets: 'Style Presets',
+    fontSize: 'Font Size',
+    small: 'Small',
+    medium: 'Medium',
+    large: 'Large',
+    fontFamily: 'Font Family',
+    textColor: 'Text Color',
+    textOutline: 'Text Outline',
+    outlineEnable: 'Enable Outline',
+    outlineColor: 'Outline Color',
+    outlineWidth: 'Outline Width',
+    textAlign: 'Text Alignment',
+    presetNeon: 'Neon',
+    presetClassic: 'Classic',
+    presetMinimal: 'Minimal',
+    presetNature: 'Nature',
+    presetRomantic: 'Romantic',
+    presetRetro: 'Retro',
+    presetCyber: 'Cyber'
   }
 };
 
