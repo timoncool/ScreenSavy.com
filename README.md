@@ -15,7 +15,9 @@ The project is actively developed in Russian and English and focuses on lightwei
 
 ## Why people use ScreenSavy
 
-ScreenSavy surfaced on ProductRadar as a utility for:
+ScreenSavy surfaced on [ProductRadar](https://productradar.ru/product/screensavy-com/) as a utility for:
+
+_Support the project: [endorse the ProductRadar listing](https://productradar.ru/product/screensavy-com/) to help more creators discover ScreenSavy._
 
 - Setting the mood during movie nights without needing additional lighting equipment.
 - Verifying monitor color reproduction or comparing palettes for design projects.
