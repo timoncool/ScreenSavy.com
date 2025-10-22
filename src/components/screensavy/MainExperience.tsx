@@ -1194,7 +1194,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">graphic_eq</i>
+                <i className="material-symbols-outlined">auto_awesome</i>
               </div>
               Celestial Weaver
             </div>
@@ -1206,7 +1206,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">graphic_eq</i>
+                <i className="material-symbols-outlined">flare</i>
               </div>
               Super Nova
             </div>
@@ -1218,7 +1218,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">graphic_eq</i>
+                <i className="material-symbols-outlined">rocket_launch</i>
               </div>
               Voyager
             </div>
@@ -1231,7 +1231,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">blur_on</i>
+                <i className="material-symbols-outlined">water_drop</i>
               </div>
               Lava Lamp
             </div>
@@ -1243,7 +1243,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">blur_on</i>
+                <i className="material-symbols-outlined">gradient</i>
               </div>
               RGB Lava
             </div>
@@ -1254,17 +1254,6 @@ const MainExperience = ({
               </div>
               <div className="menu-item-content">
                 <div>{getText("playerMode")}</div>
-                <span className="coming-soon-badge">
-                  {getText("comingSoon")}
-                </span>
-              </div>
-            </div>
-            <div className="menu-item disabled">
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">animation</i>
-              </div>
-              <div className="menu-item-content">
-                <div>{getText("animationMode")}</div>
                 <span className="coming-soon-badge">
                   {getText("comingSoon")}
                 </span>
