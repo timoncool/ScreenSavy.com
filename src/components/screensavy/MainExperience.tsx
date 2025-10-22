@@ -355,11 +355,9 @@ const MainExperience = () => {
   const [showColorsHint, setShowColorsHint] = useState(true);
   const [showShadesHint, setShowShadesHint] = useState(true);
   const [showPickerHint, setShowPickerHint] = useState(true);
-  const [visualizersOverlayOpen, setVisualizersOverlayOpen] = useState(false);
   const [visualizersCategory, setVisualizersCategory] =
     useState<VisualizerCategory>("audio");
-  const [selectedVisualizerSlug, setSelectedVisualizerSlug] =
-    useState<string | null>(null);
+  const [catalogVisible, setCatalogVisible] = useState(false);
   const [uiHydrated, setUiHydrated] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -441,8 +439,7 @@ const MainExperience = () => {
 
   useEffect(() => {
     if (!interfaceHidden) return;
-    setVisualizersOverlayOpen(false);
-    setSelectedVisualizerSlug(null);
+    setCatalogVisible(false);
   }, [interfaceHidden]);
 
   useEffect(() => {
@@ -798,15 +795,18 @@ const MainExperience = () => {
   const openVisualizersCatalog = useCallback(
     (category: VisualizerCategory) => {
       setVisualizersCategory(category);
-      setSelectedVisualizerSlug(null);
-      setVisualizersOverlayOpen(true);
+      setCatalogVisible((current) => {
+        if (current && visualizersCategory === category) {
+          return false;
+        }
+        return true;
+      });
       setMenuOpen(false);
     },
-    [],
+    [visualizersCategory],
   );
 
   const handleVisualizerOpen = useCallback((slug: string) => {
-    setSelectedVisualizerSlug(slug);
     if (typeof window !== "undefined") {
       window.open(`/modes/visualizers/${slug}`, "_blank", "noopener,noreferrer");
     }
@@ -1236,22 +1236,17 @@ const MainExperience = () => {
           translation={getText}
           onClose={() => setShowPickerHint(false)}
         />
-        <VisualizersCatalog
-          open={visualizersOverlayOpen && !interfaceHidden}
-          activeCategory={visualizersCategory}
-          language={activeLanguage}
-          translation={getText}
-          onClose={() => {
-            setVisualizersOverlayOpen(false);
-            setSelectedVisualizerSlug(null);
-          }}
-          onSelectCategory={(category) => {
-            setVisualizersCategory(category);
-            setSelectedVisualizerSlug(null);
-          }}
-          onSelectVisualizer={handleVisualizerOpen}
-          activeSlug={selectedVisualizerSlug}
-        />
+        {!interfaceHidden && catalogVisible && (
+          <VisualizersCatalog
+            activeCategory={visualizersCategory}
+            language={activeLanguage}
+            translation={getText}
+            onSelectCategory={(category) => {
+              setVisualizersCategory(category);
+            }}
+            onSelectVisualizer={handleVisualizerOpen}
+          />
+        )}
       </div>
     </HelmetProvider>
   );
