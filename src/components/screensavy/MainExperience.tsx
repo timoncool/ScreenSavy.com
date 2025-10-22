@@ -16,6 +16,7 @@ import {
   rgbToHex,
   type Rgb,
 } from "@/lib/color";
+import type { VisualizerCategory } from "@/lib/visualizers";
 import {
   getTranslation,
   type Language,
@@ -39,6 +40,7 @@ import {
   detectBrowserLanguage,
   useAnimationFrame,
 } from "./shared";
+import VisualizersCatalog from "./VisualizersCatalog";
 
 type ModeKey = "oneColor" | "colorChange" | "clock";
 type ClockStyle = "modern" | "full" | "minimal";
@@ -353,6 +355,11 @@ const MainExperience = () => {
   const [showColorsHint, setShowColorsHint] = useState(true);
   const [showShadesHint, setShowShadesHint] = useState(true);
   const [showPickerHint, setShowPickerHint] = useState(true);
+  const [visualizersOverlayOpen, setVisualizersOverlayOpen] = useState(false);
+  const [visualizersCategory, setVisualizersCategory] =
+    useState<VisualizerCategory>("audio");
+  const [selectedVisualizerSlug, setSelectedVisualizerSlug] =
+    useState<string | null>(null);
   const [uiHydrated, setUiHydrated] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -431,6 +438,12 @@ const MainExperience = () => {
   useEffect(() => {
     setDetectedLanguage(detectBrowserLanguage());
   }, []);
+
+  useEffect(() => {
+    if (!interfaceHidden) return;
+    setVisualizersOverlayOpen(false);
+    setSelectedVisualizerSlug(null);
+  }, [interfaceHidden]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -782,6 +795,23 @@ const MainExperience = () => {
     });
   }, []);
 
+  const openVisualizersCatalog = useCallback(
+    (category: VisualizerCategory) => {
+      setVisualizersCategory(category);
+      setSelectedVisualizerSlug(null);
+      setVisualizersOverlayOpen(true);
+      setMenuOpen(false);
+    },
+    [],
+  );
+
+  const handleVisualizerOpen = useCallback((slug: string) => {
+    setSelectedVisualizerSlug(slug);
+    if (typeof window !== "undefined") {
+      window.open(`/modes/visualizers/${slug}`, "_blank", "noopener,noreferrer");
+    }
+  }, []);
+
   const handleAddToBookmarks = useCallback(() => {
     try {
       const { sidebar } = window as typeof window & {
@@ -1086,10 +1116,21 @@ const MainExperience = () => {
               </div>
               {getText("clock")}
             </div>
-            <Link
-              href="/modes/visualizers"
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              role="button"
+              tabIndex={0}
+              onClick={() => openVisualizersCatalog(visualizersCategory)}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" ||
+                  event.key === " " ||
+                  event.key === "Spacebar"
+                ) {
+                  event.preventDefault();
+                  openVisualizersCatalog(visualizersCategory);
+                }
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">animation</i>
@@ -1100,11 +1141,22 @@ const MainExperience = () => {
                   {getText("visualizerAmbientMenuHint")}
                 </span>
               </div>
-            </Link>
-            <Link
-              href="/modes/visualizers?category=audio"
+            </div>
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              role="button"
+              tabIndex={0}
+              onClick={() => openVisualizersCatalog("audio")}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" ||
+                  event.key === " " ||
+                  event.key === "Spacebar"
+                ) {
+                  event.preventDefault();
+                  openVisualizersCatalog("audio");
+                }
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">graphic_eq</i>
@@ -1115,11 +1167,22 @@ const MainExperience = () => {
                   {getText("visualizerAudioMenuHint")}
                 </span>
               </div>
-            </Link>
-            <Link
-              href="/modes/visualizers?category=ambient"
+            </div>
+            <div
               className="menu-item"
-              onClick={() => setMenuOpen(false)}
+              role="button"
+              tabIndex={0}
+              onClick={() => openVisualizersCatalog("ambient")}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" ||
+                  event.key === " " ||
+                  event.key === "Spacebar"
+                ) {
+                  event.preventDefault();
+                  openVisualizersCatalog("ambient");
+                }
+              }}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">blur_on</i>
@@ -1130,7 +1193,7 @@ const MainExperience = () => {
                   {getText("visualizerAmbientMenuHint")}
                 </span>
               </div>
-            </Link>
+            </div>
             <div className="menu-separator" />
             <div className="menu-item" onClick={toggleLanguage}>
               <div className="menu-item-icon">
@@ -1172,6 +1235,22 @@ const MainExperience = () => {
           }
           translation={getText}
           onClose={() => setShowPickerHint(false)}
+        />
+        <VisualizersCatalog
+          open={visualizersOverlayOpen && !interfaceHidden}
+          activeCategory={visualizersCategory}
+          language={activeLanguage}
+          translation={getText}
+          onClose={() => {
+            setVisualizersOverlayOpen(false);
+            setSelectedVisualizerSlug(null);
+          }}
+          onSelectCategory={(category) => {
+            setVisualizersCategory(category);
+            setSelectedVisualizerSlug(null);
+          }}
+          onSelectVisualizer={handleVisualizerOpen}
+          activeSlug={selectedVisualizerSlug}
         />
       </div>
     </HelmetProvider>
