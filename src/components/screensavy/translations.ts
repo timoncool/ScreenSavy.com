@@ -31,6 +31,8 @@ export type MainTranslationKey =
   | 'toggleHints'
   | 'bookmarkError'
   | 'clearFavorites'
+  | 'hideFavorites'
+  | 'showFavorites'
   | 'modernClock'
   | 'fullClock'
   | 'minimalClock'
@@ -73,6 +75,8 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     toggleHints: 'Показать/скрыть подсказки',
     bookmarkError: 'Используйте Ctrl+D (или Command+D для Mac) чтобы добавить эту страницу в закладки',
     clearFavorites: 'Очистить избранное',
+    hideFavorites: 'Скрыть избранные цвета',
+    showFavorites: 'Показать избранные цвета',
     modernClock: 'Современный стиль часов',
     fullClock: 'Полный стиль с датой',
     minimalClock: 'Минималистичный стиль часов',
@@ -114,6 +118,8 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     toggleHints: 'Show/hide hints',
     bookmarkError: 'Press Ctrl+D (or Command+D for Mac) to bookmark this page',
     clearFavorites: 'Clear favorites',
+    hideFavorites: 'Hide favorite colors',
+    showFavorites: 'Show favorite colors',
     modernClock: 'Modern clock style',
     fullClock: 'Full style with date',
     minimalClock: 'Minimalistic clock style',

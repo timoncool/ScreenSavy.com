@@ -4,7 +4,6 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -48,6 +47,7 @@ const MAIN_UI_STORAGE_KEY = "screensavy-main-ui";
 const MAIN_UI_DEFAULTS = {
   showShades: true,
   showRgbPanel: true,
+  showFavorites: true,
   menuOpen: false,
   hintsEnabled: true,
   aboutOpen: false,
@@ -135,6 +135,7 @@ type FavoritesPanelProps = {
   onSelectFavorite: (hex: string) => void;
   onRemoveFavorite: (hex: string) => void;
   interfaceHidden: boolean;
+  visible: boolean;
 };
 
 const FavoritesPanel = ({
@@ -148,7 +149,9 @@ const FavoritesPanel = ({
   onSelectFavorite,
   onRemoveFavorite,
   interfaceHidden,
+  visible,
 }: FavoritesPanelProps) => (
+  visible ? (
   <div
     className="saved-colors"
     style={{
@@ -207,6 +210,7 @@ const FavoritesPanel = ({
       </div>
     ))}
   </div>
+  ) : null
 );
 
 type PickerHintProps = {
@@ -333,6 +337,7 @@ const MainExperience = () => {
   const [rgb, setRgb] = useState<Rgb>({ r: 85, g: 8, b: 253 });
   const [showShades, setShowShades] = useState(true);
   const [showRgbPanel, setShowRgbPanel] = useState(true);
+  const [showFavorites, setShowFavorites] = useState(true);
   const [favorites, setFavorites] = useState<string[]>(INITIAL_FAVORITES);
   const [interfaceHidden, setInterfaceHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -372,6 +377,7 @@ const MainExperience = () => {
       const parsed = JSON.parse(stored) as Partial<{
         showShades: boolean;
         showRgbPanel: boolean;
+        showFavorites: boolean;
         menuOpen: boolean;
         hintsEnabled: boolean;
         aboutOpen: boolean;
@@ -383,6 +389,9 @@ const MainExperience = () => {
       }
       if (typeof parsed.showRgbPanel === "boolean") {
         setShowRgbPanel(parsed.showRgbPanel);
+      }
+      if (typeof parsed.showFavorites === "boolean") {
+        setShowFavorites(parsed.showFavorites);
       }
       if (typeof parsed.menuOpen === "boolean") {
         setMenuOpen(parsed.menuOpen);
@@ -597,6 +606,7 @@ const MainExperience = () => {
     const uiState = {
       showShades,
       showRgbPanel,
+      showFavorites,
       menuOpen,
       hintsEnabled,
       aboutOpen,
@@ -606,6 +616,7 @@ const MainExperience = () => {
     const isDefault =
       uiState.showShades === MAIN_UI_DEFAULTS.showShades &&
       uiState.showRgbPanel === MAIN_UI_DEFAULTS.showRgbPanel &&
+      uiState.showFavorites === MAIN_UI_DEFAULTS.showFavorites &&
       uiState.menuOpen === MAIN_UI_DEFAULTS.menuOpen &&
       uiState.hintsEnabled === MAIN_UI_DEFAULTS.hintsEnabled &&
       uiState.aboutOpen === MAIN_UI_DEFAULTS.aboutOpen &&
@@ -624,6 +635,7 @@ const MainExperience = () => {
     clockStyle,
     hintsEnabled,
     menuOpen,
+    showFavorites,
     showRgbPanel,
     showShades,
     uiHydrated,
@@ -834,6 +846,12 @@ const MainExperience = () => {
       onClick: () => setShowRgbPanel((value) => !value),
       title: activeLanguage === "ru" ? "RGB настройки" : "RGB settings",
       active: showRgbPanel,
+    },
+    toggleFavorites: {
+      icon: "favorite",
+      onClick: () => setShowFavorites((value) => !value),
+      title: getText(showFavorites ? "hideFavorites" : "showFavorites"),
+      active: showFavorites,
     },
     picker: {
       icon: "web_traffic",
@@ -1134,6 +1152,7 @@ const MainExperience = () => {
           onSelectFavorite={handleSelectFavorite}
           onRemoveFavorite={handleRemoveFavorite}
           interfaceHidden={interfaceHidden}
+          visible={showFavorites}
         />
         <PickerHint
           visible={

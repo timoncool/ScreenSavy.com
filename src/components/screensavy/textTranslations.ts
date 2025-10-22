@@ -37,7 +37,9 @@ export type TextTranslationKey =
   | 'bookmarkSite'
   | 'toggleHints'
   | 'bookmarkError'
-  | 'clearFavorites';
+  | 'clearFavorites'
+  | 'hideFavorites'
+  | 'showFavorites';
 
 export const textTranslations: Record<Language, Record<TextTranslationKey, string>> = {
   ru: {
@@ -78,7 +80,9 @@ export const textTranslations: Record<Language, Record<TextTranslationKey, strin
     bookmarkSite: 'Добавить в закладки',
     toggleHints: 'Показать/скрыть подсказки',
     bookmarkError: 'Используйте Ctrl+D (или Command+D для Mac) чтобы добавить эту страницу в закладки',
-    clearFavorites: 'Очистить избранное'
+    clearFavorites: 'Очистить избранное',
+    hideFavorites: 'Скрыть избранные цвета',
+    showFavorites: 'Показать избранные цвета'
   },
   en: {
     welcome: 'Welcome to ScreenSavy Text!',
@@ -118,7 +122,9 @@ export const textTranslations: Record<Language, Record<TextTranslationKey, strin
     bookmarkSite: 'Bookmark site',
     toggleHints: 'Show/hide hints',
     bookmarkError: 'Press Ctrl+D (or Command+D for Mac) to bookmark this page',
-    clearFavorites: 'Clear favorites'
+    clearFavorites: 'Clear favorites',
+    hideFavorites: 'Hide favorite colors',
+    showFavorites: 'Show favorite colors'
   }
 };
 
