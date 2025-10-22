@@ -497,6 +497,12 @@ export const SUPPORT_LINKS: SupportLink[] = [
     labelKey: "youtube",
     className: "support-button youtube-button",
   },
+  {
+    href: "https://github.com/timoncool/ScreenSavy.com",
+    icon: "code",
+    labelKey: "github",
+    className: "support-button github-button",
+  },
 ];
 
 const ABOUT_TRANSLATION_KEYS: MainTranslationKey[] = [
