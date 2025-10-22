@@ -16,7 +16,6 @@ import {
   rgbToHex,
   type Rgb,
 } from "@/lib/color";
-import type { VisualizerCategory } from "@/lib/visualizers";
 import {
   getTranslation,
   type Language,
@@ -40,8 +39,6 @@ import {
   detectBrowserLanguage,
   useAnimationFrame,
 } from "./shared";
-import VisualizerDetail from "./VisualizerDetail";
-import VisualizersCatalog from "./VisualizersCatalog";
 
 type ModeKey = "oneColor" | "colorChange" | "clock";
 type ClockStyle = "modern" | "full" | "minimal";
@@ -332,7 +329,11 @@ const MetaTags = ({ language }: { language: Language }) => {
   );
 };
 
-const MainExperience = () => {
+type MainExperienceProps = {
+  visualizerMode?: boolean;
+};
+
+const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) => {
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
   const [detectedLanguage, setDetectedLanguage] = useState<Language>("en");
@@ -356,12 +357,6 @@ const MainExperience = () => {
   const [showColorsHint, setShowColorsHint] = useState(true);
   const [showShadesHint, setShowShadesHint] = useState(true);
   const [showPickerHint, setShowPickerHint] = useState(true);
-  const [visualizersCategory, setVisualizersCategory] =
-    useState<VisualizerCategory>("audio");
-  const [catalogVisible, setCatalogVisible] = useState(false);
-  const [selectedVisualizer, setSelectedVisualizer] = useState<string | null>(
-    null,
-  );
   const [uiHydrated, setUiHydrated] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -369,8 +364,6 @@ const MainExperience = () => {
   const transitionIndexRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const nextColorRef = useRef<Rgb | null>(null);
-  const catalogContainerRef = useRef<HTMLDivElement | null>(null);
-  const visualizerCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const animationFrame = useAnimationFrame();
 
   useLayoutEffect(() => {
@@ -442,11 +435,6 @@ const MainExperience = () => {
   useEffect(() => {
     setDetectedLanguage(detectBrowserLanguage());
   }, []);
-
-  useEffect(() => {
-    if (!interfaceHidden) return;
-    setCatalogVisible(false);
-  }, [interfaceHidden]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -798,77 +786,6 @@ const MainExperience = () => {
     });
   }, []);
 
-  const openVisualizersCatalog = useCallback(
-    (category: VisualizerCategory) => {
-      setVisualizersCategory(category);
-      setCatalogVisible((current) => {
-        if (current && visualizersCategory === category) {
-          return false;
-        }
-        return true;
-      });
-      setMenuOpen(false);
-    },
-    [visualizersCategory],
-  );
-
-  const focusCatalog = useCallback(() => {
-    if (!catalogContainerRef.current) {
-      return;
-    }
-
-    const focusable = catalogContainerRef.current.querySelector<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    );
-
-    focusable?.focus();
-  }, []);
-
-  const closeVisualizerOverlay = useCallback(() => {
-    setSelectedVisualizer(null);
-
-    const focusAfterClose = () => {
-      focusCatalog();
-    };
-
-    if (typeof window !== "undefined") {
-      window.requestAnimationFrame(focusAfterClose);
-      return;
-    }
-
-    focusAfterClose();
-  }, [focusCatalog]);
-
-  const handleVisualizerOpen = useCallback((slug: string) => {
-    setSelectedVisualizer(slug);
-  }, []);
-
-  useEffect(() => {
-    if (!selectedVisualizer) {
-      return;
-    }
-
-    visualizerCloseButtonRef.current?.focus();
-  }, [selectedVisualizer]);
-
-  useEffect(() => {
-    if (!selectedVisualizer) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeVisualizerOverlay();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [closeVisualizerOverlay, selectedVisualizer]);
-
   const handleAddToBookmarks = useCallback(() => {
     try {
       const { sidebar } = window as typeof window & {
@@ -973,7 +890,7 @@ const MainExperience = () => {
   };
 
   const backgroundStyle = {
-    backgroundColor: currentHex,
+    backgroundColor: visualizerMode ? "transparent" : currentHex,
     minHeight: "100vh",
     width: "100%",
     position: "relative" as const,
@@ -1008,36 +925,40 @@ const MainExperience = () => {
           languageSetting={languageSetting}
           detected={detectedLanguage}
         />
-        {activeModes.includes("clock") && !interfaceHidden && (
+        {!visualizerMode && activeModes.includes("clock") && !interfaceHidden && (
           <Clock clockStyle={clockStyle} language={activeLanguage} />
         )}
-        {activeModes.includes("colorChange") &&
+        {!visualizerMode && activeModes.includes("colorChange") &&
           !interfaceHidden &&
           favorites.length > 1 && (
             <SpeedControl speed={speed} onChange={setSpeed} />
           )}
-        <ShadesPanel
-          rgb={rgb}
-          visible={showShades && !interfaceHidden}
-          hintsEnabled={hintsEnabled}
-          showHint={showShadesHint}
-          translation={getCommonText}
-          onCloseHint={() => setShowShadesHint(false)}
-          onSelectShade={(hex) => {
-            setCurrentHex(hex);
-            const parsed = hexToRgb(hex);
-            if (parsed) setRgb(parsed);
-          }}
-        />
-        <RgbPanel
-          hexValue={currentHex}
-          rgb={rgb}
-          show={showRgbPanel && !interfaceHidden}
-          onHexChange={handleHexChange}
-          onChannelChange={handleChannelChange}
-          onCopyHex={handleCopyHex}
-          copySuccess={copySuccess}
-        />
+        {!visualizerMode && (
+          <>
+            <ShadesPanel
+              rgb={rgb}
+              visible={showShades && !interfaceHidden}
+              hintsEnabled={hintsEnabled}
+              showHint={showShadesHint}
+              translation={getCommonText}
+              onCloseHint={() => setShowShadesHint(false)}
+              onSelectShade={(hex) => {
+                setCurrentHex(hex);
+                const parsed = hexToRgb(hex);
+                if (parsed) setRgb(parsed);
+              }}
+            />
+            <RgbPanel
+              hexValue={currentHex}
+              rgb={rgb}
+              show={showRgbPanel && !interfaceHidden}
+              onHexChange={handleHexChange}
+              onChannelChange={handleChannelChange}
+              onCopyHex={handleCopyHex}
+              copySuccess={copySuccess}
+            />
+          </>
+        )}
         <div
           className="top-buttons"
           style={{
@@ -1048,6 +969,16 @@ const MainExperience = () => {
           <div className="top-buttons-row">
             {TOP_TOOLBAR_BUTTONS.map((key) => {
               const button = toolbarButtons[key];
+              const hideInVisualizerMode = visualizerMode && [
+                "randomColor",
+                "toggleShades",
+                "toggleRgb",
+                "toggleFavorites",
+                "picker",
+              ].includes(key);
+              
+              if (hideInVisualizerMode) return null;
+              
               return (
                 <IconButton
                   key={key}
@@ -1085,28 +1016,30 @@ const MainExperience = () => {
             className={interfaceHidden ? "interface-toggle--inactive" : undefined}
           />
         </div>
-        <div
-          className={`clock-control-row ${activeModes.includes("clock") && !interfaceHidden ? "active" : ""}`}
-        >
-          <IconButton
-            icon="schedule"
-            onClick={() => setClockStyle("modern")}
-            title={getText("modernClock")}
-            active={clockStyle === "modern"}
-          />
-          <IconButton
-            icon="calendar_clock"
-            onClick={() => setClockStyle("full")}
-            title={getText("fullClock")}
-            active={clockStyle === "full"}
-          />
-          <IconButton
-            icon="history_toggle_off"
-            onClick={() => setClockStyle("minimal")}
-            title={getText("minimalClock")}
-            active={clockStyle === "minimal"}
-          />
-        </div>
+        {!visualizerMode && (
+          <div
+            className={`clock-control-row ${activeModes.includes("clock") && !interfaceHidden ? "active" : ""}`}
+          >
+            <IconButton
+              icon="schedule"
+              onClick={() => setClockStyle("modern")}
+              title={getText("modernClock")}
+              active={clockStyle === "modern"}
+            />
+            <IconButton
+              icon="calendar_clock"
+              onClick={() => setClockStyle("full")}
+              title={getText("fullClock")}
+              active={clockStyle === "full"}
+            />
+            <IconButton
+              icon="history_toggle_off"
+              onClick={() => setClockStyle("minimal")}
+              title={getText("minimalClock")}
+              active={clockStyle === "minimal"}
+            />
+          </div>
+        )}
         {menuOpen && (
           <div className="menu-container">
             <div className="menu-logo">
@@ -1173,81 +1106,90 @@ const MainExperience = () => {
               </div>
               {getText("clock")}
             </div>
-            <div
+            <div className="menu-separator" />
+            <div className="menu-section-title">{getText("audioVisualizers")}</div>
+            <Link
+              href="/modes/visualizers/celestial"
               className="menu-item"
-              role="button"
-              tabIndex={0}
-              onClick={() => openVisualizersCatalog(visualizersCategory)}
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" ||
-                  event.key === " " ||
-                  event.key === "Spacebar"
-                ) {
-                  event.preventDefault();
-                  openVisualizersCatalog(visualizersCategory);
-                }
-              }}
-            >
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">animation</i>
-              </div>
-              <div className="menu-item-content">
-                <div>{getText("visualizers")}</div>
-                <span className="menu-item-subtitle">
-                  {getText("visualizerAmbientMenuHint")}
-                </span>
-              </div>
-            </div>
-            <div
-              className="menu-item"
-              role="button"
-              tabIndex={0}
-              onClick={() => openVisualizersCatalog("audio")}
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" ||
-                  event.key === " " ||
-                  event.key === "Spacebar"
-                ) {
-                  event.preventDefault();
-                  openVisualizersCatalog("audio");
-                }
-              }}
+              onClick={() => setMenuOpen(false)}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">graphic_eq</i>
               </div>
-              <div className="menu-item-content">
-                <div>{getText("visualizerCategoryAudio")}</div>
-                <span className="menu-item-subtitle">
-                  {getText("visualizerAudioMenuHint")}
-                </span>
-              </div>
-            </div>
-            <div
+              Celestial Weaver
+            </Link>
+            <Link
+              href="/modes/visualizers/supernova"
               className="menu-item"
-              role="button"
-              tabIndex={0}
-              onClick={() => openVisualizersCatalog("ambient")}
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" ||
-                  event.key === " " ||
-                  event.key === "Spacebar"
-                ) {
-                  event.preventDefault();
-                  openVisualizersCatalog("ambient");
-                }
-              }}
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">graphic_eq</i>
+              </div>
+              Super Nova
+            </Link>
+            <Link
+              href="/modes/visualizers/voyager"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">graphic_eq</i>
+              </div>
+              Voyager
+            </Link>
+            <div className="menu-section-title">{getText("ambientVisualizers")}</div>
+            <Link
+              href="/modes/visualizers/lava-lamp"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">blur_on</i>
               </div>
+              Lava Lamp
+            </Link>
+            <Link
+              href="/modes/visualizers/rgb-lava"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">blur_on</i>
+              </div>
+              RGB Lava
+            </Link>
+            <div className="menu-separator" />
+            <div className="menu-item disabled">
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">tv_gen</i>
+              </div>
               <div className="menu-item-content">
-                <div>{getText("visualizerCategoryAmbient")}</div>
-                <span className="menu-item-subtitle">
-                  {getText("visualizerAmbientMenuHint")}
+                <div>{getText("playerMode")}</div>
+                <span className="coming-soon-badge">
+                  {getText("comingSoon")}
+                </span>
+              </div>
+            </div>
+            <div className="menu-item disabled">
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">animation</i>
+              </div>
+              <div className="menu-item-content">
+                <div>{getText("animationMode")}</div>
+                <span className="coming-soon-badge">
+                  {getText("comingSoon")}
+                </span>
+              </div>
+            </div>
+            <div className="menu-item disabled">
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">publish</i>
+              </div>
+              <div className="menu-item-content">
+                <div>{getText("createOwnMode")}</div>
+                <span className="coming-soon-badge">
+                  {getText("comingSoon")}
                 </span>
               </div>
             </div>
@@ -1273,66 +1215,31 @@ const MainExperience = () => {
             </div>
           </div>
         )}
-        <FavoritesPanel
-          favorites={favorites}
-          translation={getText}
-          hintsEnabled={hintsEnabled}
-          showHint={showColorsHint}
-          onCloseHint={() => setShowColorsHint(false)}
-          onAddFavorite={handleAddFavorite}
-          onClearFavorites={() => setFavorites([])}
-          onSelectFavorite={handleSelectFavorite}
-          onRemoveFavorite={handleRemoveFavorite}
-          interfaceHidden={interfaceHidden}
-          visible={showFavorites}
-        />
-        <PickerHint
-          visible={
-            pickerActive && !interfaceHidden && hintsEnabled && showPickerHint
-          }
-          translation={getText}
-          onClose={() => setShowPickerHint(false)}
-        />
-        {!interfaceHidden && catalogVisible && (
-          <div ref={catalogContainerRef}>
-            <VisualizersCatalog
-              activeCategory={visualizersCategory}
-              language={activeLanguage}
-              translation={getText}
-              onSelectCategory={(category) => {
-                setVisualizersCategory(category);
-              }}
-              onSelectVisualizer={handleVisualizerOpen}
-            />
-          </div>
+        {!visualizerMode && (
+          <FavoritesPanel
+            favorites={favorites}
+            translation={getText}
+            hintsEnabled={hintsEnabled}
+            showHint={showColorsHint}
+            onCloseHint={() => setShowColorsHint(false)}
+            onAddFavorite={handleAddFavorite}
+            onClearFavorites={() => setFavorites([])}
+            onSelectFavorite={handleSelectFavorite}
+            onRemoveFavorite={handleRemoveFavorite}
+            interfaceHidden={interfaceHidden}
+            visible={showFavorites}
+          />
+        )}
+        {!visualizerMode && (
+          <PickerHint
+            visible={
+              pickerActive && !interfaceHidden && hintsEnabled && showPickerHint
+            }
+            translation={getText}
+            onClose={() => setShowPickerHint(false)}
+          />
         )}
       </div>
-      {selectedVisualizer && (
-        <div className="visualizer-inline-overlay">
-          <div
-            className="visualizer-inline-overlay__backdrop"
-            role="presentation"
-            onClick={closeVisualizerOverlay}
-          />
-          <div
-            className="visualizer-inline-overlay__content"
-            role="dialog"
-            aria-modal="true"
-            aria-label={getText("visualizers")}
-          >
-            <button
-              ref={visualizerCloseButtonRef}
-              type="button"
-              className="visualizer-inline-overlay__close"
-              onClick={closeVisualizerOverlay}
-              aria-label={getText("close")}
-            >
-              <i className="material-symbols-outlined">close</i>
-            </button>
-            <VisualizerDetail key={selectedVisualizer} slug={selectedVisualizer} />
-          </div>
-        </div>
-      )}
     </HelmetProvider>
   );
 };
