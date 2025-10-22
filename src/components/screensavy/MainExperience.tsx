@@ -1086,39 +1086,51 @@ const MainExperience = () => {
               </div>
               {getText("clock")}
             </div>
-            <div className="menu-item disabled">
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">tv_gen</i>
-              </div>
-              <div className="menu-item-content">
-                <div>{getText("playerMode")}</div>
-                <span className="coming-soon-badge">
-                  {getText("comingSoon")}
-                </span>
-              </div>
-            </div>
-            <div className="menu-item disabled">
+            <Link
+              href="/modes/visualizers"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">animation</i>
               </div>
               <div className="menu-item-content">
-                <div>{getText("animationMode")}</div>
-                <span className="coming-soon-badge">
-                  {getText("comingSoon")}
+                <div>{getText("visualizers")}</div>
+                <span className="menu-item-subtitle">
+                  {getText("visualizerAmbientMenuHint")}
                 </span>
               </div>
-            </div>
-            <div className="menu-item disabled">
+            </Link>
+            <Link
+              href="/modes/visualizers?category=audio"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">publish</i>
+                <i className="material-symbols-outlined">graphic_eq</i>
               </div>
               <div className="menu-item-content">
-                <div>{getText("createOwnMode")}</div>
-                <span className="coming-soon-badge">
-                  {getText("comingSoon")}
+                <div>{getText("visualizerCategoryAudio")}</div>
+                <span className="menu-item-subtitle">
+                  {getText("visualizerAudioMenuHint")}
                 </span>
               </div>
-            </div>
+            </Link>
+            <Link
+              href="/modes/visualizers?category=ambient"
+              className="menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">blur_on</i>
+              </div>
+              <div className="menu-item-content">
+                <div>{getText("visualizerCategoryAmbient")}</div>
+                <span className="menu-item-subtitle">
+                  {getText("visualizerAmbientMenuHint")}
+                </span>
+              </div>
+            </Link>
             <div className="menu-separator" />
             <div className="menu-item" onClick={toggleLanguage}>
               <div className="menu-item-icon">
