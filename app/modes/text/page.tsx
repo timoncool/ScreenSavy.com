@@ -1,5 +1,5 @@
-import TextModeExperience from '@/components/screensavy/TextModeExperience';
+import MainExperience from '@/components/screensavy/MainExperience';
 
 export default function TextModePage() {
-  return <TextModeExperience />;
+  return <MainExperience initialMode="text" />;
 }

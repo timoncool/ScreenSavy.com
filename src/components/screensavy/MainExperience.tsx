@@ -41,8 +41,10 @@ import {
   useAnimationFrame,
 } from "./shared";
 
-type ModeKey = "oneColor" | "colorChange" | "clock";
+type ModeKey = "oneColor" | "colorChange" | "clock" | "text";
 type ClockStyle = "modern" | "full" | "minimal";
+type TextFontSize = "small" | "medium" | "large";
+type TextAlignment = "left" | "center" | "right";
 
 const MAIN_UI_STORAGE_KEY = "screensavy-main-ui";
 const MAIN_UI_DEFAULTS = {
@@ -53,6 +55,117 @@ const MAIN_UI_DEFAULTS = {
   hintsEnabled: true,
   aboutOpen: false,
   clockStyle: "modern" as ClockStyle,
+  textOptionsOpen: false,
+};
+
+const fontSizeClassMap: Record<TextFontSize, string> = {
+  small: "text-small",
+  medium: "text-medium",
+  large: "text-large",
+};
+
+const fontFamilies: Record<string, string> = {
+  Inter: "'Inter', sans-serif",
+  "Roboto Mono": "'Roboto Mono', monospace",
+  Arial: "Arial, sans-serif",
+  "Times New Roman": "'Times New Roman', serif",
+  "Courier New": "'Courier New', monospace",
+  Montserrat: "'Montserrat', sans-serif",
+  "Playfair Display": "'Playfair Display', serif",
+  Oswald: "'Oswald', sans-serif",
+  Raleway: "'Raleway', sans-serif",
+  Lobster: "'Lobster', cursive",
+  Pacifico: "'Pacifico', cursive",
+  "Dancing Script": "'Dancing Script', cursive",
+  Caveat: "'Caveat', cursive",
+  "Bebas Neue": "'Bebas Neue', sans-serif",
+  Comfortaa: "'Comfortaa', cursive",
+  Unbounded: "'Unbounded', sans-serif",
+  "Russo One": "'Russo One', sans-serif",
+  Philosopher: "'Philosopher', sans-serif",
+  "PT Sans": "'PT Sans', sans-serif",
+  "Amatic SC": "'Amatic SC', cursive",
+  "Bad Script": "'Bad Script', cursive",
+  "El Messiri": "'El Messiri', sans-serif",
+  Neucha: "'Neucha', cursive",
+  "Marck Script": "'Marck Script', cursive",
+  "Poiret One": "'Poiret One', cursive",
+  "Press Start 2P": "'Press Start 2P', cursive",
+  "Kelly Slab": "'Kelly Slab', cursive",
+  "Yeseva One": "'Yeseva One', cursive",
+};
+
+const STYLE_PRESETS: Record<
+  string,
+  {
+    font: string;
+    size: TextFontSize;
+    color: string;
+    stroke: { enabled: boolean; color: string; width: number };
+    styles: { bold: boolean; italic: boolean; underline: boolean };
+  }
+> = {
+  neon: {
+    font: "Unbounded",
+    size: "large",
+    color: "#00FFFF",
+    stroke: { enabled: true, color: "#FF00FF", width: 3 },
+    styles: { bold: true, italic: false, underline: false },
+  },
+  classic: {
+    font: "Playfair Display",
+    size: "medium",
+    color: "#FFFFFF",
+    stroke: { enabled: true, color: "#000000", width: 1 },
+    styles: { bold: false, italic: false, underline: false },
+  },
+  minimal: {
+    font: "Inter",
+    size: "medium",
+    color: "#FFFFFF",
+    stroke: { enabled: false, color: "#000000", width: 0 },
+    styles: { bold: false, italic: false, underline: false },
+  },
+  nature: {
+    font: "Caveat",
+    size: "large",
+    color: "#8BC34A",
+    stroke: { enabled: true, color: "#3E5F22", width: 2 },
+    styles: { bold: false, italic: false, underline: false },
+  },
+  romantic: {
+    font: "Dancing Script",
+    size: "large",
+    color: "#FF69B4",
+    stroke: { enabled: true, color: "#C71585", width: 1 },
+    styles: { bold: false, italic: true, underline: false },
+  },
+  retro: {
+    font: "Press Start 2P",
+    size: "medium",
+    color: "#FFFF00",
+    stroke: { enabled: true, color: "#FF4500", width: 2 },
+    styles: { bold: true, italic: false, underline: false },
+  },
+  cyber: {
+    font: "Russo One",
+    size: "large",
+    color: "#00FF00",
+    stroke: { enabled: true, color: "#000000", width: 2 },
+    styles: { bold: true, italic: false, underline: false },
+  },
+};
+
+const fontOptions = Object.keys(fontFamilies);
+
+const STYLE_PRESET_LABELS: Record<string, MainTranslationKey> = {
+  neon: "presetNeon",
+  classic: "presetClassic",
+  minimal: "presetMinimal",
+  nature: "presetNature",
+  romantic: "presetRomantic",
+  retro: "presetRetro",
+  cyber: "presetCyber",
 };
 
 type ClockProps = {
@@ -123,6 +236,303 @@ const Clock = ({ clockStyle, language }: ClockProps) => {
   }
 
   return null;
+};
+
+type TextDisplayProps = {
+  text: string;
+  fontSize: TextFontSize;
+  fontFamily: string;
+  styles: { bold: boolean; italic: boolean; underline: boolean };
+  color: string;
+  outline: { enabled: boolean; color: string; width: number };
+  alignment: TextAlignment;
+  translation: (key: MainTranslationKey) => string;
+};
+
+const TextDisplay = ({
+  text,
+  fontSize,
+  fontFamily,
+  styles,
+  color,
+  outline,
+  alignment,
+  translation,
+}: TextDisplayProps) => {
+  const style: React.CSSProperties = {
+    fontFamily: fontFamilies[fontFamily] ?? "'Inter', sans-serif",
+    fontWeight: styles.bold ? "bold" : "normal",
+    fontStyle: styles.italic ? "italic" : "normal",
+    textDecoration: styles.underline ? "underline" : "none",
+    textAlign: alignment,
+    color,
+  };
+
+  if (outline.enabled) {
+    style.WebkitTextStroke = `${outline.width}px ${outline.color}`;
+    style.textShadow = `0 0 1px ${outline.color}`;
+  }
+
+  return (
+    <div className={`text-display ${fontSizeClassMap[fontSize]}`}>
+      <div className="text-content" style={style}>
+        {text || translation("enterText")}
+      </div>
+    </div>
+  );
+};
+
+type TextOptionsPanelProps = {
+  visible: boolean;
+  translation: (key: MainTranslationKey) => string;
+  showHint: boolean;
+  onCloseHint: () => void;
+  textValue: string;
+  onTextChange: (value: string, caret: number | null) => void;
+  textInputRef: React.RefObject<HTMLInputElement>;
+  presets: typeof STYLE_PRESETS;
+  onApplyPreset: (name: string) => void;
+  fontSize: TextFontSize;
+  onFontSizeChange: (size: TextFontSize) => void;
+  fontFamily: string;
+  onFontFamilyChange: (family: string) => void;
+  textColor: string;
+  onTextColorChange: (color: string) => void;
+  outline: { enabled: boolean; color: string; width: number };
+  onOutlineChange: (outline: {
+    enabled: boolean;
+    color: string;
+    width: number;
+  }) => void;
+  alignment: TextAlignment;
+  onAlignmentChange: (alignment: TextAlignment) => void;
+  styles: { bold: boolean; italic: boolean; underline: boolean };
+  onToggleStyle: (style: "bold" | "italic" | "underline") => void;
+};
+
+const TextOptionsPanel = ({
+  visible,
+  translation,
+  showHint,
+  onCloseHint,
+  textValue,
+  onTextChange,
+  textInputRef,
+  presets,
+  onApplyPreset,
+  fontSize,
+  onFontSizeChange,
+  fontFamily,
+  onFontFamilyChange,
+  textColor,
+  onTextColorChange,
+  outline,
+  onOutlineChange,
+  alignment,
+  onAlignmentChange,
+  styles,
+  onToggleStyle,
+}: TextOptionsPanelProps) => {
+  if (!visible) return null;
+
+  return (
+    <div className="text-options-panel">
+      {showHint && (
+        <div className="text-hint hint">
+          <p>{translation("textHint")}</p>
+          <button
+            type="button"
+            className="hint-close-button"
+            onClick={onCloseHint}
+          >
+            <i className="material-symbols-outlined">close</i>
+          </button>
+        </div>
+      )}
+      <div className="text-option-group">
+        <label>{translation("enterText")}</label>
+        <input
+          type="text"
+          value={textValue}
+          onChange={(event) =>
+            onTextChange(event.target.value, event.target.selectionStart)
+          }
+          ref={textInputRef}
+          className="text-input"
+          placeholder={translation("enterText")}
+        />
+      </div>
+      <div className="text-option-group">
+        <label>{translation("stylePresets")}</label>
+        <div className="preset-chips">
+          {Object.keys(presets).map((preset) => (
+            <div
+              key={preset}
+              className={`preset-chip ${preset}`}
+              onClick={() => onApplyPreset(preset)}
+            >
+              {STYLE_PRESET_LABELS[preset]
+                ? translation(STYLE_PRESET_LABELS[preset])
+                : preset.charAt(0).toUpperCase() + preset.slice(1)}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="text-option-group">
+        <label>{translation("fontSize")}</label>
+        <div className="button-group">
+          <button
+            type="button"
+            className={`option-button ${fontSize === "small" ? "active" : ""}`}
+            onClick={() => onFontSizeChange("small")}
+          >
+            {translation("small")}
+          </button>
+          <button
+            type="button"
+            className={`option-button ${fontSize === "medium" ? "active" : ""}`}
+            onClick={() => onFontSizeChange("medium")}
+          >
+            {translation("medium")}
+          </button>
+          <button
+            type="button"
+            className={`option-button ${fontSize === "large" ? "active" : ""}`}
+            onClick={() => onFontSizeChange("large")}
+          >
+            {translation("large")}
+          </button>
+        </div>
+      </div>
+      <div className="text-option-group">
+        <label>{translation("fontFamily")}</label>
+        <select
+          value={fontFamily}
+          onChange={(event) => onFontFamilyChange(event.target.value)}
+          className="font-select"
+        >
+          {fontOptions.map((font) => (
+            <option key={font} value={font}>
+              {font}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="text-option-group">
+        <label>{translation("textColor")}</label>
+        <input
+          type="color"
+          value={textColor}
+          onChange={(event) => onTextColorChange(event.target.value)}
+          className="color-picker"
+        />
+      </div>
+      <div className="text-option-group">
+        <label>{translation("textOutline")}</label>
+        <div className="stroke-controls">
+          <div className="stroke-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={outline.enabled}
+                onChange={(event) =>
+                  onOutlineChange({ ...outline, enabled: event.target.checked })
+                }
+              />
+              <span className="slider round" />
+            </label>
+            <span>{translation("outlineEnable")}</span>
+          </div>
+          <div
+            className={`stroke-options ${outline.enabled ? "" : "disabled"}`}
+          >
+            <div className="stroke-option">
+              <label>{translation("outlineColor")}</label>
+              <input
+                type="color"
+                value={outline.color}
+                disabled={!outline.enabled}
+                onChange={(event) =>
+                  onOutlineChange({ ...outline, color: event.target.value })
+                }
+                className="color-picker"
+              />
+            </div>
+            <div className="stroke-option">
+              <label>
+                {translation("outlineWidth")}: {outline.width}px
+              </label>
+              <input
+                type="range"
+                min={1}
+                max={10}
+                value={outline.width}
+                disabled={!outline.enabled}
+                onChange={(event) =>
+                  onOutlineChange({
+                    ...outline,
+                    width: Number(event.target.value),
+                  })
+                }
+                className="slider"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="text-option-group">
+        <label>{translation("textAlign")}</label>
+        <div className="button-group">
+          <button
+            type="button"
+            className={`option-button ${alignment === "left" ? "active" : ""}`}
+            onClick={() => onAlignmentChange("left")}
+          >
+            <i className="material-symbols-outlined">format_align_left</i>
+          </button>
+          <button
+            type="button"
+            className={`option-button ${alignment === "center" ? "active" : ""}`}
+            onClick={() => onAlignmentChange("center")}
+          >
+            <i className="material-symbols-outlined">format_align_center</i>
+          </button>
+          <button
+            type="button"
+            className={`option-button ${alignment === "right" ? "active" : ""}`}
+            onClick={() => onAlignmentChange("right")}
+          >
+            <i className="material-symbols-outlined">format_align_right</i>
+          </button>
+        </div>
+      </div>
+      <div className="text-option-group">
+        <div className="button-group style-toggles">
+          <button
+            type="button"
+            className={`option-button ${styles.bold ? "active" : ""}`}
+            onClick={() => onToggleStyle("bold")}
+          >
+            <i className="material-symbols-outlined">format_bold</i>
+          </button>
+          <button
+            type="button"
+            className={`option-button ${styles.italic ? "active" : ""}`}
+            onClick={() => onToggleStyle("italic")}
+          >
+            <i className="material-symbols-outlined">format_italic</i>
+          </button>
+          <button
+            type="button"
+            className={`option-button ${styles.underline ? "active" : ""}`}
+            onClick={() => onToggleStyle("underline")}
+          >
+            <i className="material-symbols-outlined">format_underlined</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 type FavoritesPanelProps = {
@@ -335,13 +745,15 @@ type MainExperienceProps = {
   visualizerSlug?: string;
   visualizerCategory?: "audio" | "ambient";
   iframeRef?: React.RefObject<HTMLIFrameElement>;
+  initialMode?: ModeKey;
 };
 
 const MainExperience = ({ 
   visualizerMode = false,
   visualizerSlug,
   visualizerCategory,
-  iframeRef
+  iframeRef,
+  initialMode
 }: MainExperienceProps = {}) => {
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
@@ -355,7 +767,9 @@ const MainExperience = ({
   const [favorites, setFavorites] = useState<string[]>(INITIAL_FAVORITES);
   const [interfaceHidden, setInterfaceHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeModes, setActiveModes] = useState<ModeKey[]>(["oneColor"]);
+  const [activeModes, setActiveModes] = useState<ModeKey[]>(
+    initialMode ? [initialMode] : ["oneColor"]
+  );
   const [copySuccess, setCopySuccess] = useState(false);
   const [speed, setSpeed] = useState(5);
   const [clockStyle, setClockStyle] = useState<ClockStyle>("modern");
@@ -369,8 +783,28 @@ const MainExperience = ({
   const [showPickerHint, setShowPickerHint] = useState(true);
   const [uiHydrated, setUiHydrated] = useState(false);
   const [showVisualizerModal, setShowVisualizerModal] = useState(false);
+  
+  const [textOptionsOpen, setTextOptionsOpen] = useState(initialMode === "text");
+  const [textValue, setTextValue] = useState("ScreenSavy");
+  const [fontSize, setFontSize] = useState<TextFontSize>("medium");
+  const [fontFamily, setFontFamily] = useState("Inter");
+  const [textColor, setTextColor] = useState("#FFFFFF");
+  const [alignment, setAlignment] = useState<TextAlignment>("center");
+  const [textStyles, setTextStyles] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+  });
+  const [outline, setOutline] = useState({
+    enabled: false,
+    color: "#000000",
+    width: 1,
+  });
+  const [showTextHint, setShowTextHint] = useState(true);
+  const [restoreColorChange, setRestoreColorChange] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const textInputRef = useRef<HTMLInputElement | null>(null);
   const colorChangeTimerRef = useRef<NodeJS.Timeout | null>(null);
   const transitionIndexRef = useRef(0);
   const transitionProgressRef = useRef(0);
@@ -397,6 +831,7 @@ const MainExperience = ({
         hintsEnabled: boolean;
         aboutOpen: boolean;
         clockStyle: ClockStyle;
+        textOptionsOpen: boolean;
       }>;
 
       if (typeof parsed.showShades === "boolean") {
@@ -424,12 +859,15 @@ const MainExperience = ({
       ) {
         setClockStyle(parsed.clockStyle);
       }
+      if (typeof parsed.textOptionsOpen === "boolean" && !initialMode) {
+        setTextOptionsOpen(parsed.textOptionsOpen);
+      }
     } catch (error) {
       console.error("Failed to restore main UI state", error);
     } finally {
       setUiHydrated(true);
     }
-  }, []);
+  }, [initialMode]);
 
   const getText = useCallback(
     (key: MainTranslationKey) =>
@@ -626,6 +1064,7 @@ const MainExperience = ({
       hintsEnabled,
       aboutOpen,
       clockStyle,
+      textOptionsOpen,
     };
 
     const isDefault =
@@ -635,7 +1074,8 @@ const MainExperience = ({
       uiState.menuOpen === MAIN_UI_DEFAULTS.menuOpen &&
       uiState.hintsEnabled === MAIN_UI_DEFAULTS.hintsEnabled &&
       uiState.aboutOpen === MAIN_UI_DEFAULTS.aboutOpen &&
-      uiState.clockStyle === MAIN_UI_DEFAULTS.clockStyle;
+      uiState.clockStyle === MAIN_UI_DEFAULTS.clockStyle &&
+      uiState.textOptionsOpen === MAIN_UI_DEFAULTS.textOptionsOpen;
 
     if (isDefault) {
       window.localStorage.removeItem(MAIN_UI_STORAGE_KEY);
@@ -653,6 +1093,7 @@ const MainExperience = ({
     showFavorites,
     showRgbPanel,
     showShades,
+    textOptionsOpen,
     uiHydrated,
   ]);
 
@@ -818,10 +1259,60 @@ const MainExperience = ({
       if (mode === "oneColor") {
         return ["oneColor"];
       }
+      if (mode === "text" || mode === "clock") {
+        const withoutTextAndClock = current.filter(
+          (value) => value !== "text" && value !== "clock" && value !== "oneColor"
+        );
+        return [...withoutTextAndClock, mode];
+      }
       return current.includes("oneColor")
         ? [...current.filter((value) => value !== "oneColor"), mode]
         : [...current, mode];
     });
+  }, []);
+
+  const toggleTextOptions = useCallback(() => {
+    setTextOptionsOpen((open) => {
+      if (!open && activeModes.includes("colorChange")) {
+        setRestoreColorChange(true);
+        setActiveModes((modes) =>
+          modes.filter((mode) => mode !== "colorChange"),
+        );
+      }
+      if (open && restoreColorChange) {
+        setActiveModes((modes) =>
+          modes.includes("colorChange") ? modes : [...modes, "colorChange"],
+        );
+        setRestoreColorChange(false);
+      }
+      return !open;
+    });
+  }, [activeModes, restoreColorChange]);
+
+  const handleTextChange = useCallback((value: string, caret: number | null) => {
+    setTextValue(value);
+    if (caret !== null && textInputRef.current) {
+      requestAnimationFrame(() => {
+        if (textInputRef.current) {
+          textInputRef.current.setSelectionRange(caret, caret);
+        }
+      });
+    }
+  }, []);
+
+  const handleToggleStyle = useCallback((style: "bold" | "italic" | "underline") => {
+    setTextStyles((prev) => ({ ...prev, [style]: !prev[style] }));
+  }, []);
+
+  const applyPreset = useCallback((name: string) => {
+    const preset = STYLE_PRESETS[name];
+    if (preset) {
+      setFontFamily(preset.font);
+      setFontSize(preset.size);
+      setTextColor(preset.color);
+      setOutline(preset.stroke);
+      setTextStyles(preset.styles);
+    }
   }, []);
 
   const handleAddToBookmarks = useCallback(() => {
@@ -910,14 +1401,11 @@ const MainExperience = ({
       active: pickerActive,
     },
     textOptions: {
-      icon: "webhook",
-      onClick: () => {},
-      title:
-        activeLanguage === "ru"
-          ? "Настройки текста недоступны"
-          : "Text options unavailable",
-      disabled: true,
-      hidden: true,
+      icon: "text_fields",
+      onClick: toggleTextOptions,
+      title: getText("textOptions"),
+      active: textOptionsOpen,
+      hidden: !activeModes.includes("text"),
     },
     toggleHints: {
       icon: "help",
@@ -970,11 +1458,46 @@ const MainExperience = ({
         {!visualizerMode && activeModes.includes("clock") && !interfaceHidden && (
           <Clock clockStyle={clockStyle} language={activeLanguage} />
         )}
+        {!visualizerMode && activeModes.includes("text") && (
+          <TextDisplay
+            text={textValue}
+            fontSize={fontSize}
+            fontFamily={fontFamily}
+            styles={textStyles}
+            color={textColor}
+            outline={outline}
+            alignment={alignment}
+            translation={getText}
+          />
+        )}
         {!visualizerMode && activeModes.includes("colorChange") &&
           !interfaceHidden &&
           favorites.length > 1 && (
             <SpeedControl speed={speed} onChange={setSpeed} />
           )}
+        <TextOptionsPanel
+          visible={textOptionsOpen && !interfaceHidden}
+          translation={getText}
+          showHint={hintsEnabled && showTextHint}
+          onCloseHint={() => setShowTextHint(false)}
+          textValue={textValue}
+          onTextChange={handleTextChange}
+          textInputRef={textInputRef}
+          presets={STYLE_PRESETS}
+          onApplyPreset={applyPreset}
+          fontSize={fontSize}
+          onFontSizeChange={setFontSize}
+          fontFamily={fontFamily}
+          onFontFamilyChange={setFontFamily}
+          textColor={textColor}
+          onTextColorChange={setTextColor}
+          outline={outline}
+          onOutlineChange={setOutline}
+          alignment={alignment}
+          onAlignmentChange={setAlignment}
+          styles={textStyles}
+          onToggleStyle={handleToggleStyle}
+        />
         {!visualizerMode && (
           <>
             <ShadesPanel
@@ -1146,17 +1669,24 @@ const MainExperience = ({
             </div>
             <div className="menu-separator" />
             <div
-              className="menu-item"
-              onClick={() => {
-                setMenuOpen(false);
-                router.push("/modes/text");
-              }}
+              className={`menu-item ${activeModes.includes("text") ? "active" : ""}`}
+              onClick={() => toggleMode("text")}
             >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">text_fields</i>
               </div>
               {getText("textMode")}
             </div>
+            <div
+              className={`menu-item ${activeModes.includes("clock") ? "active" : ""}`}
+              onClick={() => toggleMode("clock")}
+            >
+              <div className="menu-item-icon">
+                <i className="material-symbols-outlined">schedule</i>
+              </div>
+              {getText("clock")}
+            </div>
+            <div className="menu-separator" />
             <div
               className={`menu-item ${activeModes.includes("oneColor") ? "active" : ""}`}
               onClick={() => toggleMode("oneColor")}
@@ -1175,15 +1705,6 @@ const MainExperience = ({
               </div>
               {getText("colorChange")}
             </div>
-            <div
-              className={`menu-item ${activeModes.includes("clock") ? "active" : ""}`}
-              onClick={() => toggleMode("clock")}
-            >
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">schedule</i>
-              </div>
-              {getText("clock")}
-            </div>
             <div className="menu-separator" />
             <div className="menu-section-title">{getText("audioVisualizers")}</div>
             <div
@@ -1194,7 +1715,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">graphic_eq</i>
+                <i className="material-symbols-outlined">auto_awesome</i>
               </div>
               Celestial Weaver
             </div>
@@ -1206,7 +1727,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">graphic_eq</i>
+                <i className="material-symbols-outlined">wb_sunny</i>
               </div>
               Super Nova
             </div>
@@ -1218,7 +1739,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">graphic_eq</i>
+                <i className="material-symbols-outlined">rocket_launch</i>
               </div>
               Voyager
             </div>
@@ -1231,7 +1752,7 @@ const MainExperience = ({
               }}
             >
               <div className="menu-item-icon">
-                <i className="material-symbols-outlined">blur_on</i>
+                <i className="material-symbols-outlined">water_drop</i>
               </div>
               Lava Lamp
             </div>
@@ -1254,17 +1775,6 @@ const MainExperience = ({
               </div>
               <div className="menu-item-content">
                 <div>{getText("playerMode")}</div>
-                <span className="coming-soon-badge">
-                  {getText("comingSoon")}
-                </span>
-              </div>
-            </div>
-            <div className="menu-item disabled">
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">animation</i>
-              </div>
-              <div className="menu-item-content">
-                <div>{getText("animationMode")}</div>
                 <span className="coming-soon-badge">
                   {getText("comingSoon")}
                 </span>
