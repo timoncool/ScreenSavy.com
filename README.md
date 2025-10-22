@@ -1,19 +1,26 @@
 # ScreenSavy.com
 
+**English** | [Русский](README.ru.md)
+
+**Live Demo:** [https://www.screensavy.com/](https://www.screensavy.com/)
+
 ScreenSavy.com is a web experience for transforming any display into an ambient screen background. The app revives the nostalgia of classic screensavers and pairs it with modern controls so you can stage color washes, animated transitions, or functional overlays like clocks and typography on laptops, TVs, projectors, or tablets.
 
 The project is actively developed in Russian and English and focuses on lightweight, offline-friendly visuals that run directly in the browser. ScreenSavy is ideal for mood lighting, photo shoots, home theater ambience, and creative workspaces where a tuned backdrop supports the moment.
 
-## Core experiences
+## Core Experiences
 
 - **One Color mode** – set a single RGB tone across the entire screen. Perfect for monitor calibration, ambient lighting, or color therapy.
 - **Color Change mode** – build a palette of favorite shades and let ScreenSavy cycle through them with adjustable speed controls.
 - **Clock mode** – display modern, full, or minimal time readouts with automatic locale-aware day and date formatting.
+- **Text mode** – craft typography-first layouts with adjustable fonts (28 options), sizes, alignments, colors, and styles for signage or event screens.
 - **Favorites & palettes** – capture swatches to reuse later, explore tonal variations with the Shades panel, and fine-tune channels with numeric sliders.
-- **Text mode (/modes/text)** – craft typography-first layouts with adjustable fonts, weights, alignments, and color pairings for signage or event screens.
+- **Visualizers** – interactive audio and ambient visualizations:
+  - **Audio Visualizers:** Celestial Weaver, Super Nova, Voyager
+  - **Ambient Visualizers:** Lava Lamp, RGB Lava
 - **Interface ergonomics** – toggle full-screen, hide controls for a clean presentation, and rely on contextual hints that guide first-time visitors.
 
-## Why people use ScreenSavy
+## Why People Use ScreenSavy
 
 ScreenSavy surfaced on [ProductRadar](https://productradar.ru/product/screensavy-com/) as a utility for:
 
@@ -25,14 +32,43 @@ _Support the project: [endorse the ProductRadar listing](https://productradar.ru
 - Preparing backgrounds for photography and video shoots using a phone, tablet, or smart TV.
 - Creating atmospheric lighting in studios, classrooms, or hospitality spaces.
 
-## Technology stack
+## Technology Stack
 
 - **Framework** – Next.js 14 with React 18 for a hybrid static/interactive experience.
 - **Styling** – Tailwind CSS alongside handcrafted utility classes tuned for full-screen layouts.
 - **State & storage** – Client-side React state with localStorage persistence for favorites, UI preferences, and animation settings.
 - **Internationalization** – Built-in Russian and English translations with automatic browser language detection.
 
-## Getting started
+## Project Structure
+
+```
+ScreenSavy.com/
+├── app/                          # Next.js App Router
+│   ├── layout.tsx               # Root layout with metadata
+│   ├── page.tsx                 # Main page (MainExperience)
+│   └── modes/
+│       ├── text/page.tsx        # Text mode
+│       └── visualizers/         # Visualizers
+│           ├── celestial/
+│           ├── supernova/
+│           ├── voyager/
+│           ├── lava-lamp/
+│           └── rgb-lava/
+├── src/
+│   └── components/
+│       └── screensavy/
+│           ├── MainExperience.tsx      # Main component (all modes)
+│           ├── VisualizerExperience.tsx # Visualizer wrapper
+│           ├── shared.tsx              # Shared components and utilities
+│           ├── translations.ts         # Translations (RU/EN)
+│           └── textTranslations.ts     # Additional text translations
+├── public/
+│   ├── visualizers/             # Visualizer HTML files
+│   └── [static assets]
+└── [configuration files]
+```
+
+## Getting Started
 
 ### Requirements
 
@@ -59,7 +95,7 @@ npm run dev
 
 By default the app serves on [http://localhost:3000](http://localhost:3000). Navigate to `/` for the main color experience or `/modes/text` for the text mode interface.
 
-### Production build
+### Production Build
 
 Generate an optimized production build and start it locally:
 
@@ -82,13 +118,34 @@ Resolve any reported issues before committing changes.
 
 ## Contributing
 
+We welcome contributions to ScreenSavy! Here's how you can help:
+
+### Quick Start
+
 1. Fork the repository and create a feature branch from `main`.
 2. Install dependencies and ensure `npm run lint` passes locally.
 3. Provide clear descriptions in pull requests, including screenshots for UI changes when practical.
 4. Ensure commits use meaningful messages and reference related issues when available.
 5. Request review from a project maintainer before merging.
 
-## Roadmap highlights
+### Areas for Contribution
+
+- **New Visualizers:** Create new audio or ambient visualizations
+- **UI/UX Improvements:** Enhance existing modes or add new features
+- **Internationalization:** Add translations for new languages
+- **Performance:** Optimize rendering and animations
+- **Documentation:** Improve README, code comments, or create tutorials
+- **Bug Fixes:** Help identify and fix issues
+
+### Code Guidelines
+
+- Follow existing code patterns and style
+- Write clean, readable code with meaningful variable names
+- Add comments for complex logic
+- Test your changes across different browsers and screen sizes
+- Ensure all modes work correctly after your changes
+
+## Roadmap Highlights
 
 - **Expanded visual modes:** add gradients, particle systems, and sound-reactive scenes.
 - **Scheduling:** plan scene changes or timers for events and working sessions.
@@ -96,6 +153,16 @@ Resolve any reported issues before committing changes.
 - **Advanced typography:** presets for lyric videos, prompts, or workshop signage.
 - **Accessibility:** richer keyboard navigation, ARIA coverage, and high-contrast presets.
 
-## Assets
+## License
 
-Static assets (favicons, manifest, mask icons) live under the `public/` directory and are automatically served by Next.js.
+This project is open-source and available under the MIT License.
+
+## Links
+
+- **Live Demo:** [https://www.screensavy.com/](https://www.screensavy.com/)
+- **ProductRadar:** [https://productradar.ru/product/screensavy-com/](https://productradar.ru/product/screensavy-com/)
+- **GitHub:** [https://github.com/timoncool/ScreenSavy.com](https://github.com/timoncool/ScreenSavy.com)
+
+---
+
+Made with ❤️ for creators, designers, and everyone who appreciates beautiful ambient screens.
