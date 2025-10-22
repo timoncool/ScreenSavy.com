@@ -40,6 +40,7 @@ import {
   detectBrowserLanguage,
   useAnimationFrame,
 } from "./shared";
+import VisualizerDetail from "./VisualizerDetail";
 import VisualizersCatalog from "./VisualizersCatalog";
 
 type ModeKey = "oneColor" | "colorChange" | "clock";
@@ -358,6 +359,9 @@ const MainExperience = () => {
   const [visualizersCategory, setVisualizersCategory] =
     useState<VisualizerCategory>("audio");
   const [catalogVisible, setCatalogVisible] = useState(false);
+  const [selectedVisualizer, setSelectedVisualizer] = useState<string | null>(
+    null,
+  );
   const [uiHydrated, setUiHydrated] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -365,6 +369,8 @@ const MainExperience = () => {
   const transitionIndexRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const nextColorRef = useRef<Rgb | null>(null);
+  const catalogContainerRef = useRef<HTMLDivElement | null>(null);
+  const visualizerCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const animationFrame = useAnimationFrame();
 
   useLayoutEffect(() => {
@@ -806,11 +812,62 @@ const MainExperience = () => {
     [visualizersCategory],
   );
 
-  const handleVisualizerOpen = useCallback((slug: string) => {
-    if (typeof window !== "undefined") {
-      window.open(`/modes/visualizers/${slug}`, "_blank", "noopener,noreferrer");
+  const focusCatalog = useCallback(() => {
+    if (!catalogContainerRef.current) {
+      return;
     }
+
+    const focusable = catalogContainerRef.current.querySelector<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+
+    focusable?.focus();
   }, []);
+
+  const closeVisualizerOverlay = useCallback(() => {
+    setSelectedVisualizer(null);
+
+    const focusAfterClose = () => {
+      focusCatalog();
+    };
+
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(focusAfterClose);
+      return;
+    }
+
+    focusAfterClose();
+  }, [focusCatalog]);
+
+  const handleVisualizerOpen = useCallback((slug: string) => {
+    setSelectedVisualizer(slug);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedVisualizer) {
+      return;
+    }
+
+    visualizerCloseButtonRef.current?.focus();
+  }, [selectedVisualizer]);
+
+  useEffect(() => {
+    if (!selectedVisualizer) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeVisualizerOverlay();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeVisualizerOverlay, selectedVisualizer]);
 
   const handleAddToBookmarks = useCallback(() => {
     try {
@@ -1237,17 +1294,45 @@ const MainExperience = () => {
           onClose={() => setShowPickerHint(false)}
         />
         {!interfaceHidden && catalogVisible && (
-          <VisualizersCatalog
-            activeCategory={visualizersCategory}
-            language={activeLanguage}
-            translation={getText}
-            onSelectCategory={(category) => {
-              setVisualizersCategory(category);
-            }}
-            onSelectVisualizer={handleVisualizerOpen}
-          />
+          <div ref={catalogContainerRef}>
+            <VisualizersCatalog
+              activeCategory={visualizersCategory}
+              language={activeLanguage}
+              translation={getText}
+              onSelectCategory={(category) => {
+                setVisualizersCategory(category);
+              }}
+              onSelectVisualizer={handleVisualizerOpen}
+            />
+          </div>
         )}
       </div>
+      {selectedVisualizer && (
+        <div className="visualizer-inline-overlay">
+          <div
+            className="visualizer-inline-overlay__backdrop"
+            role="presentation"
+            onClick={closeVisualizerOverlay}
+          />
+          <div
+            className="visualizer-inline-overlay__content"
+            role="dialog"
+            aria-modal="true"
+            aria-label={getText("visualizers")}
+          >
+            <button
+              ref={visualizerCloseButtonRef}
+              type="button"
+              className="visualizer-inline-overlay__close"
+              onClick={closeVisualizerOverlay}
+              aria-label={getText("close")}
+            >
+              <i className="material-symbols-outlined">close</i>
+            </button>
+            <VisualizerDetail key={selectedVisualizer} slug={selectedVisualizer} />
+          </div>
+        </div>
+      )}
     </HelmetProvider>
   );
 };
