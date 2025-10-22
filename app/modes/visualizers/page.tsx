@@ -1,4 +1,4 @@
-import VisualizersCatalog from '@/components/screensavy/VisualizersCatalog';
+import { VisualizersCatalogStandalone } from '@/components/screensavy/VisualizersCatalog';
 import type { VisualizerCategory } from '@/lib/visualizers';
 
 type PageProps = {
@@ -17,5 +17,5 @@ export default function VisualizersPage({ searchParams }: PageProps) {
     ? categoryParam
     : undefined;
 
-  return <VisualizersCatalog initialCategory={initialCategory} />;
+  return <VisualizersCatalogStandalone initialCategory={initialCategory} />;
 }
