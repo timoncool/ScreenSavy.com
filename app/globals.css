@@ -541,6 +541,7 @@ body::-webkit-scrollbar {
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
 }
 .menu-item:hover {
   background: rgba(255, 255, 255, 0.1);
@@ -1716,6 +1717,7 @@ body::-webkit-scrollbar {
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
 }
 .menu-item:hover {
   background: rgba(255, 255, 255, 0.1);
