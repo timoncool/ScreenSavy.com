@@ -657,9 +657,66 @@ const TextModeExperience = () => {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedHex = localStorage.getItem("screensavy-text-color");
+    if (storedHex) {
+      setCurrentHex(storedHex);
+      const parsed = hexToRgb(storedHex);
+      if (parsed) {
+        setRgb(parsed);
+      }
+    }
+
+    const storedRgb = localStorage.getItem("screensavy-text-rgb");
+    if (storedRgb) {
+      try {
+        const parsed = JSON.parse(storedRgb) as Rgb;
+        if (
+          typeof parsed?.r === "number" &&
+          typeof parsed?.g === "number" &&
+          typeof parsed?.b === "number"
+        ) {
+          setRgb(parsed);
+          setCurrentHex(rgbToHex(parsed));
+        }
+      } catch (error) {
+        console.warn("Failed to parse stored text RGB", error);
+      }
+    }
+
+    const storedFavorites = localStorage.getItem("screensavy-text-favorites");
+    if (storedFavorites) {
+      try {
+        const parsed = JSON.parse(storedFavorites);
+        if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+          setFavorites(parsed);
+        }
+      } catch (error) {
+        console.warn("Failed to parse stored text favorites", error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (languageSetting !== "auto") return;
     setDetectedLanguage(detectBrowserLanguage());
   }, [languageSetting]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("screensavy-text-color", currentHex);
+  }, [currentHex]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("screensavy-text-rgb", JSON.stringify(rgb));
+  }, [rgb]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("screensavy-text-favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
   useEffect(() => {
     if (!activeModes.includes("colorChange") || favorites.length <= 1) {
@@ -1042,8 +1099,8 @@ const TextModeExperience = () => {
 
   const backgroundStyle: React.CSSProperties = {
     backgroundColor: currentHex,
-    height: "100vh",
-    width: "100vw",
+    minHeight: "100vh",
+    width: "100%",
     position: "relative",
     overflow: "hidden",
     transition: "background-color 0.3s ease",
@@ -1153,23 +1210,26 @@ const TextModeExperience = () => {
             })}
           </div>
         </div>
-        <div
-          className="right-buttons"
-          style={{
-            opacity: interfaceHidden ? 0 : 1,
-            pointerEvents: interfaceHidden ? "none" : "auto",
-          }}
-        >
-          <IconButton
-            icon={isFullscreen ? "fullscreen_exit" : "fullscreen"}
-            onClick={toggleFullscreen}
-            title={getText(isFullscreen ? "exitFullscreen" : "fullscreen")}
-          />
+        <div className="right-buttons">
+          <div
+            className="right-buttons-group"
+            style={{
+              opacity: interfaceHidden ? 0 : 1,
+              pointerEvents: interfaceHidden ? "none" : "auto",
+            }}
+          >
+            <IconButton
+              icon={isFullscreen ? "fullscreen_exit" : "fullscreen"}
+              onClick={toggleFullscreen}
+              title={getText(isFullscreen ? "exitFullscreen" : "fullscreen")}
+            />
+          </div>
           <IconButton
             icon={interfaceHidden ? "lightbulb" : "light_off"}
             onClick={() => setInterfaceHidden((value) => !value)}
             title={getText(interfaceHidden ? "showInterface" : "hideInterface")}
             active={interfaceHidden}
+            className={interfaceHidden ? "interface-toggle--inactive" : undefined}
           />
         </div>
         {menuOpen && (

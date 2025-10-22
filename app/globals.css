@@ -1,5 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Roboto+Mono:wght@400;700&display=swap");
 
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  overflow: hidden;
+  background: #000;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 * {
   box-sizing: border-box;
   font-family: "Inter", system-ui, sans-serif;
@@ -325,6 +339,18 @@
 .icon-button.active {
   background: rgba(255, 255, 255, 0.3);
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+}
+.right-buttons-group {
+  display: flex;
+  gap: 10px;
+}
+.icon-button.interface-toggle--inactive {
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0.4;
+}
+.icon-button.interface-toggle--inactive:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.25);
 }
 .hex-input-container {
   display: flex;
