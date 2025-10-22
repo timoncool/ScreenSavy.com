@@ -86,6 +86,7 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
           height: "100%",
           border: "none",
           zIndex: 0,
+          pointerEvents: "none",
         }}
         srcDoc={htmlContent}
         title="Visualizer"
@@ -98,13 +99,10 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
           left: 0,
           width: "100%",
           height: "100%",
-          zIndex: 10,
-          pointerEvents: "none",
+          zIndex: 1,
         }}
       >
-        <div style={{ pointerEvents: "auto", width: "100%", height: "100%" }}>
-          <MainExperience visualizerMode={true} />
-        </div>
+        <MainExperience visualizerMode={true} />
       </div>
     </div>
   );

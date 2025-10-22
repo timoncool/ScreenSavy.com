@@ -900,7 +900,6 @@ const MainExperience = ({ visualizerMode = false }: MainExperienceProps = {}) =>
     cursor: pickerActive ? "crosshair" : "default",
     fontFamily:
       "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
-    pointerEvents: visualizerMode ? ("none" as const) : ("auto" as const),
   };
 
   return (
