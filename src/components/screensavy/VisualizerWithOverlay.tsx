@@ -86,7 +86,6 @@ const VisualizerWithOverlay = ({ slug }: VisualizerWithOverlayProps) => {
           height: "100%",
           border: "none",
           zIndex: 0,
-          pointerEvents: "none",
         }}
         srcDoc={htmlContent}
         title="Visualizer"
