@@ -633,8 +633,8 @@ const MainExperience = () => {
 
   const backgroundStyle = {
     backgroundColor: currentHex,
-    height: "100vh",
-    width: "100vw",
+    minHeight: "100vh",
+    width: "100%",
     position: "relative" as const,
     overflow: "hidden",
     transition: "background-color 0.3s ease",
