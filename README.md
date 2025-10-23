@@ -10,9 +10,9 @@
 
 ---
 
-## 🎨 What is ScreenSavy?
+## 🎨 What is ScreenSavy.com?
 
-ScreenSavy is a modern web application that transforms any display into a dynamic ambient screen. Whether you're setting the mood for a movie night, calibrating monitor colors, creating backgrounds for photography, or simply want a beautiful clock display, ScreenSavy provides an elegant, browser-based solution that works on any device.
+ScreenSavy.com is a modern web application that transforms any display into a dynamic ambient screen. Whether you're setting the mood for a movie night, calibrating monitor colors, creating backgrounds for photography, or simply want a beautiful clock display, ScreenSavy.com provides an elegant, browser-based solution that works on any device.
 
 **Live Demo:** [https://www.screensavy.com/](https://www.screensavy.com/)
 
@@ -30,8 +30,6 @@ ScreenSavy is a modern web application that transforms any display into a dynami
 - RGB sliders with real-time preview
 - HEX color input with copy functionality
 - Shade variations for quick color exploration
-
-![RGB Panel](docs/screenshots/rgb-panel.png)
 
 **Color Transition Mode**
 - Create smooth animated transitions between your favorite colors
@@ -69,8 +67,6 @@ Features:
 - Text stroke/outline effects
 - Style presets (Neon, Classic, Minimal, Bold, Elegant)
 
-![Text Mode](docs/screenshots/text-mode.png)
-
 ### 🌌 Visualizers
 
 **Audio-Reactive Visualizers** (require microphone or system audio):
@@ -81,8 +77,6 @@ Features:
 **Ambient Visualizers** (no audio required):
 - **Lava Lamp**: Classic lava lamp simulation
 - **RGB Lava**: Colorful lava lamp with dynamic hues
-
-![Visualizer](docs/screenshots/visualizer-celestial.png)
 
 **Want to add your own visualizers?** Check out the [Custom Visualizers Guide](docs/CUSTOM_VISUALIZERS.md) to learn how to create and integrate your own visualizations.
 
@@ -208,7 +202,7 @@ ScreenSavy.com/
 
 ## 🎯 Use Cases
 
-ScreenSavy is perfect for:
+ScreenSavy.com is perfect for:
 
 - **Home Theater**: Set ambient lighting for movie nights
 - **Photography**: Create colored backgrounds for photo/video shoots
@@ -313,7 +307,7 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ## 💖 Support
 
-If you find ScreenSavy useful, please:
+If you find ScreenSavy.com useful, please:
 - ⭐ Star the repository
 - 🐛 Report bugs and suggest features via [Issues](https://github.com/timoncool/ScreenSavy.com/issues)
 - 📢 Share with others who might find it useful
