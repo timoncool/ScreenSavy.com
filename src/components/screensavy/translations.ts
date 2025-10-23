@@ -72,7 +72,7 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
   ru: {
     welcome: 'Добро пожаловать в ScreenSavy.com!',
     welcomeMessage:
-      'ScreenSavy.com - это инструмент для создания красивого фона и заставки на экране. У нас есть несколько режимов работы:\n\n• Один цвет - выберите цвет для всего экрана, идеально для проверки монитора или создания атмосферы\n\n• Смена цветов - плавное переключение между избранными цветами с настройкой скорости\n\n• Часы - отображение текущего времени разными стилями\n\nВы можете выбирать цвета с помощью RGB панели, добавлять их в избранное, использовать режим пикера, включить полноэкранный режим или скрыть интерфейс для полного погружения.',
+      'ScreenSavy.com — это инструмент для создания красивого фона и заставки на экране. У нас есть режимы:\n\n• Один цвет — мгновенно задаёт единый оттенок для всего экрана\n\n• Смена цветов — плавные переходы между избранными цветами с регулировкой скорости\n\n• Часы — отображение времени в минималистичном, полном и современном стилях\n\n• Текст — создавайте надписи, выбирайте шрифты, цвета, размеры и пресеты оформления\n\n• Видеоплеер — запускайте любимые ролики прямо в заставке\n\n• Анимации — коллекция динамичных сцен для расслабления и вдохновения\n\n• Визуализаторы — аудио и эмбиент эффекты, включая новые моды с интегрированными сценами\n\n• Добавить свою — подключайте собственные сцены и визуалы\n\nИспользуйте RGB-панель, пипетку и палитру оттенков; сохраняйте цвета в избранное, сортируйте и очищайте подборки; закрепляйте любимые режимы в быстром доступе, включайте полноэкранный режим, скрывайте интерфейс и подсказки и переключайтесь между аудио и эмбиент визуализаторами через обновлённое меню.',
     close: 'Закрыть',
     got_it: 'Понятно',
     oneColor: 'Один цвет',
@@ -141,7 +141,7 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
   en: {
     welcome: 'Welcome to ScreenSavy.com!',
     welcomeMessage:
-      'ScreenSavy.com is a tool for creating beautiful screen backgrounds and screensavers. We have several working modes:\n\n• One Color - select a single color for your entire screen, perfect for monitor testing or creating atmosphere\n\n• Color Change - smooth transitions between your favorite colors with adjustable speed\n\n• Clock - display current time in different styles\n\nYou can select colors using the RGB panel, add them to favorites, use the picker mode, enable fullscreen, or hide the interface for complete immersion.',
+      'ScreenSavy.com is a toolkit for crafting beautiful backgrounds and screensavers. Explore our modes:\n\n• One Color — instantly fill the display with a single hue\n\n• Color Change — smooth transitions between favorite shades with adjustable speed\n\n• Clock — show the time in minimal, full, or modern layouts\n\n• Text — design captions with fonts, colors, sizes, and curated presets\n\n• Video Player — loop or play your favorite clips right in the scene\n\n• Animations — a collection of calming and inspiring motion backgrounds\n\n• Visualizers — audio-reactive and ambient effects, including new integrated scenes\n\n• Add Your Own — plug in custom scenes and visuals\n\nUse the RGB panel, picker, and shade palette for precise colors; save hues to favorites, sort and clear collections; pin preferred modes for quick access, toggle fullscreen, hide the interface and hints, and swap between audio and ambient visualizers through the refreshed menu.',
     close: 'Close',
     got_it: 'Got it',
     oneColor: 'One Color',
