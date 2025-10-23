@@ -987,23 +987,28 @@ const MainExperience = ({
 
     nextColorRef.current = next;
 
-    const stepDelay = getSpeedDelay(speed) / 100;
+    const totalDelay = getSpeedDelay(speed);
+    let totalSteps = Math.max(
+      Math.abs(next.r - current.r),
+      Math.abs(next.g - current.g),
+      Math.abs(next.b - current.b),
+      1,
+    );
+    let stepDelay = totalDelay / totalSteps;
+    let stepIndex = Math.round(transitionProgressRef.current * totalSteps);
+    if (stepIndex >= totalSteps) {
+      stepIndex = 0;
+      transitionProgressRef.current = 0;
+    }
 
     const step = () => {
-      transitionProgressRef.current += 0.01;
-      if (transitionProgressRef.current >= 1) {
-        transitionIndexRef.current =
-          (transitionIndexRef.current + 1) % favorites.length;
-        current = hexToRgb(favorites[transitionIndexRef.current]) ?? current;
-        next =
-          hexToRgb(
-            favorites[(transitionIndexRef.current + 1) % favorites.length],
-          ) ?? next;
-        transitionProgressRef.current = 0;
-        nextColorRef.current = next;
+      stepIndex += 1;
+      let progress = stepIndex / totalSteps;
+      if (progress > 1) {
+        progress = 1;
       }
 
-      const progress = transitionProgressRef.current;
+      transitionProgressRef.current = progress;
       if (!current || !next) {
         return;
       }
@@ -1015,6 +1020,27 @@ const MainExperience = ({
 
       setRgb(interpolated);
       setCurrentHex(rgbToHex(interpolated));
+
+      if (progress >= 1) {
+        transitionIndexRef.current =
+          (transitionIndexRef.current + 1) % favorites.length;
+        current = hexToRgb(favorites[transitionIndexRef.current]) ?? current;
+        next =
+          hexToRgb(
+            favorites[(transitionIndexRef.current + 1) % favorites.length],
+          ) ?? next;
+        nextColorRef.current = next;
+
+        totalSteps = Math.max(
+          Math.abs(next.r - current.r),
+          Math.abs(next.g - current.g),
+          Math.abs(next.b - current.b),
+          1,
+        );
+        stepDelay = totalDelay / totalSteps;
+        stepIndex = 0;
+        transitionProgressRef.current = 0;
+      }
 
       colorChangeTimerRef.current = setTimeout(step, stepDelay);
     };
