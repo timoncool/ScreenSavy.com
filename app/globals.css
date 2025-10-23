@@ -1282,10 +1282,11 @@ body::-webkit-scrollbar {
   position: absolute;
   background: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 10px 15px;
+  padding: 12px 18px;
   border-radius: 10px;
   font-size: 14px;
-  max-width: 300px;
+  min-width: 220px;
+  max-width: 320px;
   backdrop-filter: blur(5px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   z-index: 50;
@@ -1689,16 +1690,21 @@ body::-webkit-scrollbar {
 }
 .font-select {
   width: 100%;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.85);
   border: none;
   border-radius: 6px;
   padding: 8px 12px;
-  color: white;
+  color: #1a1633;
   font-size: 14px;
   cursor: pointer;
 }
 .font-select:focus {
   outline: none;
+  background: rgba(255, 255, 255, 0.95);
+}
+.font-select option {
+  color: #1a1633;
+  background-color: #f5f5fb;
 }
 
 .stroke-controls {
@@ -2279,10 +2285,11 @@ body::-webkit-scrollbar {
   position: absolute;
   background: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 10px 15px;
+  padding: 12px 18px;
   border-radius: 10px;
   font-size: 14px;
-  max-width: 300px;
+  min-width: 220px;
+  max-width: 320px;
   backdrop-filter: blur(5px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   z-index: 50;
