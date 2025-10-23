@@ -39,6 +39,24 @@ _Support the project: [endorse the ProductRadar listing](https://productradar.ru
 - **State & storage** – Client-side React state with localStorage persistence for favorites, UI preferences, and animation settings.
 - **Internationalization** – Built-in Russian and English translations with automatic browser language detection.
 
+## Portable Windows release
+
+ScreenSavy ships with two helper scripts — `start.bat` and `update.bat` — that allow you to bundle the app together with a portable copy of Node.js for Windows users. The scripts live in the repository root and expect the following structure inside the release archive:
+
+```text
+ScreenSavy.com-portable/
+├─ node/          (portable Node.js extracted from the official ZIP)
+├─ .next/         (prebuilt production output)
+├─ node_modules/  (dependencies installed with `npm install --omit=dev`)
+├─ start.bat      (launches the local Next.js server)
+└─ update.bat     (downloads or pulls the latest project version)
+```
+
+* `start.bat` looks for the portable runtime in `node/`, installs dependencies on the first run if they are missing, builds the production bundle when necessary, and then starts the server at `http://127.0.0.1:3000` while launching the default browser.
+* `update.bat` works both with Git clones and clean portable folders. It either executes `git pull` or downloads the latest ZIP from GitHub, reinstalls dependencies, removes the stale `.next` folder, and rebuilds the app.
+
+See [`docs/PORTABLE_RELEASE.md`](docs/PORTABLE_RELEASE.md) for the full, step-by-step checklist that the release maintainer can follow to produce the archive that gets published on the Releases page.
+
 ## Project Structure
 
 ```
