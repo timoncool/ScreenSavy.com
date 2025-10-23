@@ -430,18 +430,23 @@ export const ShadesPanel = ({
           shadeSets.baseHexShades,
           shadeSets.saturationHexShades,
           shadeSets.adjacentHexShades,
-        ].map((row, rowIndex) => (
-          <div className="shade-row" key={`row-${rowIndex}`}>
-            {row.map((shade, index) => (
-              <div
-                key={`${rowIndex}-${index}`}
-                className="shade-box"
-                style={{ backgroundColor: shade }}
-                onClick={() => onSelectShade(shade)}
+        ].map((row, rowIndex) => {
+          const displayRow =
+            rowIndex === 1 ? [...row].reverse() : row;
+
+          return (
+            <div className="shade-row" key={`row-${rowIndex}`}>
+              {displayRow.map((shade, index) => (
+                <div
+                  key={`${rowIndex}-${index}`}
+                  className="shade-box"
+                  style={{ backgroundColor: shade }}
+                  onClick={() => onSelectShade(shade)}
               />
-            ))}
-          </div>
-        ))}
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
