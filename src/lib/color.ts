@@ -101,7 +101,7 @@ export const generateShadeSets = (color: Rgb) => {
   });
 
   const saturationHexShades = Array.from({ length: 8 }, (_, index) => {
-    const s = 0.1 + (index * 0.9) / 7;
+    const s = 0.1 + ((7 - index) * 0.9) / 7;
     return rgbToHex(hslToRgb(hue, s, lightness));
   });
 
