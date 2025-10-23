@@ -1477,7 +1477,7 @@ const MainExperience = ({
           languageSetting={languageSetting}
           detected={detectedLanguage}
         />
-        {!visualizerMode && activeModes.includes("clock") && !interfaceHidden && (
+        {!visualizerMode && activeModes.includes("clock") && (
           <Clock clockStyle={clockStyle} language={activeLanguage} />
         )}
         {!visualizerMode && activeModes.includes("text") && (
