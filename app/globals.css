@@ -1272,12 +1272,6 @@ body::-webkit-scrollbar {
   opacity: 0.7;
   transition: opacity 0.2s;
 }
-.speed-icon.slow {
-  opacity: $;
-}
-.speed-icon.fast {
-  opacity: $;
-}
 .hint {
   position: absolute;
   background: rgba(0, 0, 0, 0.7);
@@ -1548,7 +1542,7 @@ body::-webkit-scrollbar {
   background: rgba(255, 255, 255, 0.3);
 }
 .clean-button {
-  opacity: $;
+  opacity: 0.7;
   transition: opacity 0.3s ease;
 }
 .clean-button:hover {
@@ -2275,12 +2269,6 @@ body::-webkit-scrollbar {
   opacity: 0.7;
   transition: opacity 0.2s;
 }
-.speed-icon.slow {
-  opacity: $;
-}
-.speed-icon.fast {
-  opacity: $;
-}
 .hint {
   position: absolute;
   background: rgba(0, 0, 0, 0.7);
@@ -2470,7 +2458,7 @@ body::-webkit-scrollbar {
   background: rgba(255, 255, 255, 0.3);
 }
 .clean-button {
-  opacity: $;
+  opacity: 0.7;
   transition: opacity 0.3s ease;
 }
 .clean-button:hover {
