@@ -118,9 +118,9 @@ export const generateShadeSets = (color: Rgb) => {
 };
 
 export const SPEED_MIN = 0;
-export const SPEED_MAX = 10;
+export const SPEED_MAX = 100;
 
-const SLOWEST_DELAY = 15000;
+const SLOWEST_DELAY = 60000;
 const FASTEST_DELAY = 500;
 
 export const getSpeedDelay = (speed: number) => {
