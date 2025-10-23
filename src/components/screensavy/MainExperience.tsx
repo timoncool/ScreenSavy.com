@@ -160,7 +160,13 @@ const STYLE_PRESETS: Record<
 
 const fontOptions = Object.keys(fontFamilies);
 
-const DEFAULT_SPEED = Math.max(SPEED_MIN, SPEED_MAX - 2);
+const SPEED_RANGE = SPEED_MAX - SPEED_MIN;
+const DEFAULT_SPEED_RATIO = 0.65;
+const DEFAULT_SPEED = Math.min(
+  SPEED_MAX,
+  Math.max(SPEED_MIN, SPEED_MIN + SPEED_RANGE * DEFAULT_SPEED_RATIO),
+);
+const SPEED_STORAGE_KEY = "screensavy-main-speed";
 
 const STYLE_PRESET_LABELS: Record<string, MainTranslationKey> = {
   neon: "presetNeon",
@@ -929,6 +935,14 @@ const MainExperience = ({
         console.warn("Failed to parse stored favorites", error);
       }
     }
+
+    const storedSpeed = localStorage.getItem(SPEED_STORAGE_KEY);
+    if (storedSpeed) {
+      const parsed = Number(storedSpeed);
+      if (!Number.isNaN(parsed)) {
+        setSpeed(Math.min(Math.max(parsed, SPEED_MIN), SPEED_MAX));
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -950,6 +964,11 @@ const MainExperience = ({
     if (typeof window === "undefined") return;
     localStorage.setItem("screensavy-main-favorites", JSON.stringify(favorites));
   }, [favorites]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(SPEED_STORAGE_KEY, String(speed));
+  }, [speed]);
 
   useEffect(() => {
     if (!activeModes.includes("colorChange") || favorites.length <= 1) {
@@ -1458,7 +1477,7 @@ const MainExperience = ({
           languageSetting={languageSetting}
           detected={detectedLanguage}
         />
-        {!visualizerMode && activeModes.includes("clock") && !interfaceHidden && (
+        {!visualizerMode && activeModes.includes("clock") && (
           <Clock clockStyle={clockStyle} language={activeLanguage} />
         )}
         {!visualizerMode && activeModes.includes("text") && (

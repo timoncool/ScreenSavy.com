@@ -247,8 +247,8 @@ export type SpeedControlProps = {
 };
 
 const SPEED_RANGE = SPEED_MAX - SPEED_MIN;
-const LOW_SPEED_THRESHOLD = SPEED_MIN + 3;
-const HIGH_SPEED_THRESHOLD = SPEED_MAX - 2;
+const LOW_SPEED_THRESHOLD = SPEED_MIN + SPEED_RANGE * 0.3;
+const HIGH_SPEED_THRESHOLD = SPEED_MAX - SPEED_RANGE * 0.2;
 
 export const SpeedControl = ({ speed, onChange }: SpeedControlProps) => {
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -263,7 +263,8 @@ export const SpeedControl = ({ speed, onChange }: SpeedControlProps) => {
         Math.max((clientX - rect.left) / rect.width, 0),
         1,
       );
-      const nextSpeed = Math.round(ratio * SPEED_RANGE) + SPEED_MIN;
+      const rawSpeed = SPEED_MIN + ratio * SPEED_RANGE;
+      const nextSpeed = Math.round(rawSpeed * 10) / 10;
       onChange(nextSpeed);
     },
     [onChange],
