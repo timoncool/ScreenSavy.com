@@ -598,8 +598,9 @@ export const AboutModal = ({
               src="/favicon.svg"
               alt="ScreenSavy Logo"
               className="logo-image"
-              width={24}
-              height={24}
+              width={32}
+              height={32}
+              style={{ background: 'white', borderRadius: '50%', padding: '4px' }}
             />
             <h2>{translation("aboutTitle")}</h2>
           </div>
