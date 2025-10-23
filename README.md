@@ -1,4 +1,5 @@
-# ScreenSavy
+# ScreenSavy.com
+
 
 **Transform any display into a beautiful ambient screen**
 
