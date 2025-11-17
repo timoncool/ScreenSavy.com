@@ -850,13 +850,7 @@ const MainExperience = ({
       if (typeof parsed.aboutOpen === "boolean") {
         setAboutOpen(parsed.aboutOpen);
       }
-      if (
-        parsed.clockStyle === "modern" ||
-        parsed.clockStyle === "full" ||
-        parsed.clockStyle === "minimal"
-      ) {
-        setClockStyle(parsed.clockStyle);
-      }
+      // clockStyle is now handled by useLocalStorage, not MAIN_UI
       if (typeof parsed.textOptionsOpen === "boolean" && !initialMode) {
         setTextOptionsOpen(parsed.textOptionsOpen);
       }
@@ -865,7 +859,7 @@ const MainExperience = ({
     } finally {
       setUiHydrated(true);
     }
-  }, [initialMode, setClockStyle]);
+  }, [initialMode]);
 
   const getText = useCallback(
     (key: MainTranslationKey) =>
@@ -1033,7 +1027,6 @@ const MainExperience = ({
       menuOpen,
       hintsEnabled,
       aboutOpen,
-      clockStyle,
       textOptionsOpen,
     };
 
@@ -1044,7 +1037,6 @@ const MainExperience = ({
       uiState.menuOpen === MAIN_UI_DEFAULTS.menuOpen &&
       uiState.hintsEnabled === MAIN_UI_DEFAULTS.hintsEnabled &&
       uiState.aboutOpen === MAIN_UI_DEFAULTS.aboutOpen &&
-      uiState.clockStyle === MAIN_UI_DEFAULTS.clockStyle &&
       uiState.textOptionsOpen === MAIN_UI_DEFAULTS.textOptionsOpen;
 
     if (isDefault) {
@@ -1057,7 +1049,6 @@ const MainExperience = ({
     }
   }, [
     aboutOpen,
-    clockStyle,
     hintsEnabled,
     menuOpen,
     showFavorites,
