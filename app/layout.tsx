@@ -46,7 +46,7 @@ export default function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Oswald:wght@300;400;700&family=Raleway:wght@300;400;700&family=Lobster&family=Pacifico&family=Dancing+Script:wght@400;700&family=Caveat:wght@400;700&family=Bebas+Neue&family=Comfortaa:wght@300;400;700&family=Unbounded:wght@300;400;700&family=Russo+One&family=Philosopher:wght@400;700&family=PT+Sans:wght@400;700&family=Amatic+SC:wght@400;700&family=Bad+Script&family=El+Messiri:wght@400;700&family=Neucha&family=Marck+Script&family=Poiret+One&family=Press+Start+2P&family=Kelly+Slab&family=Yeseva+One&display=swap"
         />
       </head>
       <body className={inter.className}>{children}</body>
