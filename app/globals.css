@@ -1696,7 +1696,7 @@ body::-webkit-scrollbar {
   border-radius: 6px;
   padding: 8px 12px;
   color: #1a1633;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
 }
 .font-select:focus {
@@ -1706,6 +1706,9 @@ body::-webkit-scrollbar {
 .font-select option {
   color: #1a1633;
   background-color: #f5f5fb;
+  padding: 8px 12px;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .stroke-controls {

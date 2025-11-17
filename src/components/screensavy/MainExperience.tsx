@@ -444,9 +444,14 @@ const TextOptionsPanel = memo(({
           value={fontFamily}
           onChange={(event) => onFontFamilyChange(event.target.value)}
           className="font-select"
+          style={{ fontFamily: fontFamilies[fontFamily] ?? "'Inter', sans-serif" }}
         >
           {fontOptions.map((font) => (
-            <option key={font} value={font}>
+            <option
+              key={font}
+              value={font}
+              style={{ fontFamily: fontFamilies[font] ?? "'Inter', sans-serif" }}
+            >
               {font}
             </option>
           ))}
