@@ -646,6 +646,12 @@ export const AboutModal = ({
             </a>
           ))}
         </div>
+        <div className="version-info">
+          <small>
+            {translation("version")}: {process.env.NEXT_PUBLIC_GIT_COMMIT_HASH || 'dev'}
+            {process.env.NEXT_PUBLIC_GIT_COMMIT_DATE && ` (${process.env.NEXT_PUBLIC_GIT_COMMIT_DATE})`}
+          </small>
+        </div>
         <button type="button" className="modal-button" onClick={onClose}>
           {translation("close")}
         </button>

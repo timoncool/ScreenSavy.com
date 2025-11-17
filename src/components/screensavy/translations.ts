@@ -66,7 +66,8 @@ export type MainTranslationKey =
   | 'presetNature'
   | 'presetRomantic'
   | 'presetRetro'
-  | 'presetCyber';
+  | 'presetCyber'
+  | 'version';
 
 export const mainTranslations: Record<Language, Record<MainTranslationKey, string>> = {
   ru: {
@@ -136,7 +137,8 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     presetNature: 'Природа',
     presetRomantic: 'Романтика',
     presetRetro: 'Ретро',
-    presetCyber: 'Кибер'
+    presetCyber: 'Кибер',
+    version: 'Версия'
   },
   en: {
     welcome: 'Welcome to ScreenSavy.com!',
@@ -205,7 +207,8 @@ export const mainTranslations: Record<Language, Record<MainTranslationKey, strin
     presetNature: 'Nature',
     presetRomantic: 'Romantic',
     presetRetro: 'Retro',
-    presetCyber: 'Cyber'
+    presetCyber: 'Cyber',
+    version: 'Version'
   }
 };
 
