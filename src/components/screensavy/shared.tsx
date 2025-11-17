@@ -612,7 +612,7 @@ export const AboutModal = ({
           </button>
         </div>
         <div
-          dangerouslySetInnerHTML={{ __html: translation("aboutDescription") }}
+          dangerouslySetInnerHTML={{ __html: require('isomorphic-dompurify').sanitize(translation("aboutDescription")) }}
         />
         <div className="author-block">
           <h3>{translation("author")}</h3>

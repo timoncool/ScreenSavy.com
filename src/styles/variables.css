@@ -1,0 +1,236 @@
+/**
+ * CSS Custom Properties (Variables)
+ * Централизованная система для всех цветов, размеров и настроек
+ *
+ * PERFORMANCE: Использование CSS переменных позволяет обновлять цвет
+ * без перерисовки React компонентов - браузер обрабатывает изменения напрямую
+ */
+
+:root {
+  /* ==================== COLOR SYSTEM ==================== */
+
+  /* Основной цвет фона - обновляется через JavaScript для плавных переходов */
+  --screensavy-bg-color: #5508FD;
+
+  /* RGB компоненты для использования с alpha */
+  --screensavy-bg-r: 85;
+  --screensavy-bg-g: 8;
+  --screensavy-bg-b: 253;
+
+  /* Адаптивный цвет текста (автоматически white/black) */
+  --screensavy-text-color: rgba(255, 255, 255, 0.9);
+  --screensavy-text-secondary: rgba(255, 255, 255, 0.7);
+  --screensavy-text-tertiary: rgba(255, 255, 255, 0.5);
+
+  /* UI элементы */
+  --ui-surface: rgba(0, 0, 0, 0.2);
+  --ui-surface-hover: rgba(0, 0, 0, 0.3);
+  --ui-surface-active: rgba(255, 255, 255, 0.15);
+  --ui-glass: rgba(255, 255, 255, 0.15);
+  --ui-glass-strong: rgba(255, 255, 255, 0.25);
+  --ui-border: rgba(255, 255, 255, 0.1);
+  --ui-border-hover: rgba(255, 255, 255, 0.2);
+
+  /* ==================== SPACING SYSTEM ==================== */
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 40px;
+
+  /* ==================== TYPOGRAPHY ==================== */
+
+  --font-family-base: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+                      "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-family-mono: "Roboto Mono", "Courier New", monospace;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 32px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* ==================== Z-INDEX LAYERS ==================== */
+
+  --z-background: 0;
+  --z-content: 5;
+  --z-shades: 20;
+  --z-speed-control: 25;
+  --z-rgb-panel: 30;
+  --z-clock-controls: 40;
+  --z-toolbar: 50;
+  --z-menu: 100;
+  --z-welcome: 200;
+  --z-modal: 1000;
+  --z-visualizer: 1200;
+
+  /* ==================== BORDER RADIUS ==================== */
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 15px;
+  --radius-2xl: 20px;
+  --radius-round: 50%;
+  --radius-pill: 999px;
+
+  /* ==================== SHADOWS ==================== */
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.25);
+  --shadow-2xl: 0 16px 60px rgba(0, 0, 0, 0.35);
+
+  /* ==================== BLUR ==================== */
+
+  --blur-light: blur(5px);
+  --blur-medium: blur(10px);
+  --blur-heavy: blur(20px);
+
+  /* ==================== TRANSITIONS ==================== */
+
+  /* Durations */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+
+  /* Timing functions */
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Combined transitions */
+  --transition-fast: var(--duration-fast) var(--ease-standard);
+  --transition-normal: var(--duration-normal) var(--ease-standard);
+  --transition-slow: var(--duration-slow) var(--ease-standard);
+
+  /* ==================== BUTTONS ==================== */
+
+  --button-size: 44px;
+  --button-padding: var(--space-lg) var(--space-2xl);
+  --button-bg: var(--ui-glass);
+  --button-bg-hover: var(--ui-glass-strong);
+  --button-bg-active: rgba(255, 255, 255, 0.3);
+
+  /* ==================== PANELS ==================== */
+
+  --panel-bg: var(--ui-surface);
+  --panel-padding: var(--space-xl);
+  --panel-radius: var(--radius-xl);
+  --panel-backdrop: var(--blur-medium);
+
+  /* ==================== SHADES PANEL ==================== */
+
+  --shades-height: 80px;
+  --shades-rows: 3;
+  --shades-cols: 8;
+
+  /* ==================== TEXT MODE ==================== */
+
+  --text-small: 3vw;
+  --text-medium: 6vw;
+  --text-large: 10vw;
+
+  /* ==================== CLOCK MODE ==================== */
+
+  --clock-size-modern: 8vw;
+  --clock-size-full: 7vw;
+  --clock-size-minimal: 8vw;
+  --clock-color: rgba(255, 255, 255, 0.85);
+
+  /* ==================== ANIMATIONS ==================== */
+
+  /* Продолжительность для различных эффектов */
+  --anim-fade: var(--duration-normal);
+  --anim-slide: var(--duration-normal);
+  --anim-scale: var(--duration-fast);
+  --anim-rotate: var(--duration-slow);
+
+  /* ==================== RESPONSIVE ==================== */
+
+  /* Breakpoints (для использования с @media) */
+  --breakpoint-mobile: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1440px;
+
+  /* ==================== ACCESSIBILITY ==================== */
+
+  /* Размеры для accessibility (WCAG)  */
+  --min-touch-target: 44px;
+  --min-text-size: 16px;
+  --accessible-contrast: 7; /* WCAG AAA */
+
+  /* ==================== PERFORMANCE OPTIMIZATIONS ==================== */
+
+  /* Использование этих переменных с will-change для оптимизации */
+  --will-change-transform: transform;
+  --will-change-opacity: opacity;
+  --will-change-color: background-color;
+}
+
+/* ==================== DARK MODE OVERRIDES ==================== */
+/* (На случай если понадобится) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Уже темная тема по умолчанию */
+  }
+}
+
+/* ==================== REDUCED MOTION ==================== */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-slower: 0ms;
+
+    --anim-fade: 0ms;
+    --anim-slide: 0ms;
+    --anim-scale: 0ms;
+    --anim-rotate: 0ms;
+  }
+}
+
+/* ==================== HIGH CONTRAST ==================== */
+@media (prefers-contrast: more) {
+  :root {
+    --ui-glass: rgba(255, 255, 255, 0.3);
+    --ui-glass-strong: rgba(255, 255, 255, 0.4);
+    --ui-border: rgba(255, 255, 255, 0.4);
+    --screensavy-text-color: rgba(255, 255, 255, 1);
+  }
+}
+
+/* ==================== MOBILE OPTIMIZATIONS ==================== */
+@media (max-width: 768px) {
+  :root {
+    --button-size: 40px;
+    --panel-padding: var(--space-md);
+    --shades-height: 60px;
+  }
+}
+
+/* ==================== SAFE AREAS (для устройств с вырезами) ==================== */
+:root {
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-right: env(safe-area-inset-right);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+  --safe-area-left: env(safe-area-inset-left);
+}

@@ -82,7 +82,7 @@ const VisualizerExperience = ({ slug }: VisualizerExperienceProps) => {
         padding: 0,
         overflow: "hidden",
       }}
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
+      dangerouslySetInnerHTML={{ __html: require('isomorphic-dompurify').sanitize(htmlContent) }}
     />
   );
 };

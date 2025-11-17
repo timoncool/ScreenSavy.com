@@ -11,6 +11,10 @@ yarn-error.log*
 pnpm-debug.log*
 .DS_Store
 
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
 # Legacy build artifacts
 main_script.js
 text_mode_script.js
