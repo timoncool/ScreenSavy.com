@@ -17,7 +17,6 @@ import {
   getSpeedDelay,
   hexToRgb,
   rgbToHex,
-  getAccessibleTextColor,
   type Rgb,
 } from "@/lib/color";
 import { STORAGE_KEY, DEFAULTS } from "@/lib/constants";
@@ -192,12 +191,6 @@ type ClockProps = {
 const Clock = memo(({ clockStyle, language, backgroundColor }: ClockProps) => {
   const [now, setNow] = useState(() => new Date());
 
-  // Get WCAG-compliant text color
-  const textColor = useMemo(() => {
-    const accessibleColor = getAccessibleTextColor(backgroundColor);
-    return rgbToHex(accessibleColor);
-  }, [backgroundColor]);
-
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
@@ -213,7 +206,7 @@ const Clock = memo(({ clockStyle, language, backgroundColor }: ClockProps) => {
 
   if (clockStyle === "modern") {
     return (
-      <div className="clock modern" style={{ color: textColor }}>
+      <div className="clock modern">
         <div className="time">
           {hours}
           <span className="blink">:</span>
@@ -225,7 +218,7 @@ const Clock = memo(({ clockStyle, language, backgroundColor }: ClockProps) => {
 
   if (clockStyle === "full") {
     return (
-      <div className="clock full" style={{ color: textColor }}>
+      <div className="clock full">
         <div className="time-fixed-container">
           <div className="time-fixed">
             <span className="digit">{hours[0]}</span>
@@ -248,7 +241,7 @@ const Clock = memo(({ clockStyle, language, backgroundColor }: ClockProps) => {
 
   if (clockStyle === "minimal") {
     return (
-      <div className="clock minimal" style={{ color: textColor }}>
+      <div className="clock minimal">
         <div className="time">
           <span className="hours">{hours}</span>
           <span className="minutes">{minutes}</span>
@@ -817,18 +810,21 @@ const MainExperience = ({
   // const nextColorRef = useRef<Rgb | null>(null);
   const animationFrame = useAnimationFrame();
 
+  // Stable callback for color animation to prevent recreating the hook
+  const handleColorChange = useCallback((hex: string, rgbValue: Rgb) => {
+    // Sync animated color back to state for UI components
+    // Note: currentHex is now derived from rgb via useMemo, no need to set it
+    setRgb(rgbValue);
+    // localStorage is now handled by useLocalStorage hook
+  }, [setRgb]);
+
   // PERFORMANCE OPTIMIZATION: Use optimized color animation hook
   // This reduces re-renders from 510+ to ~10-20 per color transition
   const colorAnimation = useColorAnimation({
     favorites,
     speed,
     enabled: activeModes.includes("colorChange"),
-    onColorChange: (hex, rgbValue) => {
-      // Sync animated color back to state for UI components
-      // Note: currentHex is now derived from rgb via useMemo, no need to set it
-      setRgb(rgbValue);
-      // localStorage is now handled by useLocalStorage hook
-    },
+    onColorChange: handleColorChange,
   });
 
   useLayoutEffect(() => {
