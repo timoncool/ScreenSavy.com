@@ -859,7 +859,7 @@ const MainExperience = ({
     } finally {
       setUiHydrated(true);
     }
-  }, [initialMode, setClockStyle]);
+  }, [initialMode]);
 
   const getText = useCallback(
     (key: MainTranslationKey) =>
