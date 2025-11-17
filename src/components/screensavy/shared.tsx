@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import type { Rgb } from "@/lib/color";
 import {
   SPEED_MAX,
@@ -470,7 +471,7 @@ export const WelcomeNotification = ({
       <div className="welcome-content">
         <div className="welcome-icon">
           <div className="menu-logo-image">
-            <img
+            <Image
               src="/favicon.svg"
               alt="ScreenSavy Logo"
               width={24}
@@ -594,7 +595,7 @@ export const AboutModal = ({
       <div className="modal-content about-content">
         <div className="modal-header">
           <div className="modal-logo">
-            <img
+            <Image
               src="/favicon.svg"
               alt="ScreenSavy Logo"
               className="logo-image"

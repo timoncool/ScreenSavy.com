@@ -159,7 +159,8 @@ export function useColorAnimation({
     return () => {
       stopAnimation();
     };
-  }, [enabled, favorites, speed, startAnimation, stopAnimation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, favorites.length, speed]);
 
   // Cleanup при размонтировании
   useEffect(() => {

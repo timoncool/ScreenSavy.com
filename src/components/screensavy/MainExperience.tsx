@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   SPEED_MAX,
   SPEED_MIN,
@@ -883,7 +884,7 @@ const MainExperience = ({
     } finally {
       setUiHydrated(true);
     }
-  }, [initialMode]);
+  }, [initialMode, setClockStyle]);
 
   const getText = useCallback(
     (key: MainTranslationKey) =>
@@ -965,7 +966,7 @@ const MainExperience = ({
       element.removeEventListener("click", handleClick);
       animationFrame.cancel();
     };
-  }, [pickerActive, animationFrame]);
+  }, [pickerActive, animationFrame, setRgb]);
 
   useEffect(() => {
     if (!uiHydrated || typeof window === "undefined") {
@@ -1106,11 +1107,11 @@ const MainExperience = ({
     setFavorites((current) =>
       current.includes(currentHex) ? current : [...current, currentHex],
     );
-  }, [currentHex]);
+  }, [currentHex, setFavorites]);
 
   const handleRemoveFavorite = useCallback((hex: string) => {
     setFavorites((current) => current.filter((value) => value !== hex));
-  }, []);
+  }, [setFavorites]);
 
   const handleSelectFavorite = useCallback((hex: string) => {
     const parsed = hexToRgb(hex);
@@ -1186,7 +1187,7 @@ const MainExperience = ({
         ? [...current.filter((value) => value !== "oneColor"), mode]
         : [...current, mode];
     });
-  }, []);
+  }, [setActiveModes]);
 
   const toggleTextOptions = useCallback(() => {
     setTextOptionsOpen((open) => {
@@ -1204,7 +1205,7 @@ const MainExperience = ({
       }
       return !open;
     });
-  }, [activeModes, restoreColorChange]);
+  }, [activeModes, restoreColorChange, setActiveModes]);
 
   const handleTextChange = useCallback((value: string, caret: number | null) => {
     setTextValue(value);
@@ -1591,7 +1592,7 @@ const MainExperience = ({
             <div className="menu-logo">
               <div className="menu-logo-left">
                 <div className="menu-logo-image">
-                  <img
+                  <Image
                     src="/favicon.svg"
                     alt="ScreenSavy Logo"
                     width={24}

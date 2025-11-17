@@ -1,32 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-
-// Dynamic import for MainExperience - reduces initial bundle size by ~70KB
-const MainExperience = dynamic(
-  () => import('@/components/screensavy/MainExperience'),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        style={{
-          width: '100%',
-          height: '100vh',
-          backgroundColor: '#000',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          fontFamily: 'system-ui'
-        }}
-      >
-        Loading...
-      </div>
-    ),
-  }
-);
+import MainExperience from '@/components/screensavy/MainExperience';
 
 function PageContent() {
   const searchParams = useSearchParams();
