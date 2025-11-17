@@ -18,6 +18,14 @@ export const ANIMATION = {
   FRAME_TIME: 1000 / 60, // ~16.67ms
 } as const;
 
+// Animation constants for animation.ts utility
+export const ANIMATION_CONSTANTS = {
+  MIN_STEPS: 20,
+  MAX_STEPS: 100,
+  SLOWEST_DELAY: 5000,
+  FASTEST_DELAY: 100,
+} as const;
+
 // Timing constants (in milliseconds)
 export const TIMING = {
   DEBOUNCE_DEFAULT: 300,
