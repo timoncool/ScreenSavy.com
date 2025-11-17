@@ -10,3 +10,5 @@ export { useLocalStorage, useLocalStorageString, useLocalStorageBoolean, useLoca
 
 export { useFullscreen } from "./useFullscreen";
 export type { FullscreenAPI } from "./useFullscreen";
+
+export { usePointerDrag } from "./usePointerDrag";

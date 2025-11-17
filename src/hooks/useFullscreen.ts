@@ -5,6 +5,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 
+// TypeScript interfaces for browser-specific fullscreen APIs
+interface DocumentWithFullscreen extends Document {
+  webkitFullscreenEnabled?: boolean;
+  mozFullScreenEnabled?: boolean;
+  msFullscreenEnabled?: boolean;
+  webkitFullscreenElement?: Element;
+  mozFullScreenElement?: Element;
+  msFullscreenElement?: Element;
+  webkitExitFullscreen?: () => Promise<void>;
+  mozCancelFullScreen?: () => Promise<void>;
+  msExitFullscreen?: () => Promise<void>;
+}
+
+interface HTMLElementWithFullscreen extends HTMLElement {
+  webkitRequestFullscreen?: () => Promise<void>;
+  mozRequestFullScreen?: () => Promise<void>;
+  msRequestFullscreen?: () => Promise<void>;
+}
+
 export interface FullscreenAPI {
   isFullscreen: boolean;
   isSupported: boolean;
@@ -25,20 +44,21 @@ export function useFullscreen(): FullscreenAPI {
     typeof document !== "undefined" &&
     !!(
       document.fullscreenEnabled ||
-      (document as any).webkitFullscreenEnabled ||
-      (document as any).mozFullScreenEnabled ||
-      (document as any).msFullscreenEnabled
+      (document as DocumentWithFullscreen).webkitFullscreenEnabled ||
+      (document as DocumentWithFullscreen).mozFullScreenEnabled ||
+      (document as DocumentWithFullscreen).msFullscreenEnabled
     );
 
   // Универсальная функция для получения fullscreen элемента
   const getFullscreenElement = useCallback((): Element | null => {
     if (typeof document === "undefined") return null;
 
+    const doc = document as DocumentWithFullscreen;
     return (
       document.fullscreenElement ||
-      (document as any).webkitFullscreenElement ||
-      (document as any).mozFullScreenElement ||
-      (document as any).msFullscreenElement ||
+      doc.webkitFullscreenElement ||
+      doc.mozFullScreenElement ||
+      doc.msFullscreenElement ||
       null
     );
   }, []);
@@ -51,16 +71,16 @@ export function useFullscreen(): FullscreenAPI {
     }
 
     try {
-      const elem = document.documentElement;
+      const elem = document.documentElement as HTMLElementWithFullscreen;
 
       if (elem.requestFullscreen) {
         await elem.requestFullscreen();
-      } else if ((elem as any).webkitRequestFullscreen) {
-        await (elem as any).webkitRequestFullscreen();
-      } else if ((elem as any).mozRequestFullScreen) {
-        await (elem as any).mozRequestFullScreen();
-      } else if ((elem as any).msRequestFullscreen) {
-        await (elem as any).msRequestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        await elem.webkitRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        await elem.mozRequestFullScreen();
+      } else if (elem.msRequestFullscreen) {
+        await elem.msRequestFullscreen();
       }
     } catch (error) {
       console.error("Error entering fullscreen:", error);
@@ -78,14 +98,15 @@ export function useFullscreen(): FullscreenAPI {
         return; // Уже не в fullscreen
       }
 
+      const doc = document as DocumentWithFullscreen;
       if (document.exitFullscreen) {
         await document.exitFullscreen();
-      } else if ((document as any).webkitExitFullscreen) {
-        await (document as any).webkitExitFullscreen();
-      } else if ((document as any).mozCancelFullScreen) {
-        await (document as any).mozCancelFullScreen();
-      } else if ((document as any).msExitFullscreen) {
-        await (document as any).msExitFullscreen();
+      } else if (doc.webkitExitFullscreen) {
+        await doc.webkitExitFullscreen();
+      } else if (doc.mozCancelFullScreen) {
+        await doc.mozCancelFullScreen();
+      } else if (doc.msExitFullscreen) {
+        await doc.msExitFullscreen();
       }
     } catch (error) {
       console.error("Error exiting fullscreen:", error);
