@@ -132,7 +132,7 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en', interfaceVisi
         styles['--saturation'] = s.saturation / 100;
         styles['--glow'] = s.glow / 100;
         styles['--color-shift'] = `${s.colorShift}deg`;
-        styles['--pulse-speed'] = s.pulseSpeed === 'slow' ? '3s' : s.pulseSpeed === 'fast' : '0.8s' : '1.6s';
+        styles['--pulse-speed'] = s.pulseSpeed === 'slow' ? '3s' : s.pulseSpeed === 'fast' ? '0.8s' : '1.6s';
         break;
       }
       case 'grain': {
