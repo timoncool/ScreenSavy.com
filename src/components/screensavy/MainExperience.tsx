@@ -1546,7 +1546,16 @@ const MainExperience = ({
                 "picker",
               ].includes(key);
 
-              if (hideInVisualizerMode) return null;
+              const hideInVideoMode = videoMode && [
+                "randomColor",
+                "toggleShades",
+                "toggleRgb",
+                "toggleFavorites",
+                "picker",
+                "toggleTextOptions",
+              ].includes(key);
+
+              if (hideInVisualizerMode || hideInVideoMode) return null;
 
               return (
                 <IconButton

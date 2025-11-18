@@ -15,6 +15,7 @@ const VideoPlayerWithOverlay = ({ slug }: VideoPlayerWithOverlayProps) => {
   const [currentEffect, setCurrentEffect] = useState('none');
   const [loading, setLoading] = useState(true);
   const [activeLanguage, setActiveLanguage] = useState<'en' | 'ru'>('en');
+  const [interfaceVisible, setInterfaceVisible] = useState(true);
 
   const player = getVideoPlayerBySlug(slug);
 
@@ -55,7 +56,7 @@ const VideoPlayerWithOverlay = ({ slug }: VideoPlayerWithOverlayProps) => {
         );
 
       case 'local':
-        return <LocalVideoPlayer effect={currentEffect} activeLanguage={activeLanguage} />;
+        return <LocalVideoPlayer effect={currentEffect} activeLanguage={activeLanguage} interfaceVisible={interfaceVisible} />;
 
       case 'vk':
         // VK player можно добавить позже
@@ -110,28 +111,10 @@ const VideoPlayerWithOverlay = ({ slug }: VideoPlayerWithOverlayProps) => {
           videoSlug={slug}
           videoEffect={currentEffect}
           onEffectChange={setCurrentEffect}
+          onInterfaceVisibilityChange={setInterfaceVisible}
         />
       </div>
 
-      {/* Loading indicator */}
-      {loading && player.type === 'youtube' && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 100,
-            color: '#fff',
-            background: 'rgba(0, 0, 0, 0.8)',
-            padding: '20px 40px',
-            borderRadius: '10px',
-            fontSize: '18px',
-          }}
-        >
-          Loading video...
-        </div>
-      )}
     </div>
   );
 };
