@@ -23,6 +23,10 @@ export const metadata: Metadata = {
     'ScreenSavy.com is a web platform for creating immersive color backgrounds, screensavers, text layouts, and visual experiences for any display.',
   keywords: ['color', 'screensaver', 'background', 'RGB', 'color picker', 'display', 'visual experience'],
   authors: [{ name: 'ScreenSavy Team' }],
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: 'ScreenSavy.com - Immersive Color Experiences',
     description: 'Create vibrant color backgrounds and visual experiences for any display',
