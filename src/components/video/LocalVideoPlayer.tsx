@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from 'react';
+import VideoEffectControls, { EffectSettings, defaultEffectSettings } from './VideoEffectControls';
 
 interface LocalVideoPlayerProps {
   effect: string;
@@ -12,6 +13,8 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFile, setVideoFile] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showEffectControls, setShowEffectControls] = useState(false);
+  const [effectSettings, setEffectSettings] = useState<EffectSettings>(defaultEffectSettings);
 
   const t = {
     uploadTitle: activeLanguage === 'ru' ? 'Загрузить Видео' : 'Upload Video File',
@@ -27,14 +30,12 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
       const url = URL.createObjectURL(file);
       setVideoFile(url);
 
-      // Auto-play after loading
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.src = url;
           videoRef.current.load();
           videoRef.current.play().catch(err => {
             console.log('Autoplay prevented:', err);
-            // Autoplay was prevented, user will need to click play
           });
         }
       }, 100);
@@ -44,7 +45,6 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-
     const file = e.dataTransfer.files[0];
     handleFileSelect(file);
   };
@@ -63,6 +63,103 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
     if (file) {
       handleFileSelect(file);
     }
+  };
+
+  const getEffectClassName = () => {
+    if (!videoFile || effect === 'none') return '';
+    return `effect-${effect}`;
+  };
+
+  const getEffectStyles = () => {
+    if (!videoFile || effect === 'none') return {};
+
+    const settings = effectSettings[effect as keyof EffectSettings];
+    if (!settings) return {};
+
+    const styles: any = {};
+
+    switch (effect) {
+      case 'vhs': {
+        const s = settings as EffectSettings['vhs'];
+        styles['--scanline-intensity'] = s.scanlineIntensity / 100;
+        styles['--rgb-shift'] = `${s.rgbShift}px`;
+        styles['--distortion'] = `${s.distortion}px`;
+        styles['--flicker-speed'] = s.flickerSpeed === 'slow' ? '0.3s' : s.flickerSpeed === 'fast' ? '0.08s' : '0.15s';
+        break;
+      }
+      case 'glitch': {
+        const s = settings as EffectSettings['glitch'];
+        styles['--glitch-intensity'] = s.intensity / 100;
+        styles['--rgb-split'] = `${s.rgbSplit}px`;
+        styles['--hue-shift'] = `${s.hueShift}deg`;
+        styles['--glitch-frequency'] = s.frequency === 'slow' ? '0.5s' : s.frequency === 'fast' ? '0.15s' : '0.25s';
+        break;
+      }
+      case 'vintage': {
+        const s = settings as EffectSettings['vintage'];
+        styles['--sepia'] = s.sepia / 100;
+        styles['--grain'] = s.grain / 100;
+        styles['--vignette'] = s.vignette / 100;
+        styles['--warmth'] = s.warmth === 'cool' ? '-20deg' : s.warmth === 'warm' ? '20deg' : '0deg';
+        break;
+      }
+      case 'noir': {
+        const s = settings as EffectSettings['noir'];
+        styles['--contrast'] = s.contrast / 100;
+        styles['--brightness'] = s.brightness / 100;
+        styles['--vignette'] = s.vignette / 100;
+        styles['--grain'] = s.grain / 100;
+        break;
+      }
+      case 'neon': {
+        const s = settings as EffectSettings['neon'];
+        styles['--saturation'] = s.saturation / 100;
+        styles['--glow'] = s.glow / 100;
+        styles['--color-shift'] = `${s.colorShift}deg`;
+        styles['--pulse-speed'] = s.pulseSpeed === 'slow' ? '3s' : s.pulseSpeed === 'fast' : '0.8s' : '1.6s';
+        break;
+      }
+      case 'grain': {
+        const s = settings as EffectSettings['grain'];
+        styles['--grain-amount'] = s.amount / 100;
+        styles['--grain-size'] = s.size === 'fine' ? '0.7' : s.size === 'coarse' ? '1.3' : '1.0';
+        styles['--grain-speed'] = s.animationSpeed === 'slow' ? '1s' : s.animationSpeed === 'fast' ? '0.3s' : '0.5s';
+        break;
+      }
+      case 'cinematic': {
+        const s = settings as EffectSettings['cinematic'];
+        styles['--teal'] = s.tealIntensity / 1000;
+        styles['--orange'] = s.orangeIntensity / 1000;
+        styles['--contrast'] = s.contrast / 100;
+        styles['--saturation'] = s.saturation / 100;
+        break;
+      }
+      case 'nightvision': {
+        const s = settings as EffectSettings['nightvision'];
+        styles['--green-tint'] = s.greenTint / 1000;
+        styles['--scanlines'] = s.scanlines / 1000;
+        styles['--brightness'] = s.brightness / 100;
+        styles['--noise'] = s.noise / 1000;
+        break;
+      }
+      case 'underwater': {
+        const s = settings as EffectSettings['underwater'];
+        styles['--blue-tint'] = s.blueTint / 1000;
+        styles['--caustics'] = s.caustics / 1000;
+        styles['--depth'] = s.depthDarkening / 1000;
+        styles['--wave-speed'] = s.waveSpeed === 'slow' ? '10s' : s.waveSpeed === 'fast' ? '3s' : '6s';
+        break;
+      }
+      case 'anaglyph': {
+        const s = settings as EffectSettings['anaglyph'];
+        styles['--separation'] = `${s.separation}px`;
+        styles['--depth'] = s.depthIntensity / 100;
+        styles['--anim-speed'] = s.animationSpeed === 'slow' ? '5s' : s.animationSpeed === 'fast' ? '1.5s' : '3s';
+        break;
+      }
+    }
+
+    return styles;
   };
 
   return (
@@ -153,7 +250,6 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
             }}
           />
 
-          {/* Change Video Button */}
           {interfaceVisible && (
             <label
               style={{
@@ -194,13 +290,61 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
               />
             </label>
           )}
+
+          {interfaceVisible && effect !== 'none' && (
+            <button
+              onClick={() => setShowEffectControls(!showEffectControls)}
+              style={{
+                position: 'absolute',
+                bottom: '20px',
+                right: '20px',
+                padding: '10px',
+                background: showEffectControls ? 'rgba(124, 252, 0, 0.2)' : 'rgba(255, 255, 255, 0.15)',
+                color: 'rgba(255, 255, 255, 0.9)',
+                border: `1px solid ${showEffectControls ? '#7cfc00' : 'rgba(255, 255, 255, 0.2)'}`,
+                borderRadius: '8px',
+                cursor: 'pointer',
+                zIndex: 1100,
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(20px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onMouseEnter={(e) => {
+                if (!showEffectControls) {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!showEffectControls) {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                }
+              }}
+              title={activeLanguage === 'ru' ? 'Настройки эффекта' : 'Effect Settings'}
+            >
+              <i className="material-symbols-outlined" style={{ fontSize: '22px' }}>tune</i>
+            </button>
+          )}
+
+          <VideoEffectControls
+            effect={effect}
+            settings={effectSettings[effect as keyof EffectSettings]}
+            onSettingsChange={(newSettings) => {
+              setEffectSettings(prev => ({
+                ...prev,
+                [effect]: newSettings,
+              }));
+            }}
+            visible={showEffectControls && interfaceVisible}
+            activeLanguage={activeLanguage}
+          />
         </>
       )}
 
-      {/* Effects Overlay */}
       {videoFile && (
         <div
-          className={`video-effect-overlay effect-${effect}`}
+          className={`video-effect-overlay ${getEffectClassName()}`}
           style={{
             position: 'absolute',
             top: 0,
@@ -209,23 +353,22 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
             height: '100%',
             pointerEvents: 'none',
             zIndex: 10,
+            ...getEffectStyles(),
           }}
         />
       )}
 
       <style jsx>{`
-        /* VHS Effect - Едва заметный */
+        /* VHS Effect */
         .effect-vhs {
-          background:
-            repeating-linear-gradient(
-              0deg,
-              rgba(0, 0, 0, 0.08),
-              rgba(0, 0, 0, 0.08) 1px,
-              transparent 1px,
-              transparent 2px
-            );
-          animation: vhsFlicker 0.15s infinite, vhsDistort 0.4s infinite;
-          filter: saturate(0.92) contrast(1.08) brightness(0.96) hue-rotate(-1deg);
+          background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, calc(var(--scanline-intensity, 0.4) * 0.2)),
+            rgba(0, 0, 0, calc(var(--scanline-intensity, 0.4) * 0.2)) 1px,
+            transparent 1px,
+            transparent 2px
+          );
+          animation: vhsFlicker var(--flicker-speed, 0.15s) infinite, vhsDistort 0.4s infinite;
         }
 
         .effect-vhs::before {
@@ -237,9 +380,9 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           height: 100%;
           background: linear-gradient(
             90deg,
-            rgba(255, 0, 0, 0.08) 0%,
-            rgba(0, 255, 0, 0.08) 50%,
-            rgba(0, 0, 255, 0.08) 100%
+            rgba(255, 0, 0, calc(var(--rgb-shift, 8) / 100)) 0%,
+            rgba(0, 255, 0, calc(var(--rgb-shift, 8) / 100)) 50%,
+            rgba(0, 0, 255, calc(var(--rgb-shift, 8) / 100)) 100%
           );
           mix-blend-mode: overlay;
           animation: vhsShift 2.5s infinite;
@@ -252,73 +395,18 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
 
         @keyframes vhsDistort {
           0%, 100% { transform: translateX(0) scaleX(1); }
-          33% { transform: translateX(-1px) scaleX(1.005); }
-          66% { transform: translateX(1px) scaleX(0.995); }
+          33% { transform: translateX(calc(var(--distortion, 5) * -0.2px)) scaleX(1.005); }
+          66% { transform: translateX(calc(var(--distortion, 5) * 0.2px)) scaleX(0.995); }
         }
 
         @keyframes vhsShift {
           0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(2px); }
+          50% { transform: translateX(calc(var(--rgb-shift, 8) / 4)); }
         }
 
-        /* CRT Effect - Едва заметный */
-        .effect-crt {
-          background: repeating-linear-gradient(
-            0deg,
-            rgba(0, 0, 0, 0.12),
-            rgba(0, 0, 0, 0.12) 2px,
-            transparent 2px,
-            transparent 4px
-          );
-          animation: crtScan 8s linear infinite;
-          filter: contrast(1.15) brightness(1.04) saturate(1.05);
-        }
-
-        .effect-crt::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: radial-gradient(
-            ellipse at center,
-            transparent 50%,
-            rgba(0, 0, 0, 0.4) 100%
-          );
-          border-radius: 8% / 4%;
-          box-shadow: inset 0 0 40px rgba(0, 255, 100, 0.05);
-        }
-
-        .effect-crt::after {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: 0;
-          width: 100%;
-          height: 50%;
-          background: linear-gradient(
-            to bottom,
-            transparent,
-            rgba(255, 255, 255, 0.06),
-            transparent
-          );
-          animation: crtScanline 8s linear infinite;
-        }
-
-        @keyframes crtScan {
-          0% { background-position: 0 0; }
-          100% { background-position: 0 100%; }
-        }
-
-        @keyframes crtScanline {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(250vh); }
-        }
-
-        /* Glitch Effect - Едва заметный */
+        /* Glitch Effect */
         .effect-glitch {
-          animation: glitchAnim 0.25s infinite;
+          animation: glitchAnim var(--glitch-frequency, 0.25s) infinite;
         }
 
         .effect-glitch::before {
@@ -339,69 +427,30 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
             filter: hue-rotate(0deg);
           }
           10% {
-            transform: translate(-3px, 2px) skew(1deg);
-            filter: hue-rotate(60deg) saturate(1.5);
+            transform: translate(calc(var(--rgb-split, 10) * -0.3px), calc(var(--rgb-split, 10) * 0.2px)) skew(calc(var(--glitch-intensity, 0.5) * 2deg));
+            filter: hue-rotate(var(--hue-shift, 60deg)) saturate(calc(1 + var(--glitch-intensity, 0.5)));
           }
           20% {
-            transform: translate(2px, -2px) skew(-1deg);
-            filter: hue-rotate(-60deg) invert(0.05);
-          }
-          30% {
-            transform: translate(-2px, -2px) scaleY(1.02);
-            filter: contrast(1.5);
-          }
-          40% {
-            transform: translate(3px, 2px) scaleX(1.02);
-            filter: brightness(1.2);
-          }
-          50% {
-            transform: translate(0, 0) scale(1.015) rotate(0.2deg);
-            filter: invert(0.08) hue-rotate(30deg);
-          }
-          60% {
-            transform: translate(-2px, 2px) skew(0.8deg);
-            filter: saturate(2);
-          }
-          70% {
-            transform: translate(2px, -2px) skew(-0.8deg);
-            filter: contrast(1.3);
-          }
-          80% {
-            transform: translate(0) scaleY(1.03);
-            filter: hue-rotate(-30deg);
+            transform: translate(calc(var(--rgb-split, 10) * 0.2px), calc(var(--rgb-split, 10) * -0.2px)) skew(calc(var(--glitch-intensity, 0.5) * -2deg));
+            filter: hue-rotate(calc(var(--hue-shift, 60deg) * -1)) invert(calc(var(--glitch-intensity, 0.5) * 0.1));
           }
         }
 
         @keyframes glitchRGB {
           0%, 100% {
-            opacity: 0.06;
+            opacity: calc(var(--glitch-intensity, 0.5) * 0.12);
           }
           25% {
-            opacity: 0.2;
+            opacity: calc(var(--glitch-intensity, 0.5) * 0.4);
             filter:
-              drop-shadow(2.5px 0 0 red)
-              drop-shadow(-2.5px 0 0 cyan)
-              drop-shadow(0 2.5px 0 lime);
-          }
-          50% {
-            opacity: 0.28;
-            filter:
-              drop-shadow(-2px 0 0 red)
-              drop-shadow(2px 0 0 cyan)
-              drop-shadow(0 -2px 0 yellow);
-          }
-          75% {
-            opacity: 0.2;
-            filter:
-              drop-shadow(3px 0 0 red)
-              drop-shadow(-3px 0 0 cyan)
-              drop-shadow(0 3px 0 magenta);
+              drop-shadow(calc(var(--rgb-split, 10) * 0.25px) 0 0 red)
+              drop-shadow(calc(var(--rgb-split, 10) * -0.25px) 0 0 cyan);
           }
         }
 
-        /* Vintage Effect - Едва заметный */
+        /* Vintage Effect */
         .effect-vintage {
-          filter: sepia(0.4) contrast(1.08) brightness(0.97) saturate(0.9);
+          filter: sepia(var(--sepia, 0.6)) contrast(1.08) brightness(0.97) saturate(0.9) hue-rotate(var(--warmth, 0deg));
         }
 
         .effect-vintage::before {
@@ -411,24 +460,9 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           left: 0;
           width: 100%;
           height: 100%;
-          background:
-            repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 1px,
-              rgba(0, 0, 0, 0.08) 1px,
-              rgba(0, 0, 0, 0.08) 2px
-            ),
-            repeating-linear-gradient(
-              90deg,
-              transparent,
-              transparent 1px,
-              rgba(0, 0, 0, 0.08) 1px,
-              rgba(0, 0, 0, 0.08) 2px
-            ),
-            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="n"><feTurbulence baseFrequency="0.65" numOctaves="2"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.15"/></svg>');
+          background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="n"><feTurbulence baseFrequency="0.65" numOctaves="2"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.15"/></svg>');
           mix-blend-mode: multiply;
-          opacity: 0.3;
+          opacity: var(--grain, 0.4);
         }
 
         .effect-vintage::after {
@@ -438,33 +472,16 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           left: 0;
           width: 100%;
           height: 100%;
-          background:
-            radial-gradient(
-              circle at 20% 30%,
-              rgba(139, 69, 19, 0.3) 0%,
-              transparent 55%
-            ),
-            radial-gradient(
-              circle at 80% 70%,
-              rgba(101, 67, 33, 0.3) 0%,
-              transparent 55%
-            ),
-            radial-gradient(
-              ellipse at center,
-              transparent 35%,
-              rgba(101, 67, 33, 0.4) 100%
-            );
-          animation: vintagePulse 4.5s ease-in-out infinite;
+          background: radial-gradient(
+            ellipse at center,
+            transparent calc(100% - var(--vignette, 0.5) * 70%),
+            rgba(101, 67, 33, calc(var(--vignette, 0.5) * 0.8)) 100%
+          );
         }
 
-        @keyframes vintagePulse {
-          0%, 100% { opacity: 0.65; }
-          50% { opacity: 0.8; }
-        }
-
-        /* Film Noir Effect - Едва заметный */
+        /* Film Noir Effect */
         .effect-noir {
-          filter: grayscale(1) contrast(1.5) brightness(0.8);
+          filter: grayscale(1) contrast(var(--contrast, 1.8)) brightness(var(--brightness, 0.8));
         }
 
         .effect-noir::before {
@@ -474,21 +491,13 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           left: 0;
           width: 100%;
           height: 100%;
-          background:
-            repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 1px,
-              rgba(0, 0, 0, 0.12) 1px,
-              rgba(0, 0, 0, 0.12) 2px
-            ),
-            repeating-linear-gradient(
-              90deg,
-              transparent,
-              transparent 80px,
-              rgba(255, 255, 255, 0.02) 80px,
-              rgba(255, 255, 255, 0.02) 81px
-            );
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 1px,
+            rgba(0, 0, 0, calc(var(--grain, 0.3) * 0.4)) 1px,
+            rgba(0, 0, 0, calc(var(--grain, 0.3) * 0.4)) 2px
+          );
           mix-blend-mode: overlay;
         }
 
@@ -501,19 +510,16 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           height: 100%;
           background: radial-gradient(
             ellipse at center,
-            transparent 25%,
-            rgba(0, 0, 0, 0.65) 100%
+            transparent calc(100% - var(--vignette, 0.65) * 40%),
+            rgba(0, 0, 0, calc(var(--vignette, 0.65))) 100%
           );
-          box-shadow:
-            inset 0 0 160px rgba(0, 0, 0, 0.75),
-            inset 0 0 80px rgba(0, 0, 0, 0.65),
-            inset 0 0 40px rgba(0, 0, 0, 0.55);
+          box-shadow: inset 0 0 160px rgba(0, 0, 0, calc(var(--vignette, 0.65)));
         }
 
-        /* Neon Effect - Едва заметный */
+        /* Neon Effect */
         .effect-neon {
-          filter: saturate(2) contrast(1.4) brightness(1.1) hue-rotate(5deg);
-          animation: neonPulse 1.6s ease-in-out infinite;
+          filter: saturate(var(--saturation, 2)) contrast(1.4) brightness(1.1) hue-rotate(var(--color-shift, 5deg));
+          animation: neonPulse var(--pulse-speed, 1.6s) ease-in-out infinite;
         }
 
         .effect-neon::before {
@@ -526,18 +532,13 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           background:
             linear-gradient(
               45deg,
-              rgba(255, 0, 255, 0.2) 0%,
-              rgba(0, 255, 255, 0.2) 50%,
-              rgba(255, 255, 0, 0.2) 100%
+              rgba(255, 0, 255, calc(var(--glow, 0.5) * 0.4)) 0%,
+              rgba(0, 255, 255, calc(var(--glow, 0.5) * 0.4)) 50%,
+              rgba(255, 255, 0, calc(var(--glow, 0.5) * 0.4)) 100%
             ),
             radial-gradient(
               circle at 30% 30%,
-              rgba(255, 0, 128, 0.15) 0%,
-              transparent 60%
-            ),
-            radial-gradient(
-              circle at 70% 70%,
-              rgba(0, 255, 200, 0.15) 0%,
+              rgba(255, 0, 128, calc(var(--glow, 0.5) * 0.3)) 0%,
               transparent 60%
             );
           mix-blend-mode: screen;
@@ -545,80 +546,22 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
         }
 
         @keyframes neonPulse {
-          0%, 100% {
-            opacity: 1;
-            filter: saturate(2) contrast(1.4) brightness(1.1) hue-rotate(5deg);
-          }
-          33% {
-            opacity: 0.92;
-            filter: saturate(2.2) contrast(1.5) brightness(1.15) hue-rotate(10deg);
-          }
-          66% {
-            opacity: 0.96;
-            filter: saturate(2.1) contrast(1.45) brightness(1.12) hue-rotate(-5deg);
-          }
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.95; }
         }
 
         @keyframes neonGlow {
           0%, 100% {
-            opacity: 0.35;
+            opacity: calc(var(--glow, 0.5) * 0.7);
             transform: scale(1);
           }
           50% {
-            opacity: 0.5;
+            opacity: var(--glow, 0.5);
             transform: scale(1.01);
           }
         }
 
-        /* Chromatic Aberration - Едва заметный */
-        .effect-chromatic {
-          position: relative;
-        }
-
-        .effect-chromatic::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: inherit;
-          mix-blend-mode: screen;
-          filter:
-            drop-shadow(4px 0 0 rgba(255, 0, 0, 0.5))
-            drop-shadow(-4px 0 0 rgba(0, 255, 255, 0.5))
-            drop-shadow(0 4px 0 rgba(0, 255, 0, 0.25));
-          animation: chromaticShift 2.2s ease-in-out infinite;
-        }
-
-        @keyframes chromaticShift {
-          0%, 100% {
-            filter:
-              drop-shadow(4px 0 0 rgba(255, 0, 0, 0.5))
-              drop-shadow(-4px 0 0 rgba(0, 255, 255, 0.5))
-              drop-shadow(0 4px 0 rgba(0, 255, 0, 0.25));
-          }
-          25% {
-            filter:
-              drop-shadow(5px 1.5px 0 rgba(255, 0, 0, 0.55))
-              drop-shadow(-5px -1.5px 0 rgba(0, 255, 255, 0.55))
-              drop-shadow(1.5px -5px 0 rgba(0, 255, 0, 0.28));
-          }
-          50% {
-            filter:
-              drop-shadow(3.5px -1.5px 0 rgba(255, 0, 0, 0.45))
-              drop-shadow(-3.5px 1.5px 0 rgba(0, 255, 255, 0.45))
-              drop-shadow(-1.5px 3.5px 0 rgba(0, 255, 0, 0.22));
-          }
-          75% {
-            filter:
-              drop-shadow(6px 0 0 rgba(255, 0, 0, 0.55))
-              drop-shadow(-6px 0 0 rgba(0, 255, 255, 0.55))
-              drop-shadow(0 6px 0 rgba(0, 255, 0, 0.3));
-          }
-        }
-
-        /* Film Grain Effect - Едва заметный */
+        /* Film Grain Effect */
         .effect-grain {
           filter: contrast(1.05) brightness(0.98);
         }
@@ -631,9 +574,10 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           width: 100%;
           height: 100%;
           background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.1"/></svg>');
+          background-size: calc(100px * var(--grain-size, 1)) calc(100px * var(--grain-size, 1));
           mix-blend-mode: overlay;
-          opacity: 0.15;
-          animation: grainMove 0.5s steps(8) infinite;
+          opacity: var(--grain-amount, 0.5);
+          animation: grainMove var(--grain-speed, 0.5s) steps(8) infinite;
         }
 
         @keyframes grainMove {
@@ -643,9 +587,9 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           75% { transform: translate(-1px, -1px); }
         }
 
-        /* Cinematic Teal-Orange - Едва заметный */
+        /* Cinematic Effect */
         .effect-cinematic {
-          filter: saturate(1.15) contrast(1.1) brightness(1.02);
+          filter: saturate(var(--saturation, 1.15)) contrast(var(--contrast, 1.1)) brightness(1.02);
         }
 
         .effect-cinematic::before {
@@ -657,36 +601,16 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           height: 100%;
           background: linear-gradient(
             180deg,
-            rgba(0, 150, 150, 0.08) 0%,
+            rgba(0, 150, 150, var(--teal, 0.08)) 0%,
             transparent 50%,
-            rgba(255, 140, 70, 0.08) 100%
+            rgba(255, 140, 70, var(--orange, 0.08)) 100%
           );
           mix-blend-mode: color;
         }
 
-        /* Duotone Effect - Едва заметный */
-        .effect-duotone {
-          filter: saturate(1.2) contrast(1.15);
-        }
-
-        .effect-duotone::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            45deg,
-            rgba(138, 43, 226, 0.15) 0%,
-            rgba(255, 215, 0, 0.15) 100%
-          );
-          mix-blend-mode: color;
-        }
-
-        /* Night Vision Effect - Едва заметный */
+        /* Night Vision Effect */
         .effect-nightvision {
-          filter: saturate(0.5) brightness(1.1) contrast(1.2) hue-rotate(90deg);
+          filter: saturate(0.5) brightness(var(--brightness, 1.25)) contrast(1.2) hue-rotate(90deg);
         }
 
         .effect-nightvision::before {
@@ -699,8 +623,8 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           background:
             repeating-linear-gradient(
               0deg,
-              rgba(0, 255, 0, 0.03),
-              rgba(0, 255, 0, 0.03) 2px,
+              rgba(0, 255, 0, var(--scanlines, 0.03)),
+              rgba(0, 255, 0, var(--scanlines, 0.03)) 2px,
               transparent 2px,
               transparent 4px
             ),
@@ -719,7 +643,7 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0, 255, 0, 0.08);
+          background: rgba(0, 255, 0, var(--green-tint, 0.08));
           mix-blend-mode: screen;
           animation: nvFlicker 0.15s infinite;
         }
@@ -729,73 +653,7 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           50% { opacity: 1; }
         }
 
-        /* Surveillance/CCTV Effect - Едва заметный */
-        .effect-surveillance {
-          filter: saturate(0.7) contrast(1.2) brightness(0.95);
-        }
-
-        .effect-surveillance::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background:
-            repeating-linear-gradient(
-              0deg,
-              rgba(0, 0, 0, 0.1),
-              rgba(0, 0, 0, 0.1) 2px,
-              transparent 2px,
-              transparent 4px
-            );
-          animation: scanlineMove 8s linear infinite;
-        }
-
-        .effect-surveillance::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 100, 200, 0.08);
-          mix-blend-mode: multiply;
-        }
-
-        @keyframes scanlineMove {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(10px); }
-        }
-
-        /* Vaporwave Effect - Едва заметный */
-        .effect-vaporwave {
-          filter: saturate(1.4) brightness(1.05) contrast(1.1) hue-rotate(-10deg);
-        }
-
-        .effect-vaporwave::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            180deg,
-            rgba(255, 0, 255, 0.12) 0%,
-            rgba(0, 255, 255, 0.12) 50%,
-            rgba(255, 105, 180, 0.12) 100%
-          );
-          mix-blend-mode: screen;
-          animation: vaporShift 4s ease-in-out infinite;
-        }
-
-        @keyframes vaporShift {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 0.7; }
-        }
-
-        /* Underwater Effect - Едва заметный */
+        /* Underwater Effect */
         .effect-underwater {
           filter: saturate(1.2) hue-rotate(180deg) brightness(0.92);
         }
@@ -810,16 +668,16 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           background:
             radial-gradient(
               ellipse at 30% 20%,
-              rgba(0, 200, 255, 0.15) 0%,
+              rgba(0, 200, 255, var(--caustics, 0.15)) 0%,
               transparent 50%
             ),
             radial-gradient(
               ellipse at 70% 80%,
-              rgba(0, 150, 200, 0.1) 0%,
+              rgba(0, 150, 200, calc(var(--caustics, 0.15) * 0.7)) 0%,
               transparent 50%
             );
           mix-blend-mode: overlay;
-          animation: caustics 6s ease-in-out infinite;
+          animation: caustics var(--wave-speed, 6s) ease-in-out infinite;
         }
 
         .effect-underwater::after {
@@ -829,7 +687,7 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0, 100, 150, 0.1);
+          background: rgba(0, 100, 150, var(--blue-tint, 0.1));
           mix-blend-mode: multiply;
         }
 
@@ -844,7 +702,7 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           }
         }
 
-        /* Anaglyph 3D Effect - Едва заметный */
+        /* Anaglyph 3D Effect */
         .effect-anaglyph {
           position: relative;
         }
@@ -859,26 +717,22 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en', interfaceVisible = tr
           background: inherit;
           mix-blend-mode: screen;
           filter:
-            drop-shadow(3px 0 0 rgba(255, 0, 0, 0.4))
-            drop-shadow(-3px 0 0 rgba(0, 255, 255, 0.4));
-          animation: anaglyphShift 3s ease-in-out infinite;
+            drop-shadow(var(--separation, 10px) 0 0 rgba(255, 0, 0, var(--depth, 0.6)))
+            drop-shadow(calc(var(--separation, 10px) * -1) 0 0 rgba(0, 255, 255, var(--depth, 0.6)));
+          animation: anaglyphShift var(--anim-speed, 3s) ease-in-out infinite;
         }
 
         @keyframes anaglyphShift {
           0%, 100% {
             filter:
-              drop-shadow(3px 0 0 rgba(255, 0, 0, 0.4))
-              drop-shadow(-3px 0 0 rgba(0, 255, 255, 0.4));
+              drop-shadow(var(--separation, 10px) 0 0 rgba(255, 0, 0, var(--depth, 0.6)))
+              drop-shadow(calc(var(--separation, 10px) * -1) 0 0 rgba(0, 255, 255, var(--depth, 0.6)));
           }
           50% {
             filter:
-              drop-shadow(4px 0 0 rgba(255, 0, 0, 0.45))
-              drop-shadow(-4px 0 0 rgba(0, 255, 255, 0.45));
+              drop-shadow(calc(var(--separation, 10px) * 1.2) 0 0 rgba(255, 0, 0, calc(var(--depth, 0.6) * 1.1)))
+              drop-shadow(calc(var(--separation, 10px) * -1.2) 0 0 rgba(0, 255, 255, calc(var(--depth, 0.6) * 1.1)));
           }
-        }
-
-        .effect-none {
-          display: none;
         }
       `}</style>
     </div>
