@@ -151,35 +151,33 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en' }: LocalVideoPlayerPro
           <label
             style={{
               position: 'absolute',
-              top: '20px',
+              bottom: '20px',
               left: '50%',
               transform: 'translateX(-50%)',
-              padding: '12px 20px',
-              background: 'rgba(0, 0, 0, 0.85)',
-              color: '#fff',
-              borderRadius: '8px',
+              padding: '8px 16px',
+              background: 'rgba(255, 255, 255, 0.15)',
+              color: 'rgba(255, 255, 255, 0.9)',
+              borderRadius: '6px',
               cursor: 'pointer',
-              zIndex: 900,
+              zIndex: 1100,
               pointerEvents: 'auto',
-              fontSize: '14px',
+              fontSize: '13px',
+              fontWeight: 500,
               border: '1px solid rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease',
+              transition: 'all 0.2s ease',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              backdropFilter: 'blur(10px)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(20px)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(124, 252, 0, 0.2)';
-              e.currentTarget.style.borderColor = '#7cfc00';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.85)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
             }}
           >
-            <i className="material-symbols-outlined" style={{ fontSize: '20px' }}>video_file</i>
+            <i className="material-symbols-outlined" style={{ fontSize: '18px' }}>video_file</i>
             {t.changeVideo}
             <input
               type="file"
