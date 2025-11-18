@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getVideoPlayerBySlug } from "@/lib/videoPlayers";
+import { detectBrowserLanguage } from "./shared";
 import MainExperience from "./MainExperience";
 import YouTubePlayerWithEffects from "../video/YouTubePlayerWithEffects";
 import LocalVideoPlayer from "../video/LocalVideoPlayer";
@@ -13,8 +14,13 @@ type VideoPlayerWithOverlayProps = {
 const VideoPlayerWithOverlay = ({ slug }: VideoPlayerWithOverlayProps) => {
   const [currentEffect, setCurrentEffect] = useState('none');
   const [loading, setLoading] = useState(true);
+  const [activeLanguage, setActiveLanguage] = useState<'en' | 'ru'>('en');
 
   const player = getVideoPlayerBySlug(slug);
+
+  useEffect(() => {
+    setActiveLanguage(detectBrowserLanguage());
+  }, []);
 
   if (!player) {
     return (
@@ -43,14 +49,13 @@ const VideoPlayerWithOverlay = ({ slug }: VideoPlayerWithOverlayProps) => {
       case 'youtube':
         return (
           <YouTubePlayerWithEffects
-            videoUrl={player.defaultUrl || 'https://www.youtube.com/watch?v=jfKfPfyJRdk'}
             effect={currentEffect}
-            onReady={handleReady}
+            activeLanguage={activeLanguage}
           />
         );
 
       case 'local':
-        return <LocalVideoPlayer effect={currentEffect} />;
+        return <LocalVideoPlayer effect={currentEffect} activeLanguage={activeLanguage} />;
 
       case 'vk':
         // VK player можно добавить позже
