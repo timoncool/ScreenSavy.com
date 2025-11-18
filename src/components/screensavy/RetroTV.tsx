@@ -321,7 +321,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           position: absolute;
           width: 870px;
           height: 465px;
-          bottom: 450px;
+          bottom: 610px;
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -856,7 +856,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           width: 600px;
           height: 300px;
           left: 50%;
-          bottom: 140px;
+          bottom: 80px;
           margin-left: -300px;
           background: transparent;
           font-size: 250%;
@@ -1151,11 +1151,11 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         @media (max-width: 1200px) {
           .old-tv {
             transform: scale(0.55);
-            bottom: 380px;
+            bottom: 480px;
           }
           #table-tv {
             transform: scale(1.4);
-            bottom: 140px;
+            bottom: 80px;
           }
         }
       `}</style>
