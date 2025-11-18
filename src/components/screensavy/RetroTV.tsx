@@ -248,24 +248,62 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           left: 0;
           right: 0;
           bottom: 140px;
-          background:
+          background-color: #8b4d3a;
+          background-image:
             repeating-linear-gradient(
               0deg,
-              #6b3d2e 0px,
-              #6b3d2e 12px,
-              #4a2618 12px,
-              #4a2618 13px
+              transparent 0px,
+              transparent 60px,
+              #3a2318 60px,
+              #3a2318 64px
             ),
             repeating-linear-gradient(
               90deg,
-              #8b4d3a 0px,
-              #8b4d3a 80px,
-              #6b3d2e 80px,
-              #6b3d2e 82px
+              #a0522d 0px,
+              #a0522d 8px,
+              #8b4513 8px,
+              #8b4513 120px,
+              #a0522d 120px,
+              #a0522d 128px,
+              #6b3d2e 128px,
+              #6b3d2e 130px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              transparent 0px,
+              transparent 65px,
+              #3a2318 65px,
+              #3a2318 68px,
+              transparent 68px,
+              transparent 130px
+            ),
+            linear-gradient(
+              180deg,
+              rgba(139, 69, 19, 0.3) 0%,
+              rgba(107, 61, 46, 0.5) 50%,
+              rgba(74, 38, 24, 0.7) 100%
             );
-          background-size: 100% 100%, 100% 100%;
+          background-size: 100% 100%, 260px 64px, 130px 64px, 100% 100%;
+          background-position: 0 0, 0 0, 0 32px, 0 0;
           box-shadow: 0 8px 10px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(0, 0, 0, 0.3);
           z-index: 100;
+        }
+
+        .brick-wall::after {
+          content: "Welcome to the Future";
+          position: absolute;
+          top: 40%;
+          right: 15%;
+          font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+          font-size: 48px;
+          font-weight: bold;
+          color: rgba(255, 255, 255, 0.15);
+          text-shadow:
+            2px 2px 4px rgba(0, 0, 0, 0.8),
+            -1px -1px 2px rgba(255, 255, 255, 0.1);
+          transform: rotate(-5deg);
+          letter-spacing: 2px;
+          z-index: 1;
         }
 
         .brick-wall::before {
@@ -321,7 +359,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           position: absolute;
           width: 870px;
           height: 465px;
-          bottom: 400px;
+          bottom: 410px;
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -856,7 +894,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           width: 600px;
           height: 300px;
           left: 50%;
-          bottom: 80px;
+          bottom: 70px;
           margin-left: -300px;
           background: transparent;
           font-size: 250%;
@@ -1151,11 +1189,11 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         @media (max-width: 1200px) {
           .old-tv {
             transform: scale(0.55);
-            bottom: 320px;
+            bottom: 325px;
           }
           #table-tv {
             transform: scale(1.4);
-            bottom: 80px;
+            bottom: 70px;
           }
         }
       `}</style>
