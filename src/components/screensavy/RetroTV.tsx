@@ -321,7 +321,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           position: absolute;
           width: 870px;
           height: 465px;
-          bottom: 370px;
+          bottom: 580px;
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -401,7 +401,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         .old-tv main {
           position: relative;
           display: inline-block;
-          padding: 20px;
+          padding: 15px;
           border-radius: 8px;
           background: #444;
           border: 3px #aaa solid;
@@ -635,8 +635,8 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
 
         .error-noise {
           position: relative;
-          width: 560px;
-          height: 370px;
+          width: 520px;
+          height: 340px;
           overflow: hidden;
           border-radius: 5% / 50%;
           z-index: 3;
@@ -856,7 +856,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           width: 600px;
           height: 300px;
           left: 50%;
-          bottom: 200px;
+          bottom: 140px;
           margin-left: -300px;
           background: transparent;
           font-size: 250%;
@@ -1151,11 +1151,11 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         @media (max-width: 1200px) {
           .old-tv {
             transform: scale(0.55);
-            bottom: 320px;
+            bottom: 480px;
           }
           #table-tv {
             transform: scale(1.4);
-            bottom: 180px;
+            bottom: 140px;
           }
         }
       `}</style>
