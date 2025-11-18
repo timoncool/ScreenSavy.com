@@ -11,6 +11,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { videoPlayers, videoEffects } from "@/lib/videoPlayers";
 import {
   SPEED_MAX,
   SPEED_MIN,
@@ -743,6 +744,10 @@ type MainExperienceProps = {
   visualizerCategory?: "audio" | "ambient";
   iframeRef?: React.RefObject<HTMLIFrameElement>;
   initialMode?: ModeKey;
+  videoMode?: boolean;
+  videoSlug?: string;
+  videoEffect?: string;
+  onEffectChange?: (effect: string) => void;
 };
 
 const MainExperience = ({
@@ -750,7 +755,11 @@ const MainExperience = ({
   visualizerSlug,
   visualizerCategory,
   iframeRef,
-  initialMode
+  initialMode,
+  videoMode = false,
+  videoSlug,
+  videoEffect = 'none',
+  onEffectChange,
 }: MainExperienceProps = {}) => {
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
@@ -1398,7 +1407,7 @@ const MainExperience = ({
   ]);
 
   const backgroundStyle = {
-    backgroundColor: visualizerMode ? "transparent" : currentHex,
+    backgroundColor: (visualizerMode || videoMode) ? "transparent" : currentHex,
     minHeight: "100vh",
     width: "100%",
     position: "relative" as const,
@@ -1413,7 +1422,7 @@ const MainExperience = ({
     <div
       ref={rootRef}
       style={backgroundStyle}
-      className={visualizerMode ? "visualizer-mode-root" : ""}
+      className={(visualizerMode || videoMode) ? "visualizer-mode-root" : ""}
     >
       <noscript>
         <iframe
@@ -1435,14 +1444,14 @@ const MainExperience = ({
         languageSetting={languageSetting}
         detected={detectedLanguage}
       />
-      {!visualizerMode && activeModes.includes("clock") && (
+      {!(visualizerMode || videoMode) && activeModes.includes("clock") && (
         <Clock
           clockStyle={clockStyle}
           language={activeLanguage}
           backgroundColor={rgb}
         />
       )}
-        {!visualizerMode && activeModes.includes("text") && (
+        {!(visualizerMode || videoMode) && activeModes.includes("text") && (
           <TextDisplay
             text={textValue}
             fontSize={fontSize}
@@ -1454,12 +1463,12 @@ const MainExperience = ({
             translation={getText}
           />
         )}
-        {!visualizerMode && activeModes.includes("colorChange") &&
+        {!(visualizerMode || videoMode) && activeModes.includes("colorChange") &&
           !interfaceHidden &&
           favorites.length > 1 && (
             <SpeedControl speed={speed} onChange={setSpeed} />
           )}
-        {!visualizerMode && activeModes.includes("text") && (
+        {!(visualizerMode || videoMode) && activeModes.includes("text") && (
           <TextOptionsPanel
             visible={textOptionsOpen && !interfaceHidden}
             translation={getText}
@@ -1484,7 +1493,7 @@ const MainExperience = ({
             onToggleStyle={handleToggleStyle}
           />
         )}
-        {!visualizerMode && (
+        {!(visualizerMode || videoMode) && (
           <>
             <ShadesPanel
               rgb={rgb}
@@ -1570,7 +1579,7 @@ const MainExperience = ({
             aria-label={getText(interfaceHidden ? "showInterface" : "hideInterface")}
           />
         </div>
-        {!visualizerMode && (
+        {!(visualizerMode || videoMode) && (
           <div
             className={`clock-control-row ${activeModes.includes("clock") && !interfaceHidden ? "active" : ""}`}
           >
@@ -1635,6 +1644,40 @@ const MainExperience = ({
               aria-label="RGB Lava visualizer"
             />
           </div>
+        )}
+        {videoMode && !interfaceHidden && (
+          <>
+            {/* Video Players Navigation */}
+            <div className="video-control-row active" style={{ marginBottom: '10px' }}>
+              {videoPlayers.map((player) => (
+                <IconButton
+                  key={player.slug}
+                  icon={
+                    player.type === 'youtube' ? 'play_circle' :
+                    player.type === 'local' ? 'folder_open' :
+                    'videocam'
+                  }
+                  onClick={() => router.push(`/modes/video/${player.slug}`)}
+                  title={activeLanguage === 'ru' ? player.nameRu : player.name}
+                  active={typeof window !== 'undefined' && window.location.pathname === `/modes/video/${player.slug}`}
+                  aria-label={activeLanguage === 'ru' ? player.nameRu : player.name}
+                />
+              ))}
+            </div>
+            {/* Video Effects */}
+            <div className="video-control-row active">
+              {videoEffects.map((effect) => (
+                <IconButton
+                  key={effect.id}
+                  icon={effect.icon}
+                  onClick={() => onEffectChange?.(effect.id)}
+                  title={activeLanguage === 'ru' ? effect.nameRu : effect.name}
+                  active={videoEffect === effect.id}
+                  aria-label={activeLanguage === 'ru' ? effect.nameRu : effect.name}
+                />
+              ))}
+            </div>
+          </>
         )}
         {menuOpen && (
           <div className="menu-container">
@@ -1929,7 +1972,7 @@ const MainExperience = ({
             </div>
           </div>
         )}
-        {!visualizerMode && (
+        {!(visualizerMode || videoMode) && (
           <FavoritesPanel
             favorites={favorites}
             translation={getText}
@@ -1944,7 +1987,7 @@ const MainExperience = ({
             visible={showFavorites}
           />
         )}
-        {!visualizerMode && (
+        {!(visualizerMode || videoMode) && (
           <PickerHint
             visible={
               pickerActive && !interfaceHidden && hintsEnabled && showPickerHint
