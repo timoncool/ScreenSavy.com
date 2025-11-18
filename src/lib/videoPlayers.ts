@@ -2,12 +2,20 @@ export type VideoPlayer = {
   slug: string;
   name: string;
   nameRu: string;
-  type: 'youtube' | 'vk' | 'local';
+  type: 'youtube' | 'vk' | 'local' | 'retro';
   defaultUrl?: string;
   supportsEffects: boolean;
 };
 
 export const videoPlayers: VideoPlayer[] = [
+  {
+    slug: 'retro-tv',
+    name: 'Retro TV',
+    nameRu: 'Ретро ТВ',
+    type: 'retro',
+    defaultUrl: 'https://www.youtube.com/watch?v=jfKfPfyJRdk',
+    supportsEffects: false, // Has its own built-in effects
+  },
   {
     slug: 'youtube-effects',
     name: 'YouTube Player',

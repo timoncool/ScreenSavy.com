@@ -1902,31 +1902,8 @@ const MainExperience = ({
               RGB Lava
             </div>
             <div className="menu-separator" />
-            <div
-              className="menu-item"
-              onClick={() => {
-                setMenuOpen(false);
-                router.push("/modes/retro-tv");
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setMenuOpen(false);
-                  router.push("/modes/retro-tv");
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="Retro TV Player"
-            >
-              <div className="menu-item-icon">
-                <i className="material-symbols-outlined">tv_gen</i>
-              </div>
-              Retro TV Player
-            </div>
-            <div className="menu-separator" />
             <div className="menu-section-title">
-              {activeLanguage === 'ru' ? 'Видеоплееры с Эффектами' : 'Video Players with Effects'}
+              {activeLanguage === 'ru' ? 'Видеоплееры' : 'Video Players'}
             </div>
             {videoPlayers.map((player) => (
               <div
@@ -1942,7 +1919,8 @@ const MainExperience = ({
               >
                 <div className="menu-item-icon">
                   <i className="material-symbols-outlined">
-                    {player.type === 'youtube' ? 'play_circle' :
+                    {player.type === 'retro' ? 'tv_gen' :
+                     player.type === 'youtube' ? 'play_circle' :
                      player.type === 'local' ? 'folder_open' :
                      'videocam'}
                   </i>
