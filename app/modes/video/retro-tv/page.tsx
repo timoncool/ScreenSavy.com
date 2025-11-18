@@ -5,9 +5,10 @@ import RetroTV from '@/components/screensavy/RetroTV';
 import MainExperience from '@/components/screensavy/MainExperience';
 
 export default function RetroTVPage() {
-  const tvRef = useRef<{ setVideoId: (id: string) => void }>(null);
+  const tvRef = useRef<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void }>(null);
   const [inputValue, setInputValue] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(true);
+  const [viewMode, setViewMode] = useState<'full' | 'closeup'>('full');
 
   // Extract video ID from YouTube URL
   const extractVideoId = useCallback((url: string): string | null => {
@@ -59,6 +60,59 @@ export default function RetroTVPage() {
           }}
         >
           <RetroTV ref={tvRef} />
+        </div>
+
+        {/* View Mode Buttons - top of screen */}
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 900,
+          pointerEvents: 'auto',
+          display: 'flex',
+          gap: '12px',
+        }}>
+          <button
+            onClick={() => {
+              setViewMode('full');
+              tvRef.current?.setViewMode('full');
+            }}
+            style={{
+              padding: '10px 20px',
+              background: viewMode === 'full' ? 'rgba(100, 149, 237, 0.3)' : 'rgba(0, 0, 0, 0.6)',
+              border: `2px solid ${viewMode === 'full' ? 'rgba(100, 149, 237, 0.8)' : 'rgba(255, 255, 255, 0.2)'}`,
+              borderRadius: '8px',
+              color: 'rgba(255, 255, 255, 0.9)',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 500,
+              transition: 'all 0.2s ease',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            Full View
+          </button>
+          <button
+            onClick={() => {
+              setViewMode('closeup');
+              tvRef.current?.setViewMode('closeup');
+            }}
+            style={{
+              padding: '10px 20px',
+              background: viewMode === 'closeup' ? 'rgba(100, 149, 237, 0.3)' : 'rgba(0, 0, 0, 0.6)',
+              border: `2px solid ${viewMode === 'closeup' ? 'rgba(100, 149, 237, 0.8)' : 'rgba(255, 255, 255, 0.2)'}`,
+              borderRadius: '8px',
+              color: 'rgba(255, 255, 255, 0.9)',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 500,
+              transition: 'all 0.2s ease',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            Closeup
+          </button>
         </div>
 
         {/* URL Input Panel - only show when showUrlInput is true */}

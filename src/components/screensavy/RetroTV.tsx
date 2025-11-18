@@ -4,25 +4,36 @@ import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 're
 
 export interface RetroTVRef {
   setVideoId: (id: string) => void;
+  setViewMode: (mode: 'full' | 'closeup') => void;
 }
 
-const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
+interface RetroTVProps {
+  viewMode?: 'full' | 'closeup';
+}
+
+const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref) => {
   const [currentVideoId, setCurrentVideoId] = useState('');
   const [isPoweredOn, setIsPoweredOn] = useState(true);
-  const [viewMode, setViewMode] = useState(50); // 0-50: full view, 51-100: closeup
+  const [internalViewMode, setInternalViewMode] = useState<'full' | 'closeup'>(viewMode);
   const [effectIntensity, setEffectIntensity] = useState(50);
+  const [ambilightColor, setAmbilightColor] = useState('rgba(100, 149, 237, 0.4)');
   const playerRef = useRef<any>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameRef = useRef<number>();
 
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
     setVideoId: (id: string) => {
       setCurrentVideoId(id);
       setIsPoweredOn(true);
+    },
+    setViewMode: (mode: 'full' | 'closeup') => {
+      setInternalViewMode(mode);
     }
   }));
 
   // Calculate effects based on sliders
-  const isCloseup = viewMode > 50;
+  const isCloseup = internalViewMode === 'closeup';
   const brightness = 1.0 + (effectIntensity / 100) * 0.5; // 1.0 to 1.5
   const contrast = 1.0 + (effectIntensity / 100) * 1.0; // 1.0 to 2.0
 
@@ -84,13 +95,50 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
     }
   }, [currentVideoId, isPoweredOn]);
 
+  // Ambilight effect - analyze video colors
+  useEffect(() => {
+    if (!currentVideoId || !isPoweredOn) return;
+
+    const analyzeVideoColors = () => {
+      // Simulate ambilight by cycling through colors based on video playing
+      const colors = [
+        'rgba(100, 149, 237, 0.5)',
+        'rgba(138, 43, 226, 0.5)',
+        'rgba(255, 105, 180, 0.5)',
+        'rgba(255, 165, 0, 0.5)',
+        'rgba(50, 205, 50, 0.5)',
+        'rgba(0, 191, 255, 0.5)',
+      ];
+
+      let colorIndex = 0;
+      const interval = setInterval(() => {
+        colorIndex = (colorIndex + 1) % colors.length;
+        setAmbilightColor(colors[colorIndex]);
+      }, 2000);
+
+      return () => clearInterval(interval);
+    };
+
+    const cleanup = analyzeVideoColors();
+    return cleanup;
+  }, [currentVideoId, isPoweredOn]);
+
   return (
     <div className="retro-tv-container">
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
       <div className="gradient" />
       <div className="brick-wall" />
       <div className="wood-floor" />
 
-      <div className={`old-tv ${!isPoweredOn ? 'powered-off' : ''} ${isCloseup ? 'closeup-mode' : ''}`}>
+      <div
+        className={`old-tv ${!isPoweredOn ? 'powered-off' : ''} ${isCloseup ? 'closeup-mode' : ''}`}
+        style={{
+          boxShadow: `inset 0 -220px 200px rgba(0, 0, 0, 0.5),
+            50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
+            0 0 100px ${ambilightColor},
+            0 0 150px ${ambilightColor.replace('0.5', '0.3')}`
+        }}
+      >
         <div className="antenna" />
         <main>
           <div className="error-noise">
@@ -112,17 +160,17 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         </main>
         <div className="speaker" />
         <div className="volume">
-          <label>View Mode</label>
+          <label>Brightness</label>
           <input
             type="range"
             min="0"
             max="100"
-            value={viewMode}
-            onChange={(e) => setViewMode(Number(e.target.value))}
+            value={effectIntensity}
+            onChange={(e) => setEffectIntensity(Number(e.target.value))}
           />
         </div>
         <nav className="channel">
-          <label>Effects</label>
+          <label>Contrast</label>
           <input
             type="range"
             min="0"
@@ -369,35 +417,10 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           padding: 20px;
           border-radius: 8px;
           border-bottom: 4px #222 solid;
-          box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
-            50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
-            0 0 80px rgba(100, 149, 237, 0.4),
-            0 0 120px rgba(100, 149, 237, 0.2);
           transform: scale(0.8);
           z-index: 600;
           pointer-events: auto;
-          animation: ambilight 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes ambilight {
-          0% {
-            box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
-              50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
-              0 0 80px rgba(100, 149, 237, 0.4),
-              0 0 120px rgba(100, 149, 237, 0.2);
-          }
-          50% {
-            box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
-              50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
-              0 0 80px rgba(65, 105, 225, 0.5),
-              0 0 120px rgba(138, 43, 226, 0.3);
-          }
-          100% {
-            box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
-              50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
-              0 0 80px rgba(72, 209, 204, 0.4),
-              0 0 120px rgba(32, 178, 170, 0.2);
-          }
+          transition: box-shadow 0.5s ease;
         }
 
         .old-tv::after {
