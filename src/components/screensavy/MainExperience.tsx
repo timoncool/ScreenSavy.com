@@ -748,6 +748,7 @@ type MainExperienceProps = {
   videoSlug?: string;
   videoEffect?: string;
   onEffectChange?: (effect: string) => void;
+  onInterfaceVisibilityChange?: (visible: boolean) => void;
 };
 
 const MainExperience = ({
@@ -760,6 +761,7 @@ const MainExperience = ({
   videoSlug,
   videoEffect = 'none',
   onEffectChange,
+  onInterfaceVisibilityChange,
 }: MainExperienceProps = {}) => {
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
@@ -1113,6 +1115,13 @@ const MainExperience = ({
       setShowVisualizerModal(true);
     }
   }, [visualizerMode, visualizerCategory]);
+
+  // Notify parent when interface visibility changes
+  useEffect(() => {
+    if (onInterfaceVisibilityChange) {
+      onInterfaceVisibilityChange(!interfaceHidden);
+    }
+  }, [interfaceHidden, onInterfaceVisibilityChange]);
 
   const handleStartMicrophone = useCallback(async (deviceId: string) => {
     if (iframeRef?.current && iframeRef.current.contentWindow) {
