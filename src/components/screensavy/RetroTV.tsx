@@ -9,8 +9,8 @@ export interface RetroTVRef {
 const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
   const [currentVideoId, setCurrentVideoId] = useState('');
   const [isPoweredOn, setIsPoweredOn] = useState(true);
-  const [volume, setVolume] = useState(50);
-  const [channel, setChannel] = useState(50);
+  const [viewMode, setViewMode] = useState(50); // 0-50: full view, 51-100: closeup
+  const [effectIntensity, setEffectIntensity] = useState(50);
   const playerRef = useRef<any>(null);
 
   // Expose methods to parent
@@ -22,9 +22,9 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
   }));
 
   // Calculate effects based on sliders
-  // At 0: no effects (1.0), at 100: maximum effects
-  const brightness = 1.0 + (volume / 100) * 0.5; // 1.0 to 1.5
-  const contrast = 1.0 + (channel / 100) * 1.0; // 1.0 to 2.0
+  const isCloseup = viewMode > 50;
+  const brightness = 1.0 + (effectIntensity / 100) * 0.5; // 1.0 to 1.5
+  const contrast = 1.0 + (effectIntensity / 100) * 1.0; // 1.0 to 2.0
 
   // Load YouTube IFrame API
   useEffect(() => {
@@ -90,7 +90,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
       <div className="brick-wall" />
       <div className="wood-floor" />
 
-      <div className={`old-tv ${!isPoweredOn ? 'powered-off' : ''}`}>
+      <div className={`old-tv ${!isPoweredOn ? 'powered-off' : ''} ${isCloseup ? 'closeup-mode' : ''}`}>
         <div className="antenna" />
         <main>
           <div className="error-noise">
@@ -112,21 +112,23 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         </main>
         <div className="speaker" />
         <div className="volume">
+          <label>View Mode</label>
           <input
             type="range"
             min="0"
             max="100"
-            value={volume}
-            onChange={(e) => setVolume(Number(e.target.value))}
+            value={viewMode}
+            onChange={(e) => setViewMode(Number(e.target.value))}
           />
         </div>
         <nav className="channel">
+          <label>Effects</label>
           <input
             type="range"
             min="0"
             max="100"
-            value={channel}
-            onChange={(e) => setChannel(Number(e.target.value))}
+            value={effectIntensity}
+            onChange={(e) => setEffectIntensity(Number(e.target.value))}
           />
         </nav>
         <nav className="power">
@@ -136,7 +138,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         <footer />
       </div>
 
-      <div id="table-tv">
+      <div id="table-tv" className={isCloseup ? 'closeup-mode' : ''}>
         <div className="scene" style={{ transform: 'rotateX(-12deg) rotateY(0deg)' }}>
           <div className="shape cuboid-1 cub-1">
             <div className="face ft" style={{ boxShadow: 'inset 0 1px rgba(255,255,255,0.2)' }} />
@@ -290,19 +292,19 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         }
 
         .brick-wall::after {
-          content: "Welcome to the Future";
+          content: "Kilroy was here 👾";
           position: absolute;
-          top: 40%;
-          right: 15%;
+          top: 15%;
+          right: 20%;
           font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
-          font-size: 48px;
+          font-size: 42px;
           font-weight: bold;
-          color: rgba(255, 255, 255, 0.15);
+          color: rgba(255, 255, 255, 0.18);
           text-shadow:
             2px 2px 4px rgba(0, 0, 0, 0.8),
             -1px -1px 2px rgba(255, 255, 255, 0.1);
-          transform: rotate(-5deg);
-          letter-spacing: 2px;
+          transform: rotate(-8deg);
+          letter-spacing: 1px;
           z-index: 1;
         }
 
@@ -368,10 +370,34 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           border-radius: 8px;
           border-bottom: 4px #222 solid;
           box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
-            50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4);
+            50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
+            0 0 80px rgba(100, 149, 237, 0.4),
+            0 0 120px rgba(100, 149, 237, 0.2);
           transform: scale(0.8);
           z-index: 600;
           pointer-events: auto;
+          animation: ambilight 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes ambilight {
+          0% {
+            box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
+              50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
+              0 0 80px rgba(100, 149, 237, 0.4),
+              0 0 120px rgba(100, 149, 237, 0.2);
+          }
+          50% {
+            box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
+              50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
+              0 0 80px rgba(65, 105, 225, 0.5),
+              0 0 120px rgba(138, 43, 226, 0.3);
+          }
+          100% {
+            box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
+              50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
+              0 0 80px rgba(72, 209, 204, 0.4),
+              0 0 120px rgba(32, 178, 170, 0.2);
+          }
         }
 
         .old-tv::after {
@@ -527,7 +553,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         .old-tv .volume {
           position: absolute;
           width: 180px;
-          height: 40px;
+          height: 60px;
           right: 20px;
           bottom: 145px;
           border-radius: 4px;
@@ -537,12 +563,23 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           border: 2px #000 solid;
         }
 
+        .old-tv .volume label,
+        .old-tv .channel label {
+          position: absolute;
+          top: 2px;
+          left: 10px;
+          font-family: Arial;
+          font-size: 10px;
+          color: #aaa;
+          text-shadow: 0 1px #000;
+        }
+
         .old-tv .channel {
           position: absolute;
           width: 180px;
-          height: 40px;
+          height: 60px;
           right: 20px;
-          bottom: 90px;
+          bottom: 75px;
           border-radius: 4px;
           box-shadow: inset 2px 2px rgba(255, 255, 255, 0.1),
             inset -2px -2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(255, 255, 255, 0.2),
@@ -555,9 +592,9 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           position: absolute;
           width: 80%;
           left: 10%;
+          bottom: 8px;
           box-sizing: border-box;
           background: none;
-          margin: 18px 0;
           cursor: pointer;
         }
 
@@ -588,16 +625,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         }
 
         .old-tv .power {
-          position: absolute;
-          width: 180px;
-          height: 60px;
-          right: 20px;
-          bottom: 15px;
-          border-radius: 4px;
-          box-shadow: inset 2px 2px rgba(255, 255, 255, 0.1),
-            inset -2px -2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(255, 255, 255, 0.2),
-            0 4px 10px rgba(0, 0, 0, 0.4);
-          border: 2px #000 solid;
+          display: none;
         }
 
         .old-tv .power > button {
@@ -1186,14 +1214,42 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           background-color: #ffffff;
         }
 
+        .old-tv.closeup-mode {
+          transform: scale(1.5);
+          bottom: 200px;
+          z-index: 800;
+        }
+
+        #table-tv.closeup-mode {
+          transform: scale(2.5);
+          bottom: -50px;
+          z-index: 700;
+        }
+
+        .brick-wall {
+          transition: opacity 0.5s ease;
+        }
+
+        .closeup-mode ~ .brick-wall {
+          opacity: 0.3;
+        }
+
         @media (max-width: 1200px) {
           .old-tv {
             transform: scale(0.55);
             bottom: 325px;
           }
+          .old-tv.closeup-mode {
+            transform: scale(1.2);
+            bottom: 180px;
+          }
           #table-tv {
             transform: scale(1.4);
             bottom: 70px;
+          }
+          #table-tv.closeup-mode {
+            transform: scale(2.0);
+            bottom: 0px;
           }
         }
       `}</style>
