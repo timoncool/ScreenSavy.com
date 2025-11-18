@@ -27,11 +27,16 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en' }: LocalVideoPlayerPro
       setVideoFile(url);
 
       // Auto-play after loading
-      if (videoRef.current) {
-        videoRef.current.src = url;
-        videoRef.current.load();
-        videoRef.current.play();
-      }
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.src = url;
+          videoRef.current.load();
+          videoRef.current.play().catch(err => {
+            console.log('Autoplay prevented:', err);
+            // Autoplay was prevented, user will need to click play
+          });
+        }
+      }, 100);
     }
   };
 
@@ -206,36 +211,67 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en' }: LocalVideoPlayerPro
       )}
 
       <style jsx>{`
-        /* VHS Effect */
+        /* VHS Effect - Усиленный */
         .effect-vhs {
-          background: repeating-linear-gradient(
-            0deg,
-            rgba(255, 0, 0, 0.03),
-            rgba(255, 0, 0, 0.03) 2px,
-            transparent 2px,
-            transparent 4px
+          background:
+            repeating-linear-gradient(
+              0deg,
+              rgba(0, 0, 0, 0.15),
+              rgba(0, 0, 0, 0.15) 1px,
+              transparent 1px,
+              transparent 2px
+            );
+          animation: vhsFlicker 0.1s infinite, vhsDistort 0.3s infinite;
+          filter: saturate(0.8) contrast(1.2) brightness(0.9);
+        }
+
+        .effect-vhs::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            rgba(255, 0, 0, 0.1) 0%,
+            rgba(0, 255, 0, 0.1) 50%,
+            rgba(0, 0, 255, 0.1) 100%
           );
-          animation: vhsFlicker 0.15s infinite;
+          mix-blend-mode: overlay;
+          animation: vhsShift 2s infinite;
         }
 
         @keyframes vhsFlicker {
-          0%, 100% { opacity: 0.93; transform: translateY(0); }
-          50% { opacity: 0.98; transform: translateY(2px); }
+          0%, 100% { opacity: 0.85; }
+          50% { opacity: 1; }
         }
 
-        /* CRT Effect */
+        @keyframes vhsDistort {
+          0%, 100% { transform: translateX(0) scaleX(1); }
+          33% { transform: translateX(-2px) scaleX(1.01); }
+          66% { transform: translateX(2px) scaleX(0.99); }
+        }
+
+        @keyframes vhsShift {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(3px); }
+        }
+
+        /* CRT Effect - Усиленный */
         .effect-crt {
           background: repeating-linear-gradient(
             0deg,
-            transparent,
+            rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.2) 2px,
             transparent 2px,
-            rgba(255, 255, 255, 0.05) 2px,
-            rgba(255, 255, 255, 0.05) 4px
+            transparent 4px
           );
-          animation: crtScan 8s linear infinite;
+          animation: crtScan 6s linear infinite;
+          filter: contrast(1.3) brightness(1.1);
         }
 
-        .effect-crt::after {
+        .effect-crt::before {
           content: '';
           position: absolute;
           top: 0;
@@ -244,36 +280,170 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en' }: LocalVideoPlayerPro
           height: 100%;
           background: radial-gradient(
             ellipse at center,
-            transparent 0%,
-            rgba(0, 0, 0, 0.3) 100%
+            transparent 40%,
+            rgba(0, 0, 0, 0.6) 100%
           );
+          border-radius: 10% / 5%;
+        }
+
+        .effect-crt::after {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: 0;
+          width: 100%;
+          height: 50%;
+          background: linear-gradient(
+            to bottom,
+            transparent,
+            rgba(255, 255, 255, 0.1)
+          );
+          animation: crtScanline 8s linear infinite;
         }
 
         @keyframes crtScan {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(10px); }
+          0% { background-position: 0 0; }
+          100% { background-position: 0 100%; }
         }
 
-        /* Glitch Effect */
+        @keyframes crtScanline {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(300vh); }
+        }
+
+        /* Glitch Effect - Усиленный */
         .effect-glitch {
-          animation: glitchAnim 0.3s infinite;
+          animation: glitchAnim 0.2s infinite;
+        }
+
+        .effect-glitch::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: inherit;
+          mix-blend-mode: screen;
+          animation: glitchRGB 0.3s infinite;
         }
 
         @keyframes glitchAnim {
-          0%, 100% { transform: translate(0); }
-          20% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
-          40% { transform: translate(2px, -2px); filter: hue-rotate(-90deg); }
-          60% { transform: translate(-2px, -2px); }
-          80% { transform: translate(2px, 2px); }
+          0%, 100% {
+            transform: translate(0);
+            filter: hue-rotate(0deg);
+          }
+          10% {
+            transform: translate(-5px, 5px) skew(2deg);
+            filter: hue-rotate(90deg);
+          }
+          20% {
+            transform: translate(5px, -5px) skew(-2deg);
+            filter: hue-rotate(-90deg);
+          }
+          30% { transform: translate(-5px, -5px); }
+          40% { transform: translate(5px, 5px); }
+          50% {
+            transform: translate(0, 0) scaleX(1.05);
+            filter: invert(0.1);
+          }
+          60% { transform: translate(-3px, 3px); }
+          70% { transform: translate(3px, -3px); }
+          80% { transform: translate(0) scaleY(1.05); }
         }
 
-        /* Vintage Effect */
+        @keyframes glitchRGB {
+          0%, 100% {
+            opacity: 0;
+          }
+          25% {
+            opacity: 0.3;
+            filter:
+              drop-shadow(3px 0 0 red)
+              drop-shadow(-3px 0 0 cyan);
+          }
+          50% {
+            opacity: 0.5;
+            filter:
+              drop-shadow(-2px 0 0 red)
+              drop-shadow(2px 0 0 cyan);
+          }
+          75% {
+            opacity: 0.3;
+            filter:
+              drop-shadow(4px 0 0 red)
+              drop-shadow(-4px 0 0 cyan);
+          }
+        }
+
+        /* Vintage Effect - Усиленный */
         .effect-vintage {
-          background: rgba(255, 235, 205, 0.1);
-          mix-blend-mode: multiply;
+          filter: sepia(0.6) contrast(1.1) brightness(0.95);
+        }
+
+        .effect-vintage::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background:
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              rgba(0, 0, 0, 0.1) 2px,
+              rgba(0, 0, 0, 0.1) 3px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              transparent,
+              transparent 2px,
+              rgba(0, 0, 0, 0.1) 2px,
+              rgba(0, 0, 0, 0.1) 3px
+            );
+          mix-blend-mode: overlay;
+          opacity: 0.3;
         }
 
         .effect-vintage::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background:
+            radial-gradient(
+              circle at 20% 30%,
+              rgba(139, 69, 19, 0.3) 0%,
+              transparent 50%
+            ),
+            radial-gradient(
+              circle at 80% 70%,
+              rgba(101, 67, 33, 0.3) 0%,
+              transparent 50%
+            ),
+            radial-gradient(
+              ellipse at center,
+              transparent 30%,
+              rgba(101, 67, 33, 0.4) 100%
+            );
+          animation: vintagePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes vintagePulse {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
+        }
+
+        /* Film Noir Effect - Усиленный */
+        .effect-noir {
+          filter: grayscale(1) contrast(1.8) brightness(0.7);
+        }
+
+        .effect-noir::before {
           content: '';
           position: absolute;
           top: 0;
@@ -285,20 +455,10 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en' }: LocalVideoPlayerPro
               0deg,
               transparent,
               transparent 1px,
-              rgba(0, 0, 0, 0.02) 1px,
-              rgba(0, 0, 0, 0.02) 2px
-            ),
-            radial-gradient(
-              ellipse at center,
-              transparent 0%,
-              rgba(101, 67, 33, 0.2) 100%
+              rgba(0, 0, 0, 0.2) 1px,
+              rgba(0, 0, 0, 0.2) 2px
             );
-        }
-
-        /* Film Noir Effect */
-        .effect-noir {
-          background: rgba(0, 0, 0, 0.3);
-          filter: grayscale(1) contrast(1.3) brightness(0.8);
+          mix-blend-mode: overlay;
         }
 
         .effect-noir::after {
@@ -310,27 +470,100 @@ const LocalVideoPlayer = ({ effect, activeLanguage = 'en' }: LocalVideoPlayerPro
           height: 100%;
           background: radial-gradient(
             ellipse at center,
-            transparent 30%,
-            rgba(0, 0, 0, 0.7) 100%
+            transparent 20%,
+            rgba(0, 0, 0, 0.8) 100%
           );
+          box-shadow:
+            inset 0 0 200px rgba(0, 0, 0, 0.9),
+            inset 0 0 100px rgba(0, 0, 0, 0.6);
         }
 
-        /* Neon Effect */
+        /* Neon Effect - Усиленный */
         .effect-neon {
-          filter: saturate(2) contrast(1.5) brightness(1.2);
-          animation: neonPulse 2s ease-in-out infinite;
+          filter: saturate(3) contrast(1.8) brightness(1.3) hue-rotate(10deg);
+          animation: neonPulse 1.5s ease-in-out infinite;
+        }
+
+        .effect-neon::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background:
+            linear-gradient(
+              45deg,
+              rgba(255, 0, 255, 0.2) 0%,
+              rgba(0, 255, 255, 0.2) 100%
+            );
+          mix-blend-mode: screen;
+          animation: neonGlow 2s ease-in-out infinite;
         }
 
         @keyframes neonPulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.85; }
+          0%, 100% {
+            opacity: 1;
+            filter: saturate(3) contrast(1.8) brightness(1.3) hue-rotate(10deg);
+          }
+          50% {
+            opacity: 0.8;
+            filter: saturate(3.5) contrast(2) brightness(1.5) hue-rotate(20deg);
+          }
         }
 
-        /* Chromatic Aberration */
+        @keyframes neonGlow {
+          0%, 100% {
+            opacity: 0.5;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(1.02);
+          }
+        }
+
+        /* Chromatic Aberration - Усиленный */
         .effect-chromatic {
+          position: relative;
+        }
+
+        .effect-chromatic::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: inherit;
+          mix-blend-mode: screen;
           filter:
-            drop-shadow(2px 0 0 rgba(255, 0, 0, 0.5))
-            drop-shadow(-2px 0 0 rgba(0, 255, 255, 0.5));
+            drop-shadow(5px 0 0 rgba(255, 0, 0, 0.8))
+            drop-shadow(-5px 0 0 rgba(0, 255, 255, 0.8));
+          animation: chromaticShift 2s ease-in-out infinite;
+        }
+
+        @keyframes chromaticShift {
+          0%, 100% {
+            filter:
+              drop-shadow(5px 0 0 rgba(255, 0, 0, 0.8))
+              drop-shadow(-5px 0 0 rgba(0, 255, 255, 0.8));
+          }
+          25% {
+            filter:
+              drop-shadow(7px 2px 0 rgba(255, 0, 0, 0.9))
+              drop-shadow(-7px -2px 0 rgba(0, 255, 255, 0.9));
+          }
+          50% {
+            filter:
+              drop-shadow(3px -2px 0 rgba(255, 0, 0, 0.7))
+              drop-shadow(-3px 2px 0 rgba(0, 255, 255, 0.7));
+          }
+          75% {
+            filter:
+              drop-shadow(8px 0 0 rgba(255, 0, 0, 0.9))
+              drop-shadow(-8px 0 0 rgba(0, 255, 255, 0.9));
+          }
         }
 
         /* Original - No Effect */
