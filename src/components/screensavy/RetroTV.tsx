@@ -292,7 +292,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         }
 
         .brick-wall::after {
-          content: "Kilroy was here 👾";
+          content: "neural dreaming 👾";
           position: absolute;
           top: 15%;
           right: 20%;
