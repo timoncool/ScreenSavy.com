@@ -4,12 +4,22 @@ import { useRef, useState } from 'react';
 
 interface LocalVideoPlayerProps {
   effect: string;
+  activeLanguage?: string;
 }
 
-const LocalVideoPlayer = ({ effect }: LocalVideoPlayerProps) => {
+const LocalVideoPlayer = ({ effect, activeLanguage = 'en' }: LocalVideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFile, setVideoFile] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  const t = {
+    uploadTitle: activeLanguage === 'ru' ? 'Загрузить Видео' : 'Upload Video File',
+    dropHere: activeLanguage === 'ru' ? 'Перетащите видео сюда' : 'Drop video file here',
+    dragDrop: activeLanguage === 'ru' ? 'Перетащите или выберите файл' : 'Drag & drop or click to select',
+    selectVideo: activeLanguage === 'ru' ? 'Выбрать Видео' : 'Select Video',
+    supported: activeLanguage === 'ru' ? 'Поддерживается: MP4, WebM, OGG, MOV' : 'Supported: MP4, WebM, OGG, MOV',
+    changeVideo: activeLanguage === 'ru' ? 'Сменить Видео' : 'Change Video',
+  };
 
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith('video/')) {
@@ -79,12 +89,12 @@ const LocalVideoPlayer = ({ effect }: LocalVideoPlayerProps) => {
             minWidth: '400px',
           }}
         >
-          <div style={{ fontSize: '64px', marginBottom: '20px' }}>📁</div>
+          <i className="material-symbols-outlined" style={{ fontSize: '64px', marginBottom: '20px' }}>video_file</i>
           <h2 style={{ marginBottom: '20px', fontSize: '24px' }}>
-            {isDragging ? 'Drop video file here' : 'Upload Video File'}
+            {isDragging ? t.dropHere : t.uploadTitle}
           </h2>
           <p style={{ marginBottom: '20px', color: '#999' }}>
-            Drag & drop or click to select
+            {t.dragDrop}
           </p>
           <label
             style={{
@@ -106,7 +116,7 @@ const LocalVideoPlayer = ({ effect }: LocalVideoPlayerProps) => {
               e.currentTarget.style.transform = 'scale(1)';
             }}
           >
-            Select Video
+            {t.selectVideo}
             <input
               type="file"
               accept="video/*"
@@ -115,7 +125,7 @@ const LocalVideoPlayer = ({ effect }: LocalVideoPlayerProps) => {
             />
           </label>
           <p style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
-            Supported: MP4, WebM, OGG, MOV
+            {t.supported}
           </p>
         </div>
       ) : (
@@ -141,29 +151,36 @@ const LocalVideoPlayer = ({ effect }: LocalVideoPlayerProps) => {
           <label
             style={{
               position: 'absolute',
-              bottom: '20px',
+              top: '20px',
               left: '50%',
               transform: 'translateX(-50%)',
-              padding: '10px 20px',
-              background: 'rgba(0, 0, 0, 0.7)',
+              padding: '12px 20px',
+              background: 'rgba(0, 0, 0, 0.85)',
               color: '#fff',
               borderRadius: '8px',
               cursor: 'pointer',
-              zIndex: 20,
+              zIndex: 900,
+              pointerEvents: 'auto',
               fontSize: '14px',
-              border: '1px solid #666',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
               transition: 'all 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = 'rgba(124, 252, 0, 0.2)';
               e.currentTarget.style.borderColor = '#7cfc00';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)';
-              e.currentTarget.style.borderColor = '#666';
+              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.85)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
             }}
           >
-            📁 Change Video
+            <i className="material-symbols-outlined" style={{ fontSize: '20px' }}>video_file</i>
+            {t.changeVideo}
             <input
               type="file"
               accept="video/*"
