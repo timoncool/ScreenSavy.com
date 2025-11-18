@@ -52,6 +52,7 @@ const VideoPlayerWithOverlay = ({ slug }: VideoPlayerWithOverlayProps) => {
           <YouTubePlayerWithEffects
             effect={currentEffect}
             activeLanguage={activeLanguage}
+            interfaceVisible={interfaceVisible}
           />
         );
 
