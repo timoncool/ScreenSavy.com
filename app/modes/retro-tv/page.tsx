@@ -65,7 +65,7 @@ export default function RetroTVPage() {
         {showUrlInput && (
           <div style={{
             position: 'absolute',
-            top: '20px',
+            bottom: '20px',
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 900,
@@ -73,86 +73,61 @@ export default function RetroTVPage() {
           }}>
             <form onSubmit={handleSubmit} style={{
               display: 'flex',
-              gap: '10px',
-              background: 'rgba(0, 0, 0, 0.85)',
-              padding: '15px 20px',
-              borderRadius: '12px',
-              backdropFilter: 'blur(10px)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              gap: '8px',
+              background: 'rgba(0, 0, 0, 0.7)',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
             }}>
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="YouTube URL or Video ID..."
+                placeholder="YouTube URL..."
                 style={{
-                  minWidth: '400px',
-                  padding: '12px 16px',
-                  border: '2px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  color: 'white',
-                  fontSize: '14px',
+                  minWidth: '300px',
+                  padding: '8px 12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '6px',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontSize: '13px',
                   outline: 'none',
-                  fontFamily: 'monospace',
-                  transition: 'all 0.3s ease',
+                  fontFamily: 'Inter, sans-serif',
+                  transition: 'all 0.2s ease',
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#7cfc00';
-                  e.target.style.boxShadow = '0 0 15px rgba(124, 252, 0, 0.3)';
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                  e.target.style.background = 'rgba(255, 255, 255, 0.12)';
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.boxShadow = 'none';
+                  e.target.style.background = 'rgba(255, 255, 255, 0.08)';
                 }}
               />
               <button type="submit" style={{
-                padding: '12px 24px',
-                background: '#7cfc00',
-                border: 'none',
-                borderRadius: '8px',
-                color: '#000',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 'bold',
-                fontSize: '14px',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 4px 12px rgba(124, 252, 0, 0.3)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#6ae000';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(124, 252, 0, 0.5)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#7cfc00';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(124, 252, 0, 0.3)';
-              }}>
-                <i className="material-symbols-outlined" style={{ fontSize: '20px' }}>play_arrow</i>
-              </button>
-              <button type="button" onClick={() => setShowUrlInput(false)} style={{
-                padding: '12px',
-                background: 'rgba(255, 255, 255, 0.1)',
+                padding: '8px 16px',
+                background: 'rgba(255, 255, 255, 0.15)',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '8px',
-                color: 'white',
+                borderRadius: '6px',
+                color: 'rgba(255, 255, 255, 0.9)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                transition: 'all 0.3s ease',
+                fontSize: '13px',
+                fontWeight: 500,
+                transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
               }}>
-                <i className="material-symbols-outlined" style={{ fontSize: '20px' }}>close</i>
+                <i className="material-symbols-outlined" style={{ fontSize: '18px', marginRight: '4px' }}>play_arrow</i>
+                Play
               </button>
             </form>
           </div>
