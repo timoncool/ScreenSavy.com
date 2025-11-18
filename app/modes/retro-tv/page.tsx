@@ -7,7 +7,7 @@ import MainExperience from '@/components/screensavy/MainExperience';
 export default function RetroTVPage() {
   const tvRef = useRef<{ setVideoId: (id: string) => void }>(null);
   const [inputValue, setInputValue] = useState('');
-  const [showInput, setShowInput] = useState(true);
+  const [showUrlInput, setShowUrlInput] = useState(true);
 
   // Extract video ID from YouTube URL
   const extractVideoId = useCallback((url: string): string | null => {
@@ -46,7 +46,8 @@ export default function RetroTVPage() {
         Загрузка...
       </div>
     }>
-      <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+        {/* Retro TV - lowest z-index */}
         <div
           style={{
             position: 'absolute',
@@ -60,14 +61,14 @@ export default function RetroTVPage() {
           <RetroTV ref={tvRef} />
         </div>
 
-        {/* URL Input Panel */}
-        {showInput && (
+        {/* URL Input Panel with its own show/hide toggle */}
+        {showUrlInput ? (
           <div style={{
             position: 'absolute',
-            top: '40px',
+            top: '20px',
             left: '50%',
             transform: 'translateX(-50%)',
-            zIndex: 1001,
+            zIndex: 900,
             pointerEvents: 'auto',
           }}>
             <form onSubmit={handleSubmit} style={{
@@ -133,7 +134,7 @@ export default function RetroTVPage() {
               }}>
                 <i className="material-symbols-outlined" style={{ fontSize: '20px' }}>play_arrow</i>
               </button>
-              <button type="button" onClick={() => setShowInput(false)} style={{
+              <button type="button" onClick={() => setShowUrlInput(false)} style={{
                 padding: '12px',
                 background: 'rgba(255, 255, 255, 0.1)',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -155,17 +156,14 @@ export default function RetroTVPage() {
               </button>
             </form>
           </div>
-        )}
-
-        {/* Toggle button when input is hidden */}
-        {!showInput && (
+        ) : (
           <button
-            onClick={() => setShowInput(true)}
+            onClick={() => setShowUrlInput(true)}
             style={{
               position: 'absolute',
               top: '20px',
-              right: '20px',
-              zIndex: 1001,
+              left: '20px',
+              zIndex: 900,
               padding: '12px 20px',
               background: 'rgba(124, 252, 0, 0.9)',
               border: 'none',
@@ -195,6 +193,7 @@ export default function RetroTVPage() {
           </button>
         )}
 
+        {/* MainExperience overlay - highest z-index but pointer-events only on specific elements */}
         <div
           style={{
             position: 'absolute',
@@ -203,15 +202,13 @@ export default function RetroTVPage() {
             width: '100%',
             height: '100%',
             zIndex: 1000,
-            pointerEvents: 'none',
+            pointerEvents: 'none', // Don't block TV controls
           }}
         >
-          <div style={{ pointerEvents: 'auto' }}>
-            <MainExperience
-              visualizerMode={true}
-              visualizerSlug="retro-tv"
-            />
-          </div>
+          <MainExperience
+            visualizerMode={true}
+            visualizerSlug="retro-tv"
+          />
         </div>
       </div>
     </Suspense>

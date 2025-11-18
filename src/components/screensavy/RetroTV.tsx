@@ -670,10 +670,10 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
 
         .youtube-container {
           position: absolute;
-          width: 120%;
-          height: 120%;
-          top: -10%;
-          left: -10%;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
           border-radius: 50% / 5%;
           overflow: hidden;
         }
@@ -688,28 +688,82 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           position: absolute;
           width: 100%;
           height: 100%;
-          background: repeating-radial-gradient(
-            circle at 50% 50%,
-            #fff 0%,
-            #000 0.0001%,
-            #fff 0.0002%
-          );
-          animation: static 0.1s infinite steps(10);
-          opacity: 0.8;
+          background-image:
+            linear-gradient(0deg, transparent 50%, rgba(255, 255, 255, 0.1) 50%),
+            linear-gradient(90deg, transparent 50%, rgba(255, 255, 255, 0.05) 50%);
+          background-size: 2px 2px, 3px 3px;
+          animation: static 0.05s infinite;
+          opacity: 0.9;
+          filter: contrast(200%) brightness(150%);
+        }
+
+        .static-noise::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.1);
+          animation: flicker 0.1s infinite;
+        }
+
+        .static-noise::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background-image:
+            radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 10%),
+            radial-gradient(circle, rgba(255,255,255,0.2) 15%, transparent 15%);
+          background-size: 8px 8px, 12px 12px;
+          background-position: 0 0, 4px 4px;
+          animation: staticDots 0.08s infinite;
         }
 
         @keyframes static {
-          0% { background-position: 0 0; }
-          10% { background-position: -5% -10%; }
-          20% { background-position: -15% 5%; }
-          30% { background-position: 7% -25%; }
-          40% { background-position: 20% 25%; }
-          50% { background-position: -25% 10%; }
-          60% { background-position: 15% -20%; }
-          70% { background-position: -10% 15%; }
-          80% { background-position: 25% -5%; }
-          90% { background-position: -20% 20%; }
-          100% { background-position: 10% -15%; }
+          0% {
+            background-position: 0 0, 0 0;
+            filter: contrast(200%) brightness(150%) hue-rotate(0deg);
+          }
+          25% {
+            background-position: -2px 2px, 3px -1px;
+            filter: contrast(220%) brightness(140%) hue-rotate(5deg);
+          }
+          50% {
+            background-position: 1px -1px, -2px 2px;
+            filter: contrast(180%) brightness(160%) hue-rotate(-5deg);
+          }
+          75% {
+            background-position: -1px -2px, 1px 3px;
+            filter: contrast(210%) brightness(145%) hue-rotate(3deg);
+          }
+          100% {
+            background-position: 2px 1px, -1px -2px;
+            filter: contrast(200%) brightness(150%) hue-rotate(0deg);
+          }
+        }
+
+        @keyframes flicker {
+          0%, 100% { opacity: 0.05; }
+          50% { opacity: 0.15; }
+        }
+
+        @keyframes staticDots {
+          0% {
+            transform: translate(0, 0);
+            opacity: 0.6;
+          }
+          33% {
+            transform: translate(-2px, 2px);
+            opacity: 0.8;
+          }
+          66% {
+            transform: translate(2px, -1px);
+            opacity: 0.7;
+          }
+          100% {
+            transform: translate(-1px, 1px);
+            opacity: 0.6;
+          }
         }
 
         .old-tv-content::after {
