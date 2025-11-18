@@ -61,8 +61,8 @@ export default function RetroTVPage() {
           <RetroTV ref={tvRef} />
         </div>
 
-        {/* URL Input Panel with its own show/hide toggle */}
-        {showUrlInput ? (
+        {/* URL Input Panel - only show when showUrlInput is true */}
+        {showUrlInput && (
           <div style={{
             position: 'absolute',
             top: '20px',
@@ -156,41 +156,6 @@ export default function RetroTVPage() {
               </button>
             </form>
           </div>
-        ) : (
-          <button
-            onClick={() => setShowUrlInput(true)}
-            style={{
-              position: 'absolute',
-              top: '20px',
-              left: '20px',
-              zIndex: 900,
-              padding: '12px 20px',
-              background: 'rgba(124, 252, 0, 0.9)',
-              border: 'none',
-              borderRadius: '8px',
-              color: '#000',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontWeight: 'bold',
-              fontSize: '14px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 12px rgba(124, 252, 0, 0.3)',
-              pointerEvents: 'auto',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(124, 252, 0, 0.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(124, 252, 0, 0.3)';
-            }}
-          >
-            <i className="material-symbols-outlined" style={{ fontSize: '20px' }}>add_link</i>
-            YouTube URL
-          </button>
         )}
 
         {/* MainExperience overlay - highest z-index but pointer-events only on specific elements */}
@@ -208,6 +173,11 @@ export default function RetroTVPage() {
           <MainExperience
             visualizerMode={true}
             visualizerSlug="retro-tv"
+            onInterfaceVisibilityChange={(visible) => {
+              if (!visible) {
+                setShowUrlInput(false);
+              }
+            }}
           />
         </div>
       </div>

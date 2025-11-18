@@ -207,7 +207,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
               rgba(0, 0, 0, 0.8) 100%
             ),
             radial-gradient(transparent 50%, rgba(0, 0, 0, 0.8));
-          z-index: 5;
+          z-index: 700;
           pointer-events: none;
         }
 
@@ -243,7 +243,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           background: url(https://levelhard.com.br/jobs/jobs/site_television/images/wall_brick_texture.jpg);
           background-size: 400px;
           box-shadow: 0 8px 10px rgba(0, 0, 0, 0.8);
-          z-index: 2;
+          z-index: 100;
         }
 
         .brick-wall:before {
@@ -267,7 +267,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           left: 0;
           perspective: 300px;
           overflow: hidden;
-          z-index: 1;
+          z-index: 50;
         }
 
         .wood-floor::before {
@@ -302,6 +302,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
             50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4);
           transform: scale(0.8);
           z-index: 600;
+          pointer-events: auto;
         }
 
         .old-tv::after {
