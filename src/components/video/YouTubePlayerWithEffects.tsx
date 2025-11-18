@@ -600,6 +600,265 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en', interfaceVisi
           }
         }
 
+        /* Film Grain Effect - Едва заметный */
+        .effect-grain {
+          filter: contrast(1.05) brightness(0.98);
+        }
+
+        .effect-grain::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.1"/></svg>');
+          mix-blend-mode: overlay;
+          opacity: 0.15;
+          animation: grainMove 0.5s steps(8) infinite;
+        }
+
+        @keyframes grainMove {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(-1px, 1px); }
+          50% { transform: translate(1px, -1px); }
+          75% { transform: translate(-1px, -1px); }
+        }
+
+        /* Cinematic Teal-Orange - Едва заметный */
+        .effect-cinematic {
+          filter: saturate(1.15) contrast(1.1) brightness(1.02);
+        }
+
+        .effect-cinematic::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            180deg,
+            rgba(0, 150, 150, 0.08) 0%,
+            transparent 50%,
+            rgba(255, 140, 70, 0.08) 100%
+          );
+          mix-blend-mode: color;
+        }
+
+        /* Duotone Effect - Едва заметный */
+        .effect-duotone {
+          filter: saturate(1.2) contrast(1.15);
+        }
+
+        .effect-duotone::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            45deg,
+            rgba(138, 43, 226, 0.15) 0%,
+            rgba(255, 215, 0, 0.15) 100%
+          );
+          mix-blend-mode: color;
+        }
+
+        /* Night Vision Effect - Едва заметный */
+        .effect-nightvision {
+          filter: saturate(0.5) brightness(1.1) contrast(1.2) hue-rotate(90deg);
+        }
+
+        .effect-nightvision::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background:
+            repeating-linear-gradient(
+              0deg,
+              rgba(0, 255, 0, 0.03),
+              rgba(0, 255, 0, 0.03) 2px,
+              transparent 2px,
+              transparent 4px
+            ),
+            radial-gradient(
+              circle at center,
+              transparent 0%,
+              rgba(0, 0, 0, 0.3) 100%
+            );
+          mix-blend-mode: overlay;
+        }
+
+        .effect-nightvision::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 255, 0, 0.08);
+          mix-blend-mode: screen;
+          animation: nvFlicker 0.15s infinite;
+        }
+
+        @keyframes nvFlicker {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
+        }
+
+        /* Surveillance/CCTV Effect - Едва заметный */
+        .effect-surveillance {
+          filter: saturate(0.7) contrast(1.2) brightness(0.95);
+        }
+
+        .effect-surveillance::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background:
+            repeating-linear-gradient(
+              0deg,
+              rgba(0, 0, 0, 0.1),
+              rgba(0, 0, 0, 0.1) 2px,
+              transparent 2px,
+              transparent 4px
+            );
+          animation: scanlineMove 8s linear infinite;
+        }
+
+        .effect-surveillance::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 100, 200, 0.08);
+          mix-blend-mode: multiply;
+        }
+
+        @keyframes scanlineMove {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(10px); }
+        }
+
+        /* Vaporwave Effect - Едва заметный */
+        .effect-vaporwave {
+          filter: saturate(1.4) brightness(1.05) contrast(1.1) hue-rotate(-10deg);
+        }
+
+        .effect-vaporwave::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            180deg,
+            rgba(255, 0, 255, 0.12) 0%,
+            rgba(0, 255, 255, 0.12) 50%,
+            rgba(255, 105, 180, 0.12) 100%
+          );
+          mix-blend-mode: screen;
+          animation: vaporShift 4s ease-in-out infinite;
+        }
+
+        @keyframes vaporShift {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 0.7; }
+        }
+
+        /* Underwater Effect - Едва заметный */
+        .effect-underwater {
+          filter: saturate(1.2) hue-rotate(180deg) brightness(0.92);
+        }
+
+        .effect-underwater::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background:
+            radial-gradient(
+              ellipse at 30% 20%,
+              rgba(0, 200, 255, 0.15) 0%,
+              transparent 50%
+            ),
+            radial-gradient(
+              ellipse at 70% 80%,
+              rgba(0, 150, 200, 0.1) 0%,
+              transparent 50%
+            );
+          mix-blend-mode: overlay;
+          animation: caustics 6s ease-in-out infinite;
+        }
+
+        .effect-underwater::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 100, 150, 0.1);
+          mix-blend-mode: multiply;
+        }
+
+        @keyframes caustics {
+          0%, 100% {
+            transform: translate(0, 0) scale(1);
+            opacity: 0.6;
+          }
+          50% {
+            transform: translate(10px, -10px) scale(1.05);
+            opacity: 0.8;
+          }
+        }
+
+        /* Anaglyph 3D Effect - Едва заметный */
+        .effect-anaglyph {
+          position: relative;
+        }
+
+        .effect-anaglyph::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: inherit;
+          mix-blend-mode: screen;
+          filter:
+            drop-shadow(3px 0 0 rgba(255, 0, 0, 0.4))
+            drop-shadow(-3px 0 0 rgba(0, 255, 255, 0.4));
+          animation: anaglyphShift 3s ease-in-out infinite;
+        }
+
+        @keyframes anaglyphShift {
+          0%, 100% {
+            filter:
+              drop-shadow(3px 0 0 rgba(255, 0, 0, 0.4))
+              drop-shadow(-3px 0 0 rgba(0, 255, 255, 0.4));
+          }
+          50% {
+            filter:
+              drop-shadow(4px 0 0 rgba(255, 0, 0, 0.45))
+              drop-shadow(-4px 0 0 rgba(0, 255, 255, 0.45));
+          }
+        }
+
         .effect-none {
           display: none;
         }
