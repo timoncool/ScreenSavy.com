@@ -5,9 +5,10 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 interface YouTubePlayerWithEffectsProps {
   effect: string;
   activeLanguage?: string;
+  interfaceVisible?: boolean;
 }
 
-const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlayerWithEffectsProps) => {
+const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en', interfaceVisible = true }: YouTubePlayerWithEffectsProps) => {
   const playerRef = useRef<any>(null);
   const [inputValue, setInputValue] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(true);
@@ -38,13 +39,10 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
   }, [inputValue, getVideoId]);
 
   useEffect(() => {
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
+    // Check if YouTube API is already loaded
     // @ts-ignore
-    window.onYouTubeIframeAPIReady = () => {
+    if (window.YT && window.YT.Player) {
+      // API already loaded, create player immediately
       // @ts-ignore
       playerRef.current = new window.YT.Player('youtube-effects-player', {
         videoId: currentVideoId,
@@ -57,7 +55,29 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
           playlist: currentVideoId,
         },
       });
-    };
+    } else {
+      // Load YouTube API
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+      // @ts-ignore
+      window.onYouTubeIframeAPIReady = () => {
+        // @ts-ignore
+        playerRef.current = new window.YT.Player('youtube-effects-player', {
+          videoId: currentVideoId,
+          playerVars: {
+            autoplay: 1,
+            controls: 1,
+            modestbranding: 1,
+            rel: 0,
+            loop: 1,
+            playlist: currentVideoId,
+          },
+        });
+      };
+    }
 
     return () => {
       if (playerRef.current && playerRef.current.destroy) {
@@ -90,7 +110,7 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
       />
 
       {/* URL Input Panel */}
-      {showUrlInput && (
+      {showUrlInput && interfaceVisible && (
         <div style={{
           position: 'absolute',
           bottom: '20px',
@@ -176,18 +196,18 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
       />
 
       <style jsx>{`
-        /* VHS Effect - ЭКСТРЕМАЛЬНО УСИЛЕННЫЙ */
+        /* VHS Effect - Заметный и стильный */
         .effect-vhs {
           background:
             repeating-linear-gradient(
               0deg,
-              rgba(0, 0, 0, 0.35),
-              rgba(0, 0, 0, 0.35) 1px,
+              rgba(0, 0, 0, 0.25),
+              rgba(0, 0, 0, 0.25) 1px,
               transparent 1px,
               transparent 2px
             );
-          animation: vhsFlicker 0.08s infinite, vhsDistort 0.2s infinite;
-          filter: saturate(0.6) contrast(1.5) brightness(0.85) hue-rotate(-5deg);
+          animation: vhsFlicker 0.1s infinite, vhsDistort 0.25s infinite;
+          filter: saturate(0.7) contrast(1.3) brightness(0.88) hue-rotate(-3deg);
         }
 
         .effect-vhs::before {
@@ -199,41 +219,41 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
           height: 100%;
           background: linear-gradient(
             90deg,
-            rgba(255, 0, 0, 0.25) 0%,
-            rgba(0, 255, 0, 0.25) 50%,
-            rgba(0, 0, 255, 0.25) 100%
+            rgba(255, 0, 0, 0.18) 0%,
+            rgba(0, 255, 0, 0.18) 50%,
+            rgba(0, 0, 255, 0.18) 100%
           );
           mix-blend-mode: overlay;
-          animation: vhsShift 1.5s infinite;
+          animation: vhsShift 1.8s infinite;
         }
 
         @keyframes vhsFlicker {
-          0%, 100% { opacity: 0.7; }
+          0%, 100% { opacity: 0.78; }
           50% { opacity: 1; }
         }
 
         @keyframes vhsDistort {
           0%, 100% { transform: translateX(0) scaleX(1); }
-          33% { transform: translateX(-5px) scaleX(1.03); }
-          66% { transform: translateX(5px) scaleX(0.97); }
+          33% { transform: translateX(-3px) scaleX(1.02); }
+          66% { transform: translateX(3px) scaleX(0.98); }
         }
 
         @keyframes vhsShift {
           0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(8px); }
+          50% { transform: translateX(5px); }
         }
 
-        /* CRT Effect - ЭКСТРЕМАЛЬНО УСИЛЕННЫЙ */
+        /* CRT Effect - Заметный и стильный */
         .effect-crt {
           background: repeating-linear-gradient(
             0deg,
-            rgba(0, 0, 0, 0.4),
-            rgba(0, 0, 0, 0.4) 2px,
+            rgba(0, 0, 0, 0.3),
+            rgba(0, 0, 0, 0.3) 2px,
             transparent 2px,
             transparent 4px
           );
-          animation: crtScan 4s linear infinite;
-          filter: contrast(1.6) brightness(1.2) saturate(1.2);
+          animation: crtScan 5s linear infinite;
+          filter: contrast(1.5) brightness(1.15) saturate(1.15);
         }
 
         .effect-crt::before {
@@ -245,27 +265,27 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
           height: 100%;
           background: radial-gradient(
             ellipse at center,
-            transparent 30%,
-            rgba(0, 0, 0, 0.8) 100%
+            transparent 35%,
+            rgba(0, 0, 0, 0.7) 100%
           );
-          border-radius: 15% / 8%;
-          box-shadow: inset 0 0 100px rgba(0, 255, 100, 0.15);
+          border-radius: 12% / 6%;
+          box-shadow: inset 0 0 80px rgba(0, 255, 100, 0.12);
         }
 
         .effect-crt::after {
           content: '';
           position: absolute;
-          top: -100%;
+          top: -80%;
           left: 0;
           width: 100%;
-          height: 100%;
+          height: 80%;
           background: linear-gradient(
             to bottom,
             transparent,
-            rgba(255, 255, 255, 0.2),
+            rgba(255, 255, 255, 0.15),
             transparent
           );
-          animation: crtScanline 5s linear infinite;
+          animation: crtScanline 6s linear infinite;
         }
 
         @keyframes crtScan {
@@ -275,12 +295,12 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
 
         @keyframes crtScanline {
           0% { transform: translateY(0); }
-          100% { transform: translateY(400vh); }
+          100% { transform: translateY(350vh); }
         }
 
-        /* Glitch Effect - ЭКСТРЕМАЛЬНО УСИЛЕННЫЙ */
+        /* Glitch Effect - Заметный и стильный */
         .effect-glitch {
-          animation: glitchAnim 0.15s infinite;
+          animation: glitchAnim 0.18s infinite;
         }
 
         .effect-glitch::before {
@@ -292,7 +312,7 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
           height: 100%;
           background: inherit;
           mix-blend-mode: screen;
-          animation: glitchRGB 0.2s infinite;
+          animation: glitchRGB 0.25s infinite;
         }
 
         @keyframes glitchAnim {
@@ -301,69 +321,69 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
             filter: hue-rotate(0deg);
           }
           10% {
-            transform: translate(-12px, 8px) skew(5deg);
-            filter: hue-rotate(180deg) saturate(3);
+            transform: translate(-8px, 6px) skew(3deg);
+            filter: hue-rotate(120deg) saturate(2.5);
           }
           20% {
-            transform: translate(10px, -10px) skew(-5deg);
-            filter: hue-rotate(-180deg) invert(0.2);
+            transform: translate(7px, -7px) skew(-3deg);
+            filter: hue-rotate(-120deg) invert(0.15);
           }
           30% {
-            transform: translate(-8px, -8px) scaleY(1.1);
-            filter: contrast(3);
+            transform: translate(-6px, -6px) scaleY(1.08);
+            filter: contrast(2.5);
           }
           40% {
-            transform: translate(12px, 8px) scaleX(1.1);
-            filter: brightness(2);
+            transform: translate(8px, 6px) scaleX(1.08);
+            filter: brightness(1.7);
           }
           50% {
-            transform: translate(0, 0) scale(1.08) rotate(1deg);
-            filter: invert(0.3) hue-rotate(90deg);
+            transform: translate(0, 0) scale(1.05) rotate(0.5deg);
+            filter: invert(0.2) hue-rotate(60deg);
           }
           60% {
-            transform: translate(-10px, 6px) skew(3deg);
-            filter: saturate(5);
+            transform: translate(-7px, 5px) skew(2deg);
+            filter: saturate(4);
           }
           70% {
-            transform: translate(8px, -8px) skew(-3deg);
-            filter: contrast(2);
+            transform: translate(6px, -6px) skew(-2deg);
+            filter: contrast(1.8);
           }
           80% {
-            transform: translate(0) scaleY(1.12);
-            filter: hue-rotate(-90deg);
+            transform: translate(0) scaleY(1.09);
+            filter: hue-rotate(-60deg);
           }
         }
 
         @keyframes glitchRGB {
           0%, 100% {
-            opacity: 0.2;
+            opacity: 0.15;
           }
           25% {
-            opacity: 0.6;
+            opacity: 0.5;
             filter:
-              drop-shadow(8px 0 0 red)
-              drop-shadow(-8px 0 0 cyan)
-              drop-shadow(0 8px 0 lime);
+              drop-shadow(6px 0 0 red)
+              drop-shadow(-6px 0 0 cyan)
+              drop-shadow(0 6px 0 lime);
           }
           50% {
-            opacity: 0.8;
+            opacity: 0.65;
             filter:
-              drop-shadow(-6px 0 0 red)
-              drop-shadow(6px 0 0 cyan)
-              drop-shadow(0 -6px 0 yellow);
+              drop-shadow(-5px 0 0 red)
+              drop-shadow(5px 0 0 cyan)
+              drop-shadow(0 -5px 0 yellow);
           }
           75% {
-            opacity: 0.6;
+            opacity: 0.5;
             filter:
-              drop-shadow(10px 0 0 red)
-              drop-shadow(-10px 0 0 cyan)
-              drop-shadow(0 10px 0 magenta);
+              drop-shadow(7px 0 0 red)
+              drop-shadow(-7px 0 0 cyan)
+              drop-shadow(0 7px 0 magenta);
           }
         }
 
-        /* Vintage Effect - ЭКСТРЕМАЛЬНО УСИЛЕННЫЙ */
+        /* Vintage Effect - Заметный и стильный */
         .effect-vintage {
-          filter: sepia(0.9) contrast(1.4) brightness(0.85) saturate(0.7);
+          filter: sepia(0.75) contrast(1.25) brightness(0.9) saturate(0.75);
         }
 
         .effect-vintage::before {
@@ -378,19 +398,19 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
               0deg,
               transparent,
               transparent 1px,
-              rgba(0, 0, 0, 0.25) 1px,
-              rgba(0, 0, 0, 0.25) 2px
+              rgba(0, 0, 0, 0.18) 1px,
+              rgba(0, 0, 0, 0.18) 2px
             ),
             repeating-linear-gradient(
               90deg,
               transparent,
               transparent 1px,
-              rgba(0, 0, 0, 0.25) 1px,
-              rgba(0, 0, 0, 0.25) 2px
+              rgba(0, 0, 0, 0.18) 1px,
+              rgba(0, 0, 0, 0.18) 2px
             ),
-            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.4"/></svg>');
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="n"><feTurbulence baseFrequency="0.85" numOctaves="2"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.3"/></svg>');
           mix-blend-mode: multiply;
-          opacity: 0.6;
+          opacity: 0.5;
         }
 
         .effect-vintage::after {
@@ -403,30 +423,30 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
           background:
             radial-gradient(
               circle at 20% 30%,
-              rgba(139, 69, 19, 0.6) 0%,
-              transparent 40%
+              rgba(139, 69, 19, 0.5) 0%,
+              transparent 45%
             ),
             radial-gradient(
               circle at 80% 70%,
-              rgba(101, 67, 33, 0.6) 0%,
-              transparent 40%
+              rgba(101, 67, 33, 0.5) 0%,
+              transparent 45%
             ),
             radial-gradient(
               ellipse at center,
-              transparent 20%,
-              rgba(101, 67, 33, 0.7) 100%
+              transparent 25%,
+              rgba(101, 67, 33, 0.6) 100%
             );
-          animation: vintagePulse 3s ease-in-out infinite;
+          animation: vintagePulse 3.5s ease-in-out infinite;
         }
 
         @keyframes vintagePulse {
-          0%, 100% { opacity: 0.9; }
+          0%, 100% { opacity: 0.85; }
           50% { opacity: 1; }
         }
 
-        /* Film Noir Effect - ЭКСТРЕМАЛЬНО УСИЛЕННЫЙ */
+        /* Film Noir Effect - Заметный и стильный */
         .effect-noir {
-          filter: grayscale(1) contrast(2.5) brightness(0.5);
+          filter: grayscale(1) contrast(2.1) brightness(0.6);
         }
 
         .effect-noir::before {
@@ -441,15 +461,15 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
               0deg,
               transparent,
               transparent 1px,
-              rgba(0, 0, 0, 0.4) 1px,
-              rgba(0, 0, 0, 0.4) 2px
+              rgba(0, 0, 0, 0.3) 1px,
+              rgba(0, 0, 0, 0.3) 2px
             ),
             repeating-linear-gradient(
               90deg,
               transparent,
-              transparent 50px,
-              rgba(255, 255, 255, 0.05) 50px,
-              rgba(255, 255, 255, 0.05) 51px
+              transparent 60px,
+              rgba(255, 255, 255, 0.04) 60px,
+              rgba(255, 255, 255, 0.04) 61px
             );
           mix-blend-mode: overlay;
         }
@@ -463,19 +483,19 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
           height: 100%;
           background: radial-gradient(
             ellipse at center,
-            transparent 10%,
-            rgba(0, 0, 0, 0.9) 100%
+            transparent 15%,
+            rgba(0, 0, 0, 0.85) 100%
           );
           box-shadow:
-            inset 0 0 300px rgba(0, 0, 0, 1),
-            inset 0 0 150px rgba(0, 0, 0, 0.9),
-            inset 0 0 50px rgba(0, 0, 0, 0.8);
+            inset 0 0 250px rgba(0, 0, 0, 0.95),
+            inset 0 0 120px rgba(0, 0, 0, 0.85),
+            inset 0 0 60px rgba(0, 0, 0, 0.75);
         }
 
-        /* Neon Effect - ЭКСТРЕМАЛЬНО УСИЛЕННЫЙ */
+        /* Neon Effect - Заметный и стильный */
         .effect-neon {
-          filter: saturate(5) contrast(2.5) brightness(1.5) hue-rotate(15deg);
-          animation: neonPulse 1s ease-in-out infinite;
+          filter: saturate(4) contrast(2.1) brightness(1.4) hue-rotate(12deg);
+          animation: neonPulse 1.2s ease-in-out infinite;
         }
 
         .effect-neon::before {
@@ -488,51 +508,51 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
           background:
             linear-gradient(
               45deg,
-              rgba(255, 0, 255, 0.5) 0%,
-              rgba(0, 255, 255, 0.5) 50%,
-              rgba(255, 255, 0, 0.5) 100%
+              rgba(255, 0, 255, 0.4) 0%,
+              rgba(0, 255, 255, 0.4) 50%,
+              rgba(255, 255, 0, 0.4) 100%
             ),
             radial-gradient(
               circle at 30% 30%,
-              rgba(255, 0, 128, 0.4) 0%,
+              rgba(255, 0, 128, 0.35) 0%,
               transparent 50%
             ),
             radial-gradient(
               circle at 70% 70%,
-              rgba(0, 255, 200, 0.4) 0%,
+              rgba(0, 255, 200, 0.35) 0%,
               transparent 50%
             );
           mix-blend-mode: screen;
-          animation: neonGlow 1.5s ease-in-out infinite;
+          animation: neonGlow 1.6s ease-in-out infinite;
         }
 
         @keyframes neonPulse {
           0%, 100% {
             opacity: 1;
-            filter: saturate(5) contrast(2.5) brightness(1.5) hue-rotate(15deg);
+            filter: saturate(4) contrast(2.1) brightness(1.4) hue-rotate(12deg);
           }
           33% {
-            opacity: 0.85;
-            filter: saturate(6) contrast(3) brightness(1.7) hue-rotate(30deg);
+            opacity: 0.88;
+            filter: saturate(4.5) contrast(2.4) brightness(1.55) hue-rotate(24deg);
           }
           66% {
-            opacity: 0.9;
-            filter: saturate(5.5) contrast(2.8) brightness(1.6) hue-rotate(-15deg);
+            opacity: 0.94;
+            filter: saturate(4.2) contrast(2.2) brightness(1.48) hue-rotate(-12deg);
           }
         }
 
         @keyframes neonGlow {
           0%, 100% {
-            opacity: 0.7;
+            opacity: 0.65;
             transform: scale(1);
           }
           50% {
-            opacity: 1;
-            transform: scale(1.05);
+            opacity: 0.9;
+            transform: scale(1.03);
           }
         }
 
-        /* Chromatic Aberration - ЭКСТРЕМАЛЬНО УСИЛЕННЫЙ */
+        /* Chromatic Aberration - Заметный и стильный */
         .effect-chromatic {
           position: relative;
         }
@@ -547,36 +567,36 @@ const YouTubePlayerWithEffects = ({ effect, activeLanguage = 'en' }: YouTubePlay
           background: inherit;
           mix-blend-mode: screen;
           filter:
-            drop-shadow(12px 0 0 rgba(255, 0, 0, 1))
-            drop-shadow(-12px 0 0 rgba(0, 255, 255, 1))
-            drop-shadow(0 12px 0 rgba(0, 255, 0, 0.6));
-          animation: chromaticShift 1.5s ease-in-out infinite;
+            drop-shadow(9px 0 0 rgba(255, 0, 0, 0.9))
+            drop-shadow(-9px 0 0 rgba(0, 255, 255, 0.9))
+            drop-shadow(0 9px 0 rgba(0, 255, 0, 0.5));
+          animation: chromaticShift 1.8s ease-in-out infinite;
         }
 
         @keyframes chromaticShift {
           0%, 100% {
             filter:
-              drop-shadow(12px 0 0 rgba(255, 0, 0, 1))
-              drop-shadow(-12px 0 0 rgba(0, 255, 255, 1))
-              drop-shadow(0 12px 0 rgba(0, 255, 0, 0.6));
+              drop-shadow(9px 0 0 rgba(255, 0, 0, 0.9))
+              drop-shadow(-9px 0 0 rgba(0, 255, 255, 0.9))
+              drop-shadow(0 9px 0 rgba(0, 255, 0, 0.5));
           }
           25% {
             filter:
-              drop-shadow(15px 5px 0 rgba(255, 0, 0, 1))
-              drop-shadow(-15px -5px 0 rgba(0, 255, 255, 1))
-              drop-shadow(5px -15px 0 rgba(0, 255, 0, 0.7));
+              drop-shadow(11px 3px 0 rgba(255, 0, 0, 0.95))
+              drop-shadow(-11px -3px 0 rgba(0, 255, 255, 0.95))
+              drop-shadow(3px -11px 0 rgba(0, 255, 0, 0.6));
           }
           50% {
             filter:
-              drop-shadow(8px -5px 0 rgba(255, 0, 0, 0.9))
-              drop-shadow(-8px 5px 0 rgba(0, 255, 255, 0.9))
-              drop-shadow(-5px 8px 0 rgba(0, 255, 0, 0.5));
+              drop-shadow(7px -3px 0 rgba(255, 0, 0, 0.85))
+              drop-shadow(-7px 3px 0 rgba(0, 255, 255, 0.85))
+              drop-shadow(-3px 7px 0 rgba(0, 255, 0, 0.45));
           }
           75% {
             filter:
-              drop-shadow(18px 0 0 rgba(255, 0, 0, 1))
-              drop-shadow(-18px 0 0 rgba(0, 255, 255, 1))
-              drop-shadow(0 18px 0 rgba(0, 255, 0, 0.8));
+              drop-shadow(13px 0 0 rgba(255, 0, 0, 0.95))
+              drop-shadow(-13px 0 0 rgba(0, 255, 255, 0.95))
+              drop-shadow(0 13px 0 rgba(0, 255, 0, 0.65));
           }
         }
 
