@@ -174,9 +174,7 @@ export default function RetroTVPage() {
             visualizerMode={true}
             visualizerSlug="retro-tv"
             onInterfaceVisibilityChange={(visible) => {
-              if (!visible) {
-                setShowUrlInput(false);
-              }
+              setShowUrlInput(visible);
             }}
           />
         </div>

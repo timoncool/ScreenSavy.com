@@ -22,8 +22,9 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
   }));
 
   // Calculate effects based on sliders
-  const brightness = 0.8 + (volume / 100) * 0.4; // 0.8 to 1.2
-  const contrast = 1.0 + (channel / 100) * 0.5; // 1.0 to 1.5
+  // At 0: no effects (1.0), at 100: maximum effects
+  const brightness = 1.0 + (volume / 100) * 0.5; // 1.0 to 1.5
+  const contrast = 1.0 + (channel / 100) * 1.0; // 1.0 to 2.0
 
   // Load YouTube IFrame API
   useEffect(() => {
@@ -84,7 +85,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
   }, [currentVideoId, isPoweredOn]);
 
   return (
-    <>
+    <div className="retro-tv-container">
       <div className="gradient" />
       <div className="brick-wall" />
       <div className="wood-floor" />
@@ -189,16 +190,26 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
       </div>
 
       <style jsx>{`
+        .retro-tv-container {
+          position: relative;
+          width: 100%;
+          height: 100vh;
+          overflow: hidden;
+          background: #000;
+        }
+
         body {
           padding: 0;
           margin: 0;
         }
 
         .gradient {
-          position: fixed;
+          position: absolute;
           content: " ";
           width: 100%;
           height: 100%;
+          top: 0;
+          left: 0;
           background: linear-gradient(
               to left,
               rgba(0, 0, 0, 0.8) 0%,
@@ -212,7 +223,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         }
 
         .gradient::before {
-          position: fixed;
+          position: absolute;
           content: " ";
           width: 2500px;
           height: 300px;
@@ -223,7 +234,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         }
 
         .gradient::after {
-          position: fixed;
+          position: absolute;
           content: " ";
           width: 2000px;
           height: 1500px;
@@ -234,7 +245,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         }
 
         .brick-wall {
-          position: fixed;
+          position: absolute;
           content: " ";
           top: 0;
           left: 0;
@@ -259,7 +270,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         }
 
         .wood-floor {
-          position: fixed;
+          position: absolute;
           content: " ";
           width: 100%;
           height: 140px;
@@ -314,7 +325,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           height: 400px;
           background: rgba(255, 255, 255, 0.5);
           border-radius: 5% / 50%;
-          filter: blur(30px);
+          filter: blur(20px);
           z-index: 100;
           animation: screen 800ms infinite linear;
           pointer-events: none;
@@ -322,13 +333,13 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
 
         @keyframes screen {
           0% {
-            transform: scale(1.03);
+            transform: scale(1.01);
           }
           50% {
             transform: scale(1);
           }
           100% {
-            transform: scale(1.03);
+            transform: scale(1.01);
           }
         }
 
@@ -1134,7 +1145,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           }
         }
       `}</style>
-    </>
+    </div>
   );
 });
 
