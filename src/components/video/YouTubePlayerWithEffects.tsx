@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import VideoEffectControls, { EffectSettings, defaultEffectSettings } from './VideoEffectControls';
 
 interface YouTubePlayerWithEffectsProps {
