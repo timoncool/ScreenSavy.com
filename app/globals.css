@@ -178,6 +178,31 @@ body::-webkit-scrollbar {
 .visualizer-control-row a {
   text-decoration: none;
 }
+
+/* Video control row - same style as visualizer */
+.video-control-row {
+  position: absolute;
+  top: 70px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: calc(100% - 40px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+.video-control-row.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.video-control-row a {
+  text-decoration: none;
+}
 .clock-style-button {
   width: 44px;
   height: 44px;
