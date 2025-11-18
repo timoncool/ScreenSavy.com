@@ -53,4 +53,12 @@ export const videoEffects: VideoEffect[] = [
   { id: 'noir', name: 'Film Noir', nameRu: 'Черно-белый', icon: 'theaters' },
   { id: 'neon', name: 'Neon', nameRu: 'Неон', icon: 'wb_twilight' },
   { id: 'chromatic', name: 'Chromatic', nameRu: 'Хроматический', icon: 'palette' },
+  { id: 'grain', name: 'Film Grain', nameRu: 'Зернистость', icon: 'grain' },
+  { id: 'cinematic', name: 'Cinematic', nameRu: 'Кинематограф', icon: 'movie_filter' },
+  { id: 'duotone', name: 'Duotone', nameRu: 'Дуотон', icon: 'filter_b_and_w' },
+  { id: 'nightvision', name: 'Night Vision', nameRu: 'Ночное Видение', icon: 'nightlight' },
+  { id: 'surveillance', name: 'Surveillance', nameRu: 'Наблюдение', icon: 'video_camera_back' },
+  { id: 'vaporwave', name: 'Vaporwave', nameRu: 'Вапорвейв', icon: 'waves' },
+  { id: 'underwater', name: 'Underwater', nameRu: 'Подводный', icon: 'water' },
+  { id: 'anaglyph', name: 'Anaglyph 3D', nameRu: '3D Анаглиф', icon: '3d_rotation' },
 ];

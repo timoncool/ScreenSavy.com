@@ -1552,7 +1552,7 @@ const MainExperience = ({
                 "toggleRgb",
                 "toggleFavorites",
                 "picker",
-                "toggleTextOptions",
+                "textOptions",
               ].includes(key);
 
               if (hideInVisualizerMode || hideInVideoMode) return null;
