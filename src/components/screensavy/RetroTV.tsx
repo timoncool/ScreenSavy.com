@@ -340,7 +340,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .brick-wall::after {
-          content: "neural dreaming 👾";
+          content: "nerual dreming 👾";
           position: absolute;
           top: 15%;
           right: 20%;
