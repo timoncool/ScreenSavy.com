@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { VideoAmbilight as Ambilight } from 'react-ambilight';
 
 export interface RetroTVRef {
   setVideoId: (id: string) => void;
@@ -17,10 +18,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
   const [internalViewMode, setInternalViewMode] = useState<'full' | 'closeup'>(viewMode);
   const [volume, setVolume] = useState(50);
   const [channel, setChannel] = useState(50);
-  const [ambilightColor, setAmbilightColor] = useState('rgba(100, 149, 237, 0.4)');
   const playerRef = useRef<any>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number>();
 
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
@@ -62,30 +60,23 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
     }
 
     const initPlayer = () => {
-      if (playerRef.current) {
-        playerRef.current.loadVideoById(currentVideoId);
-        playerRef.current.playVideo?.();
-        return;
-      }
+      const iframe = document.querySelector<HTMLIFrameElement>(
+        'iframe[src*="youtube.com/embed/"]'
+      );
 
-      if ((window as any).YT && (window as any).YT.Player) {
-        playerRef.current = new (window as any).YT.Player('youtube-player', {
-          videoId: currentVideoId,
-          playerVars: {
-            autoplay: 1,
-            controls: 0,
-            modestbranding: 1,
-            rel: 0,
-            showinfo: 0,
-            iv_load_policy: 3,
-            disablekb: 1,
-          },
-          events: {
-            onReady: (event: any) => {
-              event.target.playVideo();
+      if (iframe && (window as any).YT && (window as any).YT.Player) {
+        if (playerRef.current) {
+          playerRef.current.loadVideoById(currentVideoId);
+          playerRef.current.playVideo?.();
+        } else {
+          playerRef.current = new (window as any).YT.Player(iframe, {
+            events: {
+              onReady: (event: any) => {
+                event.target.playVideo();
+              }
             }
-          }
-        });
+          });
+        }
       }
     };
 
@@ -96,134 +87,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
     }
   }, [currentVideoId, isPoweredOn]);
 
-  // Ambilight effect - analyze video colors from thumbnail
-  useEffect(() => {
-    if (!currentVideoId || !isPoweredOn) return;
-
-    const analyzeVideoColors = async () => {
-      try {
-        // Try to get colors from YouTube thumbnail
-        const thumbnailUrl = `https://img.youtube.com/vi/${currentVideoId}/maxresdefault.jpg`;
-
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-
-        img.onload = () => {
-          const canvas = canvasRef.current;
-          if (!canvas) return;
-
-          const ctx = canvas.getContext('2d');
-          if (!ctx) return;
-
-          // Set canvas size
-          canvas.width = 100;
-          canvas.height = 56;
-
-          // Draw thumbnail
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-          // Sample colors from different regions
-          const sampleColors = () => {
-            const regions = [
-              { x: 10, y: 28 },   // Left center
-              { x: 50, y: 28 },   // Center
-              { x: 90, y: 28 },   // Right center
-              { x: 50, y: 10 },   // Top center
-              { x: 50, y: 46 },   // Bottom center
-            ];
-
-            const colors = regions.map(pos => {
-              const imageData = ctx.getImageData(pos.x, pos.y, 5, 5);
-              const data = imageData.data;
-
-              // Calculate average color
-              let r = 0, g = 0, b = 0, count = 0;
-              for (let i = 0; i < data.length; i += 4) {
-                r += data[i];
-                g += data[i + 1];
-                b += data[i + 2];
-                count++;
-              }
-
-              r = Math.floor(r / count);
-              g = Math.floor(g / count);
-              b = Math.floor(b / count);
-
-              return `rgba(${r}, ${g}, ${b}, 0.5)`;
-            });
-
-            return colors;
-          };
-
-          const colors = sampleColors();
-          let colorIndex = 0;
-
-          // Smoothly transition between sampled colors
-          const interval = setInterval(() => {
-            colorIndex = (colorIndex + 1) % colors.length;
-            setAmbilightColor(colors[colorIndex]);
-          }, 1500);
-
-          animationFrameRef.current = interval as any;
-        };
-
-        img.onerror = () => {
-          // Fallback to dynamic color generation
-          const generateDynamicColors = () => {
-            const baseHue = Math.floor(Math.random() * 360);
-            const colors = [];
-
-            for (let i = 0; i < 8; i++) {
-              const hue = (baseHue + i * 45) % 360;
-              const saturation = 60 + Math.random() * 40;
-              const lightness = 40 + Math.random() * 20;
-              colors.push(`hsla(${hue}, ${saturation}%, ${lightness}%, 0.5)`);
-            }
-
-            return colors;
-          };
-
-          const colors = generateDynamicColors();
-          let colorIndex = 0;
-
-          const interval = setInterval(() => {
-            colorIndex = (colorIndex + 1) % colors.length;
-            setAmbilightColor(colors[colorIndex]);
-          }, 1200);
-
-          animationFrameRef.current = interval as any;
-        };
-
-        img.src = thumbnailUrl;
-      } catch (error) {
-        console.error('Ambilight error:', error);
-      }
-    };
-
-    analyzeVideoColors();
-
-    return () => {
-      if (animationFrameRef.current) {
-        clearInterval(animationFrameRef.current);
-      }
-    };
-  }, [currentVideoId, isPoweredOn]);
-
   return (
     <div className="retro-tv-container">
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
       <div className="gradient" />
       <div className="brick-wall" />
       <div className="wood-floor" />
 
       <div
         className={`old-tv ${!isPoweredOn ? 'powered-off' : ''} ${isCloseup ? 'closeup-mode' : ''}`}
-        style={{
-          boxShadow: `inset 0 -220px 200px rgba(0, 0, 0, 0.5),
-            50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4),
-            0 0 100px ${ambilightColor},
-            0 0 150px ${ambilightColor.replace('0.5', '0.3')}`
-        }}
       >
         <div className="antenna" />
         <main>
@@ -236,7 +107,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
                 }}
               >
                 {currentVideoId && isPoweredOn ? (
-                  <div id="youtube-player" className="youtube-container" />
+                  <div className="youtube-container">
+                    <Ambilight youtubeId={currentVideoId} />
+                  </div>
                 ) : (
                   <div className="static-noise" />
                 )}
@@ -245,6 +118,24 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           </div>
         </main>
         <div className="speaker" />
+        <div className="controls">
+          <button onClick={() => playerRef.current?.playVideo()} className="control-button">Play</button>
+          <button onClick={() => playerRef.current?.pauseVideo()} className="control-button">Pause</button>
+          <div className="volume-control">
+            <span>Volume</span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={(e) => {
+                const newVolume = Number(e.target.value);
+                setVolume(newVolume);
+                playerRef.current?.setVolume(newVolume);
+              }}
+            />
+          </div>
+        </div>
         <div className="volume">
           <input
             type="range"
@@ -504,7 +395,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           transform: scale(0.8);
           z-index: 600;
           pointer-events: auto;
-          transition: box-shadow 0.5s ease;
+          box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
+            50px 2px 20px rgba(0, 0, 0, 0.4),
+            -50px 2px 20px rgba(0, 0, 0, 0.4);
+          transition: transform 0.5s ease, bottom 0.5s ease;
         }
 
         .old-tv::after {
@@ -609,6 +503,31 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
             linear-gradient(rgba(0, 0, 0, 0.1) 10%, transparent);
           z-index: 2;
           pointer-events: none;
+        }
+
+        .controls {
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .control-button {
+          background: #333;
+          border: 2px solid #555;
+          color: #fff;
+          padding: 5px 10px;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
+        .volume-control {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #fff;
         }
 
         .old-tv .speaker {
@@ -1319,7 +1238,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         #table-tv.closeup-mode {
           transform: scale(2.5);
-          bottom: -50px;
+          bottom: -150px;
           z-index: 700;
         }
 
