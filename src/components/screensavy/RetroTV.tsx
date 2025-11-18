@@ -15,7 +15,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
   const [currentVideoId, setCurrentVideoId] = useState('');
   const [isPoweredOn, setIsPoweredOn] = useState(true);
   const [internalViewMode, setInternalViewMode] = useState<'full' | 'closeup'>(viewMode);
-  const [effectIntensity, setEffectIntensity] = useState(50);
+  const [volume, setVolume] = useState(50);
+  const [channel, setChannel] = useState(50);
   const [ambilightColor, setAmbilightColor] = useState('rgba(100, 149, 237, 0.4)');
   const playerRef = useRef<any>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,8 +35,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
   // Calculate effects based on sliders
   const isCloseup = internalViewMode === 'closeup';
-  const brightness = 1.0 + (effectIntensity / 100) * 0.5; // 1.0 to 1.5
-  const contrast = 1.0 + (effectIntensity / 100) * 1.0; // 1.0 to 2.0
+  const brightness = 1.0 + (volume / 100) * 0.5; // 1.0 to 1.5
+  const contrast = 1.0 + (channel / 100) * 1.0; // 1.0 to 2.0
 
   // Load YouTube IFrame API
   useEffect(() => {
@@ -160,23 +161,21 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         </main>
         <div className="speaker" />
         <div className="volume">
-          <label>Brightness</label>
           <input
             type="range"
             min="0"
             max="100"
-            value={effectIntensity}
-            onChange={(e) => setEffectIntensity(Number(e.target.value))}
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
           />
         </div>
         <nav className="channel">
-          <label>Contrast</label>
           <input
             type="range"
             min="0"
             max="100"
-            value={effectIntensity}
-            onChange={(e) => setEffectIntensity(Number(e.target.value))}
+            value={channel}
+            onChange={(e) => setChannel(Number(e.target.value))}
           />
         </nav>
         <nav className="power">
@@ -576,7 +575,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .old-tv .volume {
           position: absolute;
           width: 180px;
-          height: 60px;
+          height: 40px;
           right: 20px;
           bottom: 145px;
           border-radius: 4px;
@@ -586,23 +585,12 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           border: 2px #000 solid;
         }
 
-        .old-tv .volume label,
-        .old-tv .channel label {
-          position: absolute;
-          top: 2px;
-          left: 10px;
-          font-family: Arial;
-          font-size: 10px;
-          color: #aaa;
-          text-shadow: 0 1px #000;
-        }
-
         .old-tv .channel {
           position: absolute;
           width: 180px;
-          height: 60px;
+          height: 40px;
           right: 20px;
-          bottom: 75px;
+          bottom: 90px;
           border-radius: 4px;
           box-shadow: inset 2px 2px rgba(255, 255, 255, 0.1),
             inset -2px -2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(255, 255, 255, 0.2),
@@ -615,9 +603,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           position: absolute;
           width: 80%;
           left: 10%;
-          bottom: 8px;
           box-sizing: border-box;
           background: none;
+          margin: 18px 0;
           cursor: pointer;
         }
 
