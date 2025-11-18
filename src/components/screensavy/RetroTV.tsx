@@ -321,7 +321,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           position: absolute;
           width: 870px;
           height: 465px;
-          bottom: 280px;
+          bottom: 370px;
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -331,7 +331,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           border-bottom: 4px #222 solid;
           box-shadow: inset 0 -220px 200px rgba(0, 0, 0, 0.5),
             50px 2px 20px rgba(0, 0, 0, 0.4), -50px 2px 20px rgba(0, 0, 0, 0.4);
-          transform: scale(0.75);
+          transform: scale(0.8);
           z-index: 600;
           pointer-events: auto;
         }
@@ -401,7 +401,7 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
         .old-tv main {
           position: relative;
           display: inline-block;
-          padding: 30px;
+          padding: 20px;
           border-radius: 8px;
           background: #444;
           border: 3px #aaa solid;
@@ -635,8 +635,8 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
 
         .error-noise {
           position: relative;
-          width: 600px;
-          height: 400px;
+          width: 560px;
+          height: 370px;
           overflow: hidden;
           border-radius: 5% / 50%;
           z-index: 3;
@@ -856,11 +856,11 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
           width: 600px;
           height: 300px;
           left: 50%;
-          bottom: 90px;
+          bottom: 200px;
           margin-left: -300px;
           background: transparent;
           font-size: 250%;
-          transform: scale(1.5);
+          transform: scale(1.8);
           z-index: 500;
           pointer-events: none;
         }
@@ -1150,11 +1150,12 @@ const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
 
         @media (max-width: 1200px) {
           .old-tv {
-            transform: scale(0.5);
-            bottom: 250px;
+            transform: scale(0.55);
+            bottom: 320px;
           }
           #table-tv {
-            transform: scale(1.2);
+            transform: scale(1.4);
+            bottom: 180px;
           }
         }
       `}</style>
