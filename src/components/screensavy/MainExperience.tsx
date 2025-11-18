@@ -749,6 +749,7 @@ type MainExperienceProps = {
   videoEffect?: string;
   onEffectChange?: (effect: string) => void;
   onInterfaceVisibilityChange?: (visible: boolean) => void;
+  tvRef?: React.RefObject<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void } | null>;
 };
 
 const MainExperience = ({
@@ -762,7 +763,9 @@ const MainExperience = ({
   videoEffect = 'none',
   onEffectChange,
   onInterfaceVisibilityChange,
+  tvRef,
 }: MainExperienceProps = {}) => {
+  const [tvViewMode, setTvViewMode] = useState<'full' | 'closeup'>('full');
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
@@ -1654,7 +1657,34 @@ const MainExperience = ({
             />
           </div>
         )}
-        {videoMode && !interfaceHidden && (
+        {videoMode && !interfaceHidden && videoSlug === 'retro-tv' && tvRef && (
+          <>
+            {/* Retro TV View Mode Buttons */}
+            <div className="video-control-row active" style={{ marginBottom: '10px' }}>
+              <IconButton
+                icon="fit_screen"
+                onClick={() => {
+                  setTvViewMode('full');
+                  tvRef.current?.setViewMode('full');
+                }}
+                title={activeLanguage === 'ru' ? 'Полный вид' : 'Full View'}
+                active={tvViewMode === 'full'}
+                aria-label={activeLanguage === 'ru' ? 'Полный вид' : 'Full View'}
+              />
+              <IconButton
+                icon="fullscreen"
+                onClick={() => {
+                  setTvViewMode('closeup');
+                  tvRef.current?.setViewMode('closeup');
+                }}
+                title={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
+                active={tvViewMode === 'closeup'}
+                aria-label={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
+              />
+            </div>
+          </>
+        )}
+        {videoMode && !interfaceHidden && videoSlug !== 'retro-tv' && (
           <>
             {/* Video Players Navigation */}
             <div className="video-control-row active" style={{ marginBottom: '10px' }}>
