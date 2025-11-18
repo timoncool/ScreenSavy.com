@@ -96,32 +96,117 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
     }
   }, [currentVideoId, isPoweredOn]);
 
-  // Ambilight effect - analyze video colors
+  // Ambilight effect - analyze video colors from thumbnail
   useEffect(() => {
     if (!currentVideoId || !isPoweredOn) return;
 
-    const analyzeVideoColors = () => {
-      // Simulate ambilight by cycling through colors based on video playing
-      const colors = [
-        'rgba(100, 149, 237, 0.5)',
-        'rgba(138, 43, 226, 0.5)',
-        'rgba(255, 105, 180, 0.5)',
-        'rgba(255, 165, 0, 0.5)',
-        'rgba(50, 205, 50, 0.5)',
-        'rgba(0, 191, 255, 0.5)',
-      ];
+    const analyzeVideoColors = async () => {
+      try {
+        // Try to get colors from YouTube thumbnail
+        const thumbnailUrl = `https://img.youtube.com/vi/${currentVideoId}/maxresdefault.jpg`;
 
-      let colorIndex = 0;
-      const interval = setInterval(() => {
-        colorIndex = (colorIndex + 1) % colors.length;
-        setAmbilightColor(colors[colorIndex]);
-      }, 2000);
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
 
-      return () => clearInterval(interval);
+        img.onload = () => {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+
+          // Set canvas size
+          canvas.width = 100;
+          canvas.height = 56;
+
+          // Draw thumbnail
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Sample colors from different regions
+          const sampleColors = () => {
+            const regions = [
+              { x: 10, y: 28 },   // Left center
+              { x: 50, y: 28 },   // Center
+              { x: 90, y: 28 },   // Right center
+              { x: 50, y: 10 },   // Top center
+              { x: 50, y: 46 },   // Bottom center
+            ];
+
+            const colors = regions.map(pos => {
+              const imageData = ctx.getImageData(pos.x, pos.y, 5, 5);
+              const data = imageData.data;
+
+              // Calculate average color
+              let r = 0, g = 0, b = 0, count = 0;
+              for (let i = 0; i < data.length; i += 4) {
+                r += data[i];
+                g += data[i + 1];
+                b += data[i + 2];
+                count++;
+              }
+
+              r = Math.floor(r / count);
+              g = Math.floor(g / count);
+              b = Math.floor(b / count);
+
+              return `rgba(${r}, ${g}, ${b}, 0.5)`;
+            });
+
+            return colors;
+          };
+
+          const colors = sampleColors();
+          let colorIndex = 0;
+
+          // Smoothly transition between sampled colors
+          const interval = setInterval(() => {
+            colorIndex = (colorIndex + 1) % colors.length;
+            setAmbilightColor(colors[colorIndex]);
+          }, 1500);
+
+          animationFrameRef.current = interval as any;
+        };
+
+        img.onerror = () => {
+          // Fallback to dynamic color generation
+          const generateDynamicColors = () => {
+            const baseHue = Math.floor(Math.random() * 360);
+            const colors = [];
+
+            for (let i = 0; i < 8; i++) {
+              const hue = (baseHue + i * 45) % 360;
+              const saturation = 60 + Math.random() * 40;
+              const lightness = 40 + Math.random() * 20;
+              colors.push(`hsla(${hue}, ${saturation}%, ${lightness}%, 0.5)`);
+            }
+
+            return colors;
+          };
+
+          const colors = generateDynamicColors();
+          let colorIndex = 0;
+
+          const interval = setInterval(() => {
+            colorIndex = (colorIndex + 1) % colors.length;
+            setAmbilightColor(colors[colorIndex]);
+          }, 1200);
+
+          animationFrameRef.current = interval as any;
+        };
+
+        img.src = thumbnailUrl;
+      } catch (error) {
+        console.error('Ambilight error:', error);
+      }
     };
 
-    const cleanup = analyzeVideoColors();
-    return cleanup;
+    analyzeVideoColors();
+
+    return () => {
+      if (animationFrameRef.current) {
+        clearInterval(animationFrameRef.current);
+      }
+    };
   }, [currentVideoId, isPoweredOn]);
 
   return (
@@ -713,7 +798,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .error-noise {
           position: relative;
           width: 580px;
-          height: 385px;
+          height: 326px;
           overflow: hidden;
           border-radius: 5% / 50%;
           z-index: 3;
@@ -940,6 +1025,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           transform: scale(1.8);
           z-index: 500;
           pointer-events: none;
+          transition: transform 0.5s ease, bottom 0.5s ease;
         }
 
         .face {
