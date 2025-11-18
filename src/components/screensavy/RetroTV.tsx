@@ -1,42 +1,29 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
-interface RetroTVProps {
-  videoId?: string;
-  onVideoIdChange?: (id: string) => void;
+export interface RetroTVRef {
+  setVideoId: (id: string) => void;
 }
 
-export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
-  const [inputValue, setInputValue] = useState('');
-  const [currentVideoId, setCurrentVideoId] = useState(videoId || '');
+const RetroTV = forwardRef<RetroTVRef>((props, ref) => {
+  const [currentVideoId, setCurrentVideoId] = useState('');
   const [isPoweredOn, setIsPoweredOn] = useState(true);
+  const [volume, setVolume] = useState(50);
+  const [channel, setChannel] = useState(50);
   const playerRef = useRef<any>(null);
 
-  // Extract video ID from YouTube URL
-  const extractVideoId = useCallback((url: string): string | null => {
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-      /^([a-zA-Z0-9_-]{11})$/
-    ];
-
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match) return match[1];
-    }
-    return null;
-  }, []);
-
-  // Handle video ID submission
-  const handleSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    const videoId = extractVideoId(inputValue);
-    if (videoId) {
-      setCurrentVideoId(videoId);
-      onVideoIdChange?.(videoId);
+  // Expose methods to parent
+  useImperativeHandle(ref, () => ({
+    setVideoId: (id: string) => {
+      setCurrentVideoId(id);
       setIsPoweredOn(true);
     }
-  }, [inputValue, extractVideoId, onVideoIdChange]);
+  }));
+
+  // Calculate effects based on sliders
+  const brightness = 0.8 + (volume / 100) * 0.4; // 0.8 to 1.2
+  const contrast = 1.0 + (channel / 100) * 0.5; // 1.0 to 1.5
 
   // Load YouTube IFrame API
   useEffect(() => {
@@ -54,11 +41,17 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
 
   // Initialize YouTube player
   useEffect(() => {
-    if (!currentVideoId || typeof window === 'undefined' || !isPoweredOn) return;
+    if (!currentVideoId || typeof window === 'undefined' || !isPoweredOn) {
+      if (playerRef.current && !isPoweredOn) {
+        playerRef.current.pauseVideo?.();
+      }
+      return;
+    }
 
     const initPlayer = () => {
       if (playerRef.current) {
         playerRef.current.loadVideoById(currentVideoId);
+        playerRef.current.playVideo?.();
         return;
       }
 
@@ -67,10 +60,18 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
           videoId: currentVideoId,
           playerVars: {
             autoplay: 1,
-            controls: 1,
+            controls: 0,
             modestbranding: 1,
             rel: 0,
+            showinfo: 0,
+            iv_load_policy: 3,
+            disablekb: 1,
           },
+          events: {
+            onReady: (event: any) => {
+              event.target.playVideo();
+            }
+          }
         });
       }
     };
@@ -88,41 +89,44 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
       <div className="brick-wall" />
       <div className="wood-floor" />
 
-      {/* URL Input Panel */}
-      <div className="tv-input-panel">
-        <form onSubmit={handleSubmit} className="tv-url-form">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Вставьте ссылку на YouTube или ID видео..."
-            className="tv-url-input"
-          />
-          <button type="submit" className="tv-url-submit">
-            <i className="material-symbols-outlined">play_arrow</i>
-          </button>
-        </form>
-      </div>
-
       <div className={`old-tv ${!isPoweredOn ? 'powered-off' : ''}`}>
         <div className="antenna" />
         <main>
           <div className="error-noise">
             <div className="error-effect">
-              <div className="old-tv-content">
+              <div
+                className="old-tv-content"
+                style={{
+                  filter: `brightness(${brightness}) contrast(${contrast})`,
+                }}
+              >
                 {currentVideoId && isPoweredOn ? (
                   <div id="youtube-player" className="youtube-container" />
-                ) : null}
+                ) : (
+                  <div className="static-noise" />
+                )}
               </div>
             </div>
           </div>
         </main>
         <div className="speaker" />
         <div className="volume">
-          <input type="range" min="0" max="100" defaultValue="50" />
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
+          />
         </div>
         <nav className="channel">
-          <input type="range" min="0" max="100" defaultValue="50" />
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={channel}
+            onChange={(e) => setChannel(Number(e.target.value))}
+          />
         </nav>
         <nav className="power">
           <button onClick={() => setIsPoweredOn(!isPoweredOn)} type="button" />
@@ -276,63 +280,6 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
           background: url(https://levelhard.com.br/jobs/jobs/site_television/images/wood_floor_texture.jpg);
           background-size: 400px;
           transform: rotateX(60deg);
-        }
-
-        .tv-input-panel {
-          position: fixed;
-          top: 40px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 1000;
-        }
-
-        .tv-url-form {
-          display: flex;
-          gap: 10px;
-          background: rgba(0, 0, 0, 0.7);
-          padding: 15px 20px;
-          border-radius: 8px;
-          backdrop-filter: blur(10px);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .tv-url-input {
-          min-width: 400px;
-          padding: 10px 15px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
-          background: rgba(0, 0, 0, 0.5);
-          color: white;
-          font-size: 14px;
-          outline: none;
-          font-family: monospace;
-        }
-
-        .tv-url-input:focus {
-          border-color: #7cfc00;
-          box-shadow: 0 0 10px rgba(124, 252, 0, 0.3);
-        }
-
-        .tv-url-input::placeholder {
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        .tv-url-submit {
-          padding: 10px 20px;
-          background: #7cfc00;
-          border: none;
-          border-radius: 4px;
-          color: #000;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
-        }
-
-        .tv-url-submit:hover {
-          background: #6ae000;
-          box-shadow: 0 0 15px rgba(124, 252, 0, 0.5);
         }
 
         .old-tv * {
@@ -552,6 +499,7 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
           box-sizing: border-box;
           background: none;
           margin: 18px 0;
+          cursor: pointer;
         }
 
         .old-tv input[type="range"]:focus {
@@ -716,18 +664,16 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
           height: 100%;
           background-color: transparent;
           border-radius: 50% / 5%;
-          filter: grayscale(0) brightness(1.1) contrast(1.2);
           animation: crt-image 20ms alternate infinite;
-          opacity: ${isPoweredOn ? 0.95 : 0.1};
-          transition: opacity 0.5s ease;
+          transition: filter 0.2s ease;
         }
 
         .youtube-container {
           position: absolute;
-          width: 100%;
-          height: 100%;
-          top: 0;
-          left: 0;
+          width: 120%;
+          height: 120%;
+          top: -10%;
+          left: -10%;
           border-radius: 50% / 5%;
           overflow: hidden;
         }
@@ -736,6 +682,34 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
           width: 100%;
           height: 100%;
           border: none;
+        }
+
+        .static-noise {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: repeating-radial-gradient(
+            circle at 50% 50%,
+            #fff 0%,
+            #000 0.0001%,
+            #fff 0.0002%
+          );
+          animation: static 0.1s infinite steps(10);
+          opacity: 0.8;
+        }
+
+        @keyframes static {
+          0% { background-position: 0 0; }
+          10% { background-position: -5% -10%; }
+          20% { background-position: -15% 5%; }
+          30% { background-position: 7% -25%; }
+          40% { background-position: 20% 25%; }
+          50% { background-position: -25% 10%; }
+          60% { background-position: 15% -20%; }
+          70% { background-position: -10% 15%; }
+          80% { background-position: 25% -5%; }
+          90% { background-position: -20% 20%; }
+          100% { background-position: 10% -15%; }
         }
 
         .old-tv-content::after {
@@ -748,14 +722,6 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
           border-radius: 50% / 5%;
           animation: crt-pixels 20ms alternate infinite;
           pointer-events: none;
-        }
-
-        .old-tv.powered-off .old-tv-content {
-          opacity: 0.05;
-        }
-
-        .old-tv.powered-off .error-effect {
-          background: #000;
         }
 
         @keyframes crt-image {
@@ -1111,12 +1077,12 @@ export default function RetroTV({ videoId, onVideoIdChange }: RetroTVProps) {
           .old-tv {
             transform: scale(0.6);
           }
-
-          .tv-url-input {
-            min-width: 300px;
-          }
         }
       `}</style>
     </>
   );
-}
+});
+
+RetroTV.displayName = 'RetroTV';
+
+export default RetroTV;
