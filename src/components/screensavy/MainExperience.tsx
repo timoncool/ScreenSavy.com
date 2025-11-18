@@ -1924,6 +1924,33 @@ const MainExperience = ({
               </div>
               Retro TV Player
             </div>
+            <div className="menu-separator" />
+            <div className="menu-section-title">
+              {activeLanguage === 'ru' ? 'Видеоплееры с Эффектами' : 'Video Players with Effects'}
+            </div>
+            {videoPlayers.map((player) => (
+              <div
+                key={player.slug}
+                className="menu-item"
+                onClick={() => {
+                  setMenuOpen(false);
+                  router.push(`/modes/video/${player.slug}`);
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={activeLanguage === 'ru' ? player.nameRu : player.name}
+              >
+                <div className="menu-item-icon">
+                  <i className="material-symbols-outlined">
+                    {player.type === 'youtube' ? 'play_circle' :
+                     player.type === 'local' ? 'folder_open' :
+                     'videocam'}
+                  </i>
+                </div>
+                {activeLanguage === 'ru' ? player.nameRu : player.name}
+              </div>
+            ))}
+            <div className="menu-separator" />
             <div className="menu-item disabled">
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">publish</i>
