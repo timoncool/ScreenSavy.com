@@ -1850,16 +1850,27 @@ const MainExperience = ({
               RGB Lava
             </div>
             <div className="menu-separator" />
-            <div className="menu-item disabled">
+            <div
+              className="menu-item"
+              onClick={() => {
+                setMenuOpen(false);
+                router.push("/modes/retro-tv");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setMenuOpen(false);
+                  router.push("/modes/retro-tv");
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Retro TV Player"
+            >
               <div className="menu-item-icon">
                 <i className="material-symbols-outlined">tv_gen</i>
               </div>
-              <div className="menu-item-content">
-                <div>{getText("playerMode")}</div>
-                <span className="coming-soon-badge">
-                  {getText("comingSoon")}
-                </span>
-              </div>
+              Retro TV Player
             </div>
             <div className="menu-item disabled">
               <div className="menu-item-icon">
