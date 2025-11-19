@@ -1,0 +1,48 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e7]:
+      - main [ref=e9]
+      - button [ref=e14] [cursor=pointer]
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - button "▶" [ref=e18] [cursor=pointer]
+          - button "❚❚" [ref=e19] [cursor=pointer]
+          - button "❯❯" [ref=e20] [cursor=pointer]
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - generic [ref=e23]: Volume
+            - slider [ref=e24] [cursor=pointer]: "50"
+          - generic [ref=e25]:
+            - generic [ref=e26]: Brightness
+            - slider [ref=e27] [cursor=pointer]: "50"
+          - generic [ref=e28]:
+            - generic [ref=e29]: Contrast
+            - slider [ref=e30] [cursor=pointer]: "50"
+      - contentinfo [ref=e31]
+    - generic [ref=e33]:
+      - textbox "YouTube URL..." [ref=e34]
+      - button "play_arrow Play" [ref=e35] [cursor=pointer]:
+        - generic [ref=e36]: play_arrow
+        - text: Play
+    - generic:
+      - generic:
+        - generic [ref=e38]:
+          - button "menu" [ref=e39] [cursor=pointer]:
+            - generic [ref=e40]: menu
+          - button "help" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]: help
+        - generic [ref=e43]:
+          - button "fullscreen" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]: fullscreen
+          - button "light_off" [ref=e47] [cursor=pointer]:
+            - generic [ref=e48]: light_off
+        - generic [ref=e49]:
+          - button "fit_screen" [ref=e50] [cursor=pointer]:
+            - generic [ref=e51]: fit_screen
+          - button "fullscreen" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: fullscreen
+  - alert [ref=e54]
+```

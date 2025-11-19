@@ -1,151 +1,84 @@
 // src/components/common/VideoAmbilight.tsx
 "use client";
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
-import YouTubePlayer from 'youtube-player';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import YouTube from 'react-youtube';
 
-// Define PlayerState enum
-export enum PlayerState {
-    UNSTARTED = -1,
-    ENDED = 0,
-    PLAYING = 1,
-    PAUSED = 2,
-    BUFFERING = 3,
-    VIDEO_CUED = 5,
-}
-
-// Define props interface
-interface VideoAmbilightProps {
-    videoId: string;
-    className?: string;
-    classNames?: {
-        videoWrapper?: string;
-        ambilightWrapper?: string;
-        aspectRatio?: string;
-        ambilight?: string;
-        ambilightVideo?: string;
-    };
-}
-
-// Define exposed methods interface
+// Exposed methods interface
 export interface VideoAmbilightRef {
     playVideo: () => void;
     pauseVideo: () => void;
     setVolume: (volume: number) => void;
 }
 
-const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ videoId, className, classNames = {} }, ref) => {
-    const [mainPlayer, setMainPlayer] = useState<any>(null);
-    const [ambilightPlayer, setAmbilightPlayer] = useState<any>(null);
+// Props interface
+interface VideoAmbilightProps {
+    videoId: string;
+}
 
-    const mainPlayerId = `youtube-player-${videoId}-main`;
-    const ambilightPlayerId = `youtube-player-${videoId}-ambilight`;
+const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ videoId }, ref) => {
+    const playerRef = useRef<any>(null);
 
-    // Expose player controls to parent component
+    // Expose player controls
     useImperativeHandle(ref, () => ({
-        playVideo: () => {
-            mainPlayer?.playVideo();
-        },
-        pauseVideo: () => {
-            mainPlayer?.pauseVideo();
-        },
-        setVolume: (volume: number) => {
-            mainPlayer?.setVolume(volume);
-        },
+        playVideo: () => playerRef.current?.internalPlayer.playVideo(),
+        pauseVideo: () => playerRef.current?.internalPlayer.pauseVideo(),
+        setVolume: (volume: number) => playerRef.current?.internalPlayer.setVolume(volume),
     }));
 
-    // Animation frame handling for synchronization
-    const animationFrameRef = useRef<number>();
-    const lastTimeRef = useRef<number>();
-
-    const animate = useCallback((time: number) => {
-        if (lastTimeRef.current != null) {
-            const deltaTime = time - lastTimeRef.current;
-            // Sync logic can be added here if needed
-        }
-        lastTimeRef.current = time;
-        animationFrameRef.current = requestAnimationFrame(animate);
-    }, []);
-
-    useEffect(() => {
-        animationFrameRef.current = requestAnimationFrame(animate);
-        return () => {
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-            }
-        };
-    }, [animate]);
-
-    // Player event handlers
-    const onMainPlayerStateChange = useCallback((event: any) => {
-        switch (event.data) {
-            case PlayerState.PLAYING:
-                ambilightPlayer?.seekTo(event.target.getCurrentTime(), true);
-                ambilightPlayer?.playVideo();
-                break;
-            case PlayerState.PAUSED:
-                ambilightPlayer?.seekTo(event.target.getCurrentTime(), true);
-                ambilightPlayer?.pauseVideo();
-                break;
-        }
-    }, [ambilightPlayer]);
-
-    const onAmbilightPlayerReady = useCallback((event: any) => {
-        const availableQualityLevels = event.target.getAvailableQualityLevels();
-        event.target.mute();
-        if (availableQualityLevels?.length > 0) {
-            availableQualityLevels.reverse();
-            const bestQuality = availableQualityLevels.find((q: string) => q !== 'auto');
-            if (bestQuality) {
-                event.target.setPlaybackQuality(bestQuality);
-            }
-        }
-    }, []);
-
-    const onAmbilightPlayerStateChange = useCallback((event: any) => {
-        if (event.data === PlayerState.PLAYING || event.data === PlayerState.BUFFERING) {
-            onAmbilightPlayerReady(event);
-        }
-    }, [onAmbilightPlayerReady]);
-
-    // Initialize players
-    useEffect(() => {
-        const main = YouTubePlayer(mainPlayerId, { videoId });
-        const ambilight = YouTubePlayer(ambilightPlayerId, { videoId });
-
-        setMainPlayer(main);
-        setAmbilightPlayer(ambilight);
-
-        return () => {
-            main.destroy();
-            ambilight.destroy();
-        };
-    }, [videoId, mainPlayerId, ambilightPlayerId]);
-
-    // Attach event listeners
-    useEffect(() => {
-        if (mainPlayer) {
-            mainPlayer.on('stateChange', onMainPlayerStateChange);
-        }
-        if (ambilightPlayer) {
-            ambilightPlayer.on('ready', onAmbilightPlayerReady);
-            ambilightPlayer.on('stateChange', onAmbilightPlayerStateChange);
-        }
-
-        return () => {
-            mainPlayer?.off('stateChange', onMainPlayerStateChange);
-            ambilightPlayer?.off('ready', onAmbilightPlayerReady);
-            ambilightPlayer?.off('stateChange', onAmbilightPlayerStateChange);
-        }
-    }, [mainPlayer, ambilightPlayer, onMainPlayerStateChange, onAmbilightPlayerReady, onAmbilightPlayerStateChange]);
+    const opts = {
+        height: '100%',
+        width: '100%',
+        playerVars: {
+            autoplay: 1,
+            controls: 0,
+            rel: 0,
+            showinfo: 0,
+            iv_load_policy: 3,
+            modestbranding: 1,
+            loop: 1,
+        },
+    };
 
     return (
-        <div className={`video-wrapper ${className} ${classNames.videoWrapper}`}>
-            <div className={`ambilight-wrapper ${classNames.ambilightWrapper}`}>
-                <div className={`aspect-ratio ${classNames.aspectRatio}`}>
-                    <div id={ambilightPlayerId} className={`ambilight ${classNames.ambilight}`} />
-                    <div id={mainPlayerId} className={`ambilight-video ${classNames.ambilightVideo}`} />
-                </div>
+        <div className="video-container">
+            <div className="ambilight-backdrop">
+                <YouTube videoId={videoId} opts={opts} />
             </div>
+            <div className="main-video">
+                <YouTube videoId={videoId} opts={opts} ref={playerRef} />
+            </div>
+            <style jsx>{`
+                .video-container {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: #000;
+                    overflow: hidden;
+                }
+                .ambilight-backdrop {
+                    position: absolute;
+                    top: -25%;
+                    left: -25%;
+                    width: 150%;
+                    height: 150%;
+                    z-index: 1;
+                    filter: blur(40px) brightness(0.9) saturate(1.5);
+                    opacity: 0.7;
+                    transform: scale(1.1);
+                }
+                .main-video {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 2;
+                    border-radius: 15px; /* Ensure main video has rounded corners */
+                    overflow: hidden; /* Clip content to rounded corners */
+                }
+            `}</style>
         </div>
     );
 });
