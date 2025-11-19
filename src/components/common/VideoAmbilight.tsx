@@ -1,7 +1,7 @@
 // src/components/common/VideoAmbilight.tsx
 "use client";
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-import YouTube from 'react-youtube';
+import YouTube, { YouTubeProps } from 'react-youtube';
 
 // Exposed methods interface
 export interface VideoAmbilightRef {
@@ -25,7 +25,7 @@ const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ vid
         setVolume: (volume: number) => playerRef.current?.internalPlayer.setVolume(volume),
     }));
 
-    const opts = {
+    const opts: YouTubeProps['opts'] = {
         height: '100%',
         width: '100%',
         playerVars: {
