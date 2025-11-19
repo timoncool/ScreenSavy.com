@@ -13,7 +13,7 @@ interface RetroTVProps {
 }
 
 const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref) => {
-  const [currentVideoId, setCurrentVideoId] = useState('');
+  const [currentVideoId, setCurrentVideoId] = useState('jfKfPfyJRdk');
   const [isPoweredOn, setIsPoweredOn] = useState(true);
   const [internalViewMode, setInternalViewMode] = useState<'full' | 'closeup'>(viewMode);
   const [brightness, setBrightness] = useState(100);
