@@ -12,6 +12,9 @@ pnpm-debug.log*
 *.log
 .DS_Store
 
+# Test results
+test-results/
+
 # TypeScript
 *.tsbuildinfo
 tsconfig.tsbuildinfo
