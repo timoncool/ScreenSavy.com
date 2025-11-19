@@ -40,8 +40,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
   };
 
   const handleVolumeChange = (newVolume: number) => {
-    setVolume(newVolume);
     playerRef.current?.setVolume(newVolume);
+  };
+
+  const handleNext = () => {
+    (playerRef.current as any)?.nextVideo?.();
   };
 
   // Calculate effects based on sliders
@@ -78,18 +81,28 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           </div>
         </main>
         <div className="speaker" />
-        <div className="volume">
+        <div className="control-panel">
           <div className="playback-controls">
             <button onClick={handlePlay} className="control-button">Play</button>
             <button onClick={handlePause} className="control-button">Pause</button>
+            <button onClick={handleNext} className="control-button">Next</button>
           </div>
           <input
             className="volume-slider"
             type="range"
             min="0"
             max="100"
-            value={volume}
+            defaultValue="50"
             onChange={(e) => handleVolumeChange(Number(e.target.value))}
+          />
+        </div>
+        <div className="volume">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
           />
         </div>
         <nav className="channel">
@@ -428,7 +441,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           height: 100%;
           border-radius: 8px;
           border-style: solid;
-          border-width: 80px 90px 77px 90px;
+          border-width: 80px 90px 40px 90px;
           border-color: rgba(0, 0, 0, 0.4) rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0)
             rgba(0, 0, 0, 0.2);
           z-index: 1;
@@ -443,8 +456,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           box-sizing: border-box;
           width: 100%;
           height: 100%;
-          background: radial-gradient(rgba(0, 0, 0, 0.7) 50%, transparent 100%),
-            linear-gradient(rgba(0, 0, 0, 0.1) 10%, transparent);
+          background: linear-gradient(rgba(0, 0, 0, 0.1) 10%, transparent);
           z-index: 2;
           pointer-events: none;
         }
@@ -481,12 +493,22 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv .speaker {
           position: absolute;
-          width: 200px;
+          width: 150px;
           height: 260px;
           top: 20px;
           right: 20px;
           padding: 10px;
           box-sizing: border-box;
+        }
+
+        .control-panel {
+          position: absolute;
+          bottom: 40px;
+          right: 20px;
+          width: 150px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         }
 
         .old-tv .speaker::before {
@@ -686,7 +708,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           width: 580px;
           height: 326px;
           overflow: hidden;
-          border-radius: 5% / 50%;
+          border-radius: 50% / 10%;
           z-index: 3;
         }
 
@@ -732,9 +754,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           width: 100%;
           height: 100%;
           background-color: transparent;
-          border-radius: 50% / 5%;
+          border-radius: 50% / 10%;
           animation: crt-image 20ms alternate infinite;
           transition: filter 0.2s ease;
+          transform: scale(1.05);
         }
 
         .youtube-container {
@@ -743,7 +766,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           height: 100%;
           top: 0;
           left: 0;
-          border-radius: 50% / 5%;
           overflow: hidden;
         }
 
@@ -1197,14 +1219,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .old-tv.closeup-mode {
-          transform: scale(1.2);
-          bottom: 160px;
+          transform: scale(1.3);
+          bottom: 250px;
           z-index: 800;
         }
 
         #table-tv.closeup-mode {
-          transform: scale(2.2);
-          bottom: -200px;
+          transform: scale(2.0);
+          bottom: -50px;
           z-index: 700;
         }
 
