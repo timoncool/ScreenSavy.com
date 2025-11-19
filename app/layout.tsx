@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Inter, Roboto_Mono } from 'next/font/google';
 import '../src/styles/variables.css';
 import '../src/styles/animations.css';
+import '../src/styles/ambilight.css';
 import './globals.css';
 
 const inter = Inter({
