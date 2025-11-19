@@ -137,11 +137,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .old-tv footer { position: absolute; height: 15px; bottom: -22px; left: 15px; right: 15px; background: #222; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: inset 0 5px 5px rgba(0,0,0,0.8), 0 2px 5px rgba(0,0,0,0.5), 0 10px 25px rgba(0,0,0,1); border-bottom: 3px #000 solid; z-index: -1; }
 
         /* --- Speaker --- */
-        .old-tv .speaker { position: absolute; width: 140px; height: 200px; top: 50px; right: 40px; padding: 10px; box-sizing: border-box; }
+        .old-tv .speaker { position: absolute; width: 160px; height: 160px; top: 40px; right: 30px; padding: 10px; box-sizing: border-box; }
         .old-tv .speaker::before { content: " "; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.1) 0px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 6px, transparent 6px, transparent 10px); border-radius: 20px; border: 2px #111 solid; box-shadow: 0 1px 3px rgba(255,255,255,0.5), 0 4px 15px rgba(0,0,0,0.6); }
 
         /* --- Control Panel & Power Button --- */
-        .control-panel { position: absolute; bottom: 30px; right: 20px; width: 160px; height: auto; background: #2a2a2a; border-radius: 8px; border: 2px solid #1a1a1a; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -1px -1px 2px rgba(0,0,0,0.5), 2px 2px 5px rgba(0,0,0,0.5); padding: 15px; display: flex; flex-direction: column; gap: 15px; font-family: 'Arial', sans-serif; color: #ccc; }
+        .control-panel { position: absolute; bottom: 40px; right: 30px; width: 160px; height: auto; background: #2a2a2a; border-radius: 8px; border: 2px solid #1a1a1a; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.1), inset -1px -1px 2px rgba(0,0,0,0.5), 2px 2px 5px rgba(0,0,0,0.5); padding: 15px; display: flex; flex-direction: column; gap: 15px; font-family: 'Arial', sans-serif; color: #ccc; }
         .power-section { position: absolute; bottom: 30px; left: 40px; display: flex; align-items: center; gap: 10px; }
         .power-button { width: 25px; height: 25px; border-radius: 4px; background: #555; border: 1px solid #222; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 2px 3px rgba(0,0,0,0.4); cursor: pointer; transition: all 0.1s ease; }
         .power-button:active { transform: translateY(1px); background: #4a4a4a; }
