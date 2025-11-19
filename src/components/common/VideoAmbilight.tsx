@@ -1,85 +1,202 @@
 // src/components/common/VideoAmbilight.tsx
 "use client";
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-import YouTube, { YouTubeProps } from 'react-youtube';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
+import YouTubePlayer from 'youtube-player';
 
-// Exposed methods interface
+// Define PlayerState enum
+export enum PlayerState {
+    UNSTARTED = -1,
+    ENDED = 0,
+    PLAYING = 1,
+    PAUSED = 2,
+    BUFFERING = 3,
+    VIDEO_CUED = 5,
+}
+
+// Define props interface
+interface VideoAmbilightProps {
+    videoId: string;
+    className?: string;
+    classNames?: {
+        videoWrapper?: string;
+        ambilightWrapper?: string;
+        aspectRatio?: string;
+        ambilight?: string;
+        ambilightVideo?: string;
+    };
+}
+
+// Define exposed methods interface
 export interface VideoAmbilightRef {
     playVideo: () => void;
     pauseVideo: () => void;
     setVolume: (volume: number) => void;
 }
 
-// Props interface
-interface VideoAmbilightProps {
-    videoId: string;
-}
+const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ videoId, className, classNames = {} }, ref) => {
+    const [mainPlayer, setMainPlayer] = useState<any>(null);
+    const [ambilightPlayer, setAmbilightPlayer] = useState<any>(null);
 
-const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ videoId }, ref) => {
-    const playerRef = useRef<any>(null);
+    const mainPlayerId = `youtube-player-${videoId}-main`;
+    const ambilightPlayerId = `youtube-player-${videoId}-ambilight`;
 
-    // Expose player controls
+    // Expose player controls to parent component
     useImperativeHandle(ref, () => ({
-        playVideo: () => playerRef.current?.internalPlayer.playVideo(),
-        pauseVideo: () => playerRef.current?.internalPlayer.pauseVideo(),
-        setVolume: (volume: number) => playerRef.current?.internalPlayer.setVolume(volume),
+        playVideo: () => {
+            mainPlayer?.playVideo();
+        },
+        pauseVideo: () => {
+            mainPlayer?.pauseVideo();
+        },
+        setVolume: (volume: number) => {
+            mainPlayer?.setVolume(volume);
+        },
     }));
 
-    const opts: YouTubeProps['opts'] = {
-        height: '100%',
-        width: '100%',
-        playerVars: {
-            autoplay: 1,
-            controls: 0,
-            rel: 0,
-            showinfo: 0,
-            iv_load_policy: 3,
-            modestbranding: 1,
-            loop: 1,
-        },
-    };
+    // Animation frame handling for synchronization
+    const animationFrameRef = useRef<number>();
+    const lastTimeRef = useRef<number>();
+
+    const animate = useCallback((time: number) => {
+        if (lastTimeRef.current != null) {
+            const deltaTime = time - lastTimeRef.current;
+            // Sync logic can be added here if needed
+        }
+        lastTimeRef.current = time;
+        animationFrameRef.current = requestAnimationFrame(animate);
+    }, []);
+
+    useEffect(() => {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+        };
+    }, [animate]);
+
+    // Player event handlers
+    const onMainPlayerStateChange = useCallback((event: any) => {
+        switch (event.data) {
+            case PlayerState.PLAYING:
+                ambilightPlayer?.seekTo(event.target.getCurrentTime(), true);
+                ambilightPlayer?.playVideo();
+                break;
+            case PlayerState.PAUSED:
+                ambilightPlayer?.seekTo(event.target.getCurrentTime(), true);
+                ambilightPlayer?.pauseVideo();
+                break;
+        }
+    }, [ambilightPlayer]);
+
+    const onAmbilightPlayerReady = useCallback((event: any) => {
+        const availableQualityLevels = event.target.getAvailableQualityLevels();
+        event.target.mute();
+        if (availableQualityLevels?.length > 0) {
+            availableQualityLevels.reverse();
+            const bestQuality = availableQualityLevels.find((q: string) => q !== 'auto');
+            if (bestQuality) {
+                event.target.setPlaybackQuality(bestQuality);
+            }
+        }
+    }, []);
+
+    const onAmbilightPlayerStateChange = useCallback((event: any) => {
+        if (event.data === PlayerState.PLAYING || event.data === PlayerState.BUFFERING) {
+            onAmbilightPlayerReady(event);
+        }
+    }, [onAmbilightPlayerReady]);
+
+    // Initialize players
+    useEffect(() => {
+        const playerOptions = {
+            videoId,
+            playerVars: {
+                controls: 0,
+                rel: 0,
+                modestbranding: 1,
+                playsinline: 1,
+            },
+        };
+
+        const main = YouTubePlayer(mainPlayerId, playerOptions);
+        const ambilight = YouTubePlayer(ambilightPlayerId, playerOptions);
+
+        setMainPlayer(main);
+        setAmbilightPlayer(ambilight);
+
+        return () => {
+            main.destroy();
+            ambilight.destroy();
+        };
+    }, [videoId, mainPlayerId, ambilightPlayerId]);
+
+    // Attach event listeners
+    useEffect(() => {
+        if (mainPlayer) {
+            mainPlayer.on('stateChange', onMainPlayerStateChange);
+        }
+        if (ambilightPlayer) {
+            ambilightPlayer.on('ready', onAmbilightPlayerReady);
+            ambilightPlayer.on('stateChange', onAmbilightPlayerStateChange);
+        }
+
+        return () => {
+            mainPlayer?.off('stateChange', onMainPlayerStateChange);
+            ambilightPlayer?.off('ready', onAmbilightPlayerReady);
+            ambilightPlayer?.off('stateChange', onAmbilightPlayerStateChange);
+        }
+    }, [mainPlayer, ambilightPlayer, onMainPlayerStateChange, onAmbilightPlayerReady, onAmbilightPlayerStateChange]);
 
     return (
-        <div className="video-container">
-            <div className="ambilight-backdrop">
-                <YouTube videoId={videoId} opts={opts} />
-            </div>
-            <div className="main-video">
-                <YouTube videoId={videoId} opts={opts} ref={playerRef} />
+        <>
+            <div className={`video-wrapper ${className} ${classNames.videoWrapper}`}>
+                <div className={`ambilight-wrapper ${classNames.ambilightWrapper}`}>
+                    <div className={`aspect-ratio ${classNames.aspectRatio}`}>
+                        <div id={ambilightPlayerId} className={`ambilight ${classNames.ambilight}`} />
+                        <div id={mainPlayerId} className={`ambilight-video ${classNames.ambilightVideo}`} />
+                    </div>
+                </div>
             </div>
             <style jsx>{`
-                .video-container {
+                .video-wrapper {
+                    position: relative;
+                    width: 100%;
+                    height: 0;
+                    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+                }
+                .ambilight-wrapper {
                     position: absolute;
                     top: 0;
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: #000;
                     overflow: hidden;
                 }
-                .ambilight-backdrop {
-                    position: absolute;
-                    top: -25%;
-                    left: -25%;
-                    width: 150%;
-                    height: 150%;
-                    z-index: 1;
-                    filter: blur(40px) brightness(0.9) saturate(1.5);
-                    opacity: 0.7;
-                    transform: scale(1.1);
+                .aspect-ratio {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
                 }
-                .main-video {
+                .ambilight {
+                    position: absolute;
+                    top: -10%;
+                    left: -10%;
+                    width: 120%;
+                    height: 120%;
+                    filter: blur(20px) brightness(1.5);
+                    z-index: 1;
+                }
+                .ambilight-video {
                     position: absolute;
                     top: 0;
                     left: 0;
                     width: 100%;
                     height: 100%;
                     z-index: 2;
-                    border-radius: 15px; /* Ensure main video has rounded corners */
-                    overflow: hidden; /* Clip content to rounded corners */
                 }
             `}</style>
-        </div>
+        </>
     );
 });
 
