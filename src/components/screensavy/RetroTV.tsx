@@ -5,6 +5,8 @@ import { RETRO_ENVIRONMENTS, type RetroEnvironmentId } from '@/lib/retroEnvironm
 
 export type RetroScene = 'loft' | 'forest' | 'lake-night' | 'rooftop' | 'junkyard' | 'arcade';
 
+export type RetroScene = 'loft' | 'forest' | 'lake-night' | 'rooftop' | 'junkyard' | 'arcade';
+
 export interface RetroTVRef {
   setVideoId: (id: string) => void;
   setViewMode: (mode: 'full' | 'closeup') => void;
