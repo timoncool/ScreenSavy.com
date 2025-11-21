@@ -1,11 +1,11 @@
 'use client';
 
 import { Suspense, useRef, useState, useCallback } from 'react';
-import RetroTV from '@/components/screensavy/RetroTV';
+import RetroTV, { RetroTVRef } from '@/components/screensavy/RetroTV';
 import MainExperience from '@/components/screensavy/MainExperience';
 
 export default function RetroTVPage() {
-  const tvRef = useRef<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void }>(null);
+  const tvRef = useRef<RetroTVRef>(null);
   const [inputValue, setInputValue] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(true);
 

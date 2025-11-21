@@ -47,6 +47,8 @@ import {
   detectBrowserLanguage,
   useAnimationFrame,
 } from "./shared";
+import type { RetroTVRef } from "./RetroTV";
+import { RETRO_ENVIRONMENTS, type RetroEnvironmentId } from "@/lib/retroEnvironments";
 
 type ModeKey = "oneColor" | "colorChange" | "clock" | "text";
 type ClockStyle = "modern" | "full" | "minimal";
@@ -749,7 +751,7 @@ type MainExperienceProps = {
   videoEffect?: string;
   onEffectChange?: (effect: string) => void;
   onInterfaceVisibilityChange?: (visible: boolean) => void;
-  tvRef?: React.RefObject<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void } | null>;
+  tvRef?: React.RefObject<RetroTVRef | null>;
 };
 
 const MainExperience = ({
@@ -766,6 +768,7 @@ const MainExperience = ({
   tvRef,
 }: MainExperienceProps = {}) => {
   const [tvViewMode, setTvViewMode] = useState<'full' | 'closeup'>('full');
+  const [tvEnvironment, setTvEnvironment] = useState<RetroEnvironmentId>('loft-brick');
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
@@ -1690,6 +1693,21 @@ const MainExperience = ({
                 active={tvViewMode === 'closeup'}
                 aria-label={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
               />
+            </div>
+            <div className="video-control-row active">
+              {RETRO_ENVIRONMENTS.map((environment) => (
+                <IconButton
+                  key={environment.id}
+                  icon={environment.icon}
+                  onClick={() => {
+                    setTvEnvironment(environment.id);
+                    tvRef.current?.setEnvironment?.(environment.id);
+                  }}
+                  title={activeLanguage === 'ru' ? environment.nameRu : environment.name}
+                  active={tvEnvironment === environment.id}
+                  aria-label={activeLanguage === 'ru' ? environment.nameRu : environment.name}
+                />
+              ))}
             </div>
           </>
         )}
