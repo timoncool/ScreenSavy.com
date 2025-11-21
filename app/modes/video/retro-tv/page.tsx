@@ -1,8 +1,15 @@
 'use client';
 
 import { Suspense, useRef, useState, useCallback } from 'react';
-import RetroTV from '@/components/screensavy/RetroTV';
+import dynamic from 'next/dynamic';
 import MainExperience from '@/components/screensavy/MainExperience';
+
+// Dynamically import RetroTV with SSR disabled to avoid hydration mismatches
+// caused by styled-jsx or third-party libraries (youtube-player)
+const RetroTV = dynamic(() => import('@/components/screensavy/RetroTV'), {
+  ssr: false,
+  loading: () => <div style={{ color: 'white' }}>Loading TV...</div>
+});
 
 export default function RetroTVPage() {
   const tvRef = useRef<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void }>(null);

@@ -37,8 +37,8 @@ const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ vid
     const [mainPlayer, setMainPlayer] = useState<any>(null);
     const [ambilightPlayer, setAmbilightPlayer] = useState<any>(null);
 
-    const mainPlayerId = `youtube-player-${videoId}-main`;
-    const ambilightPlayerId = `youtube-player-${videoId}-ambilight`;
+    const mainPlayerContainerRef = useRef<HTMLDivElement>(null);
+    const ambilightPlayerContainerRef = useRef<HTMLDivElement>(null);
 
     // Expose player controls to parent component
     useImperativeHandle(ref, () => ({
@@ -109,6 +109,8 @@ const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ vid
 
     // Initialize players
     useEffect(() => {
+        if (!mainPlayerContainerRef.current || !ambilightPlayerContainerRef.current) return;
+
         const playerOptions = {
             videoId,
             playerVars: {
@@ -119,42 +121,75 @@ const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ vid
             } as any,
         };
 
-        const main = YouTubePlayer(mainPlayerId, playerOptions);
-        const ambilight = YouTubePlayer(ambilightPlayerId, playerOptions);
+        // Create temporary divs for the players to replace
+        // This prevents React from losing track of the refs or dealing with replaced elements
+        const mainDiv = document.createElement('div');
+        const ambilightDiv = document.createElement('div');
 
-        setMainPlayer(main);
-        setAmbilightPlayer(ambilight);
+        // Clear containers just in case
+        mainPlayerContainerRef.current.innerHTML = '';
+        ambilightPlayerContainerRef.current.innerHTML = '';
+
+        mainPlayerContainerRef.current.appendChild(mainDiv);
+        ambilightPlayerContainerRef.current.appendChild(ambilightDiv);
+
+        let main: any;
+        let ambilight: any;
+
+        try {
+            main = YouTubePlayer(mainDiv, playerOptions);
+            ambilight = YouTubePlayer(ambilightDiv, playerOptions);
+            setMainPlayer(main);
+            setAmbilightPlayer(ambilight);
+        } catch (error) {
+            console.error('Failed to initialize YouTube player:', error);
+        }
 
         return () => {
-            main.destroy();
-            ambilight.destroy();
+            try {
+                if (main && typeof main.destroy === 'function') main.destroy();
+                if (ambilight && typeof ambilight.destroy === 'function') ambilight.destroy();
+            } catch (e) {
+                console.error('Error destroying player:', e);
+            }
+            // The destroy method might remove the iframe, but we should ensure containers are clean
+            if (mainPlayerContainerRef.current) mainPlayerContainerRef.current.innerHTML = '';
+            if (ambilightPlayerContainerRef.current) ambilightPlayerContainerRef.current.innerHTML = '';
         };
-    }, [videoId, mainPlayerId, ambilightPlayerId]);
+    }, [videoId]);
 
-    // Attach event listeners
+    // Use refs to store the latest callbacks so we can use them in the stable event listeners
+    const onMainPlayerStateChangeRef = useRef(onMainPlayerStateChange);
+    const onAmbilightPlayerReadyRef = useRef(onAmbilightPlayerReady);
+    const onAmbilightPlayerStateChangeRef = useRef(onAmbilightPlayerStateChange);
+
     useEffect(() => {
-        if (mainPlayer) {
-            mainPlayer.on('stateChange', onMainPlayerStateChange);
-        }
-        if (ambilightPlayer) {
-            ambilightPlayer.on('ready', onAmbilightPlayerReady);
-            ambilightPlayer.on('stateChange', onAmbilightPlayerStateChange);
-        }
+        onMainPlayerStateChangeRef.current = onMainPlayerStateChange;
+        onAmbilightPlayerReadyRef.current = onAmbilightPlayerReady;
+        onAmbilightPlayerStateChangeRef.current = onAmbilightPlayerStateChange;
+    }, [onMainPlayerStateChange, onAmbilightPlayerReady, onAmbilightPlayerStateChange]);
 
-        return () => {
-            mainPlayer?.off('stateChange', onMainPlayerStateChange);
-            ambilightPlayer?.off('ready', onAmbilightPlayerReady);
-            ambilightPlayer?.off('stateChange', onAmbilightPlayerStateChange);
-        }
-    }, [mainPlayer, ambilightPlayer, onMainPlayerStateChange, onAmbilightPlayerReady, onAmbilightPlayerStateChange]);
+    useEffect(() => {
+        if (!mainPlayer || !ambilightPlayer) return;
+
+        const handleMainStateChange = (e: any) => onMainPlayerStateChangeRef.current(e);
+        const handleAmbilightReady = (e: any) => onAmbilightPlayerReadyRef.current(e);
+        const handleAmbilightStateChange = (e: any) => onAmbilightPlayerStateChangeRef.current(e);
+
+        mainPlayer.on('stateChange', handleMainStateChange);
+        ambilightPlayer.on('ready', handleAmbilightReady);
+        ambilightPlayer.on('stateChange', handleAmbilightStateChange);
+
+        // We rely on player.destroy() to clean up listeners
+    }, [mainPlayer, ambilightPlayer]);
 
     return (
         <>
             <div className={`video-wrapper ${className} ${classNames.videoWrapper}`}>
                 <div className={`ambilight-wrapper ${classNames.ambilightWrapper}`}>
                     <div className={`aspect-ratio ${classNames.aspectRatio}`}>
-                        <div id={ambilightPlayerId} className={`ambilight ${classNames.ambilight}`} />
-                        <div id={mainPlayerId} className={`ambilight-video ${classNames.ambilightVideo}`} />
+                        <div ref={ambilightPlayerContainerRef} className={`ambilight ${classNames.ambilight}`} />
+                        <div ref={mainPlayerContainerRef} className={`ambilight-video ${classNames.ambilightVideo}`} />
                     </div>
                 </div>
             </div>

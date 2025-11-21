@@ -364,7 +364,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           padding: 20px;
           border-radius: 8px;
           border-bottom: 4px #222 solid;
-          transform: scale(1);
+          transform: scale(0.5);
           z-index: 600;
           pointer-events: auto;
           transition: box-shadow 0.5s ease;
