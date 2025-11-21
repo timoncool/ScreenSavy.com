@@ -11,6 +11,7 @@ export interface RetroTVRef {
 
 interface RetroTVProps {
   viewMode?: 'full' | 'closeup';
+  environment?: RetroEnvironment;
 }
 
 type EnvironmentStyle = {
@@ -524,6 +525,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
               transparent 80%,
               rgba(0, 0, 0, 0.8) 100%
             ),
+            var(--ambient-glow),
             radial-gradient(transparent 50%, rgba(0, 0, 0, 0.8));
           z-index: 400;
           pointer-events: none;
@@ -565,6 +567,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           box-shadow: var(--wall-shadow, 0 8px 10px rgba(0, 0, 0, 0.8));
           filter: var(--wall-filter, none);
           z-index: 100;
+          overflow: hidden;
         }
 
         .brick-wall::after {
@@ -582,7 +585,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           z-index: 1;
         }
 
-        .brick-wall::before {
+        .brick-wall::after {
+          content: "";
           position: absolute;
           content: " ";
           bottom: 0;
@@ -597,7 +601,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .wood-floor {
           position: absolute;
           width: 100%;
-          height: 140px;
+          height: 170px;
           bottom: 0;
           left: 0;
           perspective: 300px;
@@ -1223,7 +1227,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           position: absolute;
           overflow: hidden;
           width: 600px;
-          height: 300px;
+          height: var(--table-height);
           left: 50%;
           --active-table-scale: var(--table-scale);
           --active-table-bottom: var(--table-bottom);

@@ -8,6 +8,7 @@ export default function RetroTVPage() {
   const tvRef = useRef<RetroTVRef>(null);
   const [inputValue, setInputValue] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(true);
+  const [environment, setEnvironment] = useState<RetroEnvironment>('loft-brick');
 
   // Extract video ID from YouTube URL
   const extractVideoId = useCallback((url: string): string | null => {
@@ -58,7 +59,7 @@ export default function RetroTVPage() {
             // zIndex: 0,
           }}
         >
-          <RetroTV ref={tvRef} />
+          <RetroTV ref={tvRef} environment={environment} />
         </div>
 
         {/* URL Input Panel - only show when showUrlInput is true */}
@@ -152,6 +153,8 @@ export default function RetroTVPage() {
               setShowUrlInput(visible);
             }}
             tvRef={tvRef}
+            environment={environment}
+            onEnvironmentChange={setEnvironment}
           />
         </div>
       </div>
