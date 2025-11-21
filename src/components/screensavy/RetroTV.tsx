@@ -524,9 +524,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv main {
           position: absolute;
-          left: 30px;
-          top: 22px;
-          width: calc(100% - 244px);
+          left: 26px;
+          top: 18px;
+          width: calc(100% - 228px);
           aspect-ratio: 16 / 9;
           height: auto;
           padding: 6px;
@@ -601,13 +601,13 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .right-panel {
           position: absolute;
-          right: 24px;
-          top: 52px;
-          bottom: 60px;
+          right: 16px;
+          top: 42px;
+          bottom: 44px;
           width: 168px;
           display: flex;
           flex-direction: column;
-          gap: 18px;
+          gap: 12px;
           align-items: center;
           justify-content: flex-start;
           z-index: 10;
@@ -670,8 +670,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .playback-row {
           position: absolute;
-          left: 36px;
-          bottom: 32px;
+          left: 30px;
+          bottom: 18px;
           display: flex;
           align-items: center;
           justify-content: flex-start;
