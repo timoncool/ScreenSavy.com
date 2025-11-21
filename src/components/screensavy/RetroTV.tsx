@@ -268,13 +268,13 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           background: #000;
           --table-height: 300px;
           --table-scale: 1;
-          --table-bottom: -12px;
+          --table-bottom: -24px;
           --table-closeup-scale: 1.35;
-          --table-closeup-bottom: -38px;
+          --table-closeup-bottom: -52px;
           --tv-scale: 0.8;
           --tv-lift-factor: 1.35;
-          --tv-bottom: 210px;
-          --tv-closeup-bottom: 250px;
+          --tv-bottom: 170px;
+          --tv-closeup-bottom: 210px;
           --tv-closeup-scale: 1.45;
           --tv-closeup-lift-factor: 0.95;
         }
@@ -522,10 +522,12 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv main {
           position: absolute;
-          left: 38px;
-          top: 22px;
-          bottom: 24px;
-          width: calc(100% - 190px);
+          left: 34px;
+          top: 50%;
+          width: calc(100% - 188px);
+          aspect-ratio: 16 / 9;
+          height: auto;
+          transform: translateY(-50%);
           padding: 6px;
           border-radius: 8px;
           background: #444;
@@ -580,14 +582,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           background-image: linear-gradient(rgba(255, 255, 255, 0.05), transparent);
           border: 2px solid #222;
           color: #ccc;
-          padding: 6px 10px;
+          padding: 5px 8px;
           border-radius: 4px;
           cursor: pointer;
           box-shadow: inset 1px 1px rgba(255, 255, 255, 0.1), inset -1px -1px rgba(0, 0, 0, 0.3), 1px 1px 2px rgba(0,0,0,0.5);
           transition: all 0.1s ease-in-out;
           font-family: 'Bebas Neue', sans-serif;
           text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
-          font-size: 14px;
+          font-size: 12px;
         }
 
         .control-button:active {
@@ -599,9 +601,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .right-panel {
           position: absolute;
           right: 20px;
-          top: 70px;
-          bottom: 70px;
-          width: 150px;
+          top: 74px;
+          bottom: 74px;
+          width: 120px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -611,8 +613,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv .speaker {
           position: relative;
-          width: 120px;
-          height: 120px;
+          width: 110px;
+          height: 110px;
           padding: 10px;
           box-sizing: border-box;
           margin-top: 10px;
@@ -622,7 +624,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .control-panel {
           position: relative;
-          width: 132px;
+          width: 110px;
           display: flex;
           flex-direction: column;
           gap: 12px;
@@ -667,7 +669,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .playback-controls {
           position: relative;
           display: flex;
-          gap: 6px;
+          gap: 4px;
           justify-content: flex-start;
           z-index: 11;
           margin-bottom: 15px;
@@ -675,7 +677,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv input[type="range"] {
           -webkit-appearance: none;
-          width: 90%;
+          width: 88%;
           background: transparent;
           cursor: pointer;
         }
@@ -685,12 +687,12 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .control-slider {
-          margin: 6px 0;
+          margin: 4px 0;
         }
 
         .old-tv input[type="range"]::-webkit-slider-runnable-track {
           width: 100%;
-          height: 6px;
+          height: 5px;
           cursor: pointer;
           box-shadow: inset 1px 1px 2px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.1);
           background: #222;
@@ -698,8 +700,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .old-tv input[type="range"]::-webkit-slider-thumb {
-          height: 18px;
-          width: 9px;
+          height: 15px;
+          width: 8px;
           border-radius: 2px;
           background-color: #555;
           background-image: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
@@ -707,12 +709,12 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
             1px 1px 5px rgba(0, 0, 0, 1);
           cursor: pointer;
           -webkit-appearance: none;
-          margin-top: -8px;
+          margin-top: -6px;
         }
 
         .power-button {
-          width: 50px;
-          height: 50px;
+          width: 44px;
+          height: 44px;
           background-color: #444;
           background-image: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
           border-radius: 50%;
@@ -739,15 +741,15 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
           margin-bottom: 0;
         }
 
         .indicator-panel {
           display: flex;
           flex-direction: row;
-          gap: 8px;
-          padding: 6px 10px;
+          gap: 6px;
+          padding: 5px 8px;
           background: #2a2a2a;
           border-radius: 4px;
           border: 2px solid #1a1a1a;
