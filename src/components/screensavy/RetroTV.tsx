@@ -413,7 +413,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           position: absolute;
           width: 870px;
           height: 465px;
-          bottom: 160px;
+          bottom: 410px;
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -421,6 +421,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           padding: 20px;
           border-radius: 8px;
           border-bottom: 4px #222 solid;
+          transform: scale(0.8);
           z-index: 600;
           pointer-events: auto;
           transition: box-shadow 0.5s ease;
@@ -594,11 +595,13 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .control-panel {
+          position: relative;
           width: 180px;
           display: flex;
           flex-direction: column;
           gap: 15px;
           margin-bottom: 20px;
+          z-index: 3;
         }
 
         .slider-group {
@@ -822,7 +825,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           border-radius: 15px;
           animation: crt-image 20ms alternate infinite;
           transition: filter 0.2s ease;
-          transform: scale(1.05);
+          overflow: hidden;
         }
 
         .youtube-container {
@@ -1287,6 +1290,15 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           transform: scale(1.2);
           bottom: 180px;
           z-index: 800;
+        }
+
+        .old-tv.powered-off .old-tv-content {
+          opacity: 0.3;
+          filter: brightness(0.2) !important;
+        }
+
+        .old-tv.powered-off .youtube-container {
+          display: none;
         }
 
         #table-tv.closeup-mode {
