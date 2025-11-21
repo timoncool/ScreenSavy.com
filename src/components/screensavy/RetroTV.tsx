@@ -273,7 +273,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           --table-closeup-bottom: -38px;
           --tv-scale: 0.8;
           --tv-lift-factor: 1.35;
-          --tv-bottom: 260px;
+          --tv-bottom: 210px;
           --tv-closeup-bottom: 250px;
           --tv-closeup-scale: 1.45;
           --tv-closeup-lift-factor: 0.95;
@@ -298,7 +298,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
               rgba(0, 0, 0, 0.8) 100%
             ),
             radial-gradient(transparent 50%, rgba(0, 0, 0, 0.8));
-          z-index: 700;
+          z-index: 400;
           pointer-events: none;
         }
 
@@ -522,11 +522,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv main {
           position: absolute;
-          left: 48px;
-          top: 30px;
-          bottom: 30px;
-          width: calc(100% - 200px);
-          padding: 8px;
+          left: 38px;
+          top: 22px;
+          bottom: 24px;
+          width: calc(100% - 190px);
+          padding: 6px;
           border-radius: 8px;
           background: #444;
           border: 2px #aaa solid;
@@ -544,9 +544,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           box-sizing: border-box;
           width: 100%;
           height: 100%;
-          border-radius: 10px;
+          border-radius: 9px;
           border-style: solid;
-          border-width: 24px 24px 16px 24px;
+          border-width: 18px 20px 12px 20px;
           border-color: rgba(0, 0, 0, 0.4) rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0)
             rgba(0, 0, 0, 0.2);
           z-index: 1;
@@ -787,8 +787,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv footer {
           position: absolute;
-          height: 15px;
-          bottom: -22px;
+          height: 18px;
+          bottom: -12px;
           left: 15px;
           right: 15px;
           background: #222;
