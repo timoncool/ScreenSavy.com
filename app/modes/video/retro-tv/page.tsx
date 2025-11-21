@@ -1,15 +1,13 @@
 'use client';
 
 import { Suspense, useRef, useState, useCallback } from 'react';
-import RetroTV, { RetroTVRef } from '@/components/screensavy/RetroTV';
+import RetroTV from '@/components/screensavy/RetroTV';
 import MainExperience from '@/components/screensavy/MainExperience';
-import { type RetroEnvironmentId } from '@/lib/retroEnvironments';
 
 export default function RetroTVPage() {
-  const tvRef = useRef<RetroTVRef>(null);
+  const tvRef = useRef<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void }>(null);
   const [inputValue, setInputValue] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(true);
-  const [environment, setEnvironment] = useState<RetroEnvironmentId>('loft-brick');
 
   // Extract video ID from YouTube URL
   const extractVideoId = useCallback((url: string): string | null => {
@@ -60,7 +58,7 @@ export default function RetroTVPage() {
             // zIndex: 0,
           }}
         >
-          <RetroTV ref={tvRef} environment={environment} />
+          <RetroTV ref={tvRef} />
         </div>
 
         {/* URL Input Panel - only show when showUrlInput is true */}
@@ -154,8 +152,6 @@ export default function RetroTVPage() {
               setShowUrlInput(visible);
             }}
             tvRef={tvRef}
-            environment={environment}
-            onEnvironmentChange={setEnvironment}
           />
         </div>
       </div>
