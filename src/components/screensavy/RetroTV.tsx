@@ -584,14 +584,18 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           flex-direction: column;
           justify-content: space-between;
           align-items: center;
+          z-index: 10;
         }
 
         .old-tv .speaker {
+          position: relative;
           width: 180px;
           height: 180px;
           padding: 10px;
           box-sizing: border-box;
           margin-top: 10px;
+          z-index: 1;
+          pointer-events: none;
         }
 
         .control-panel {
@@ -601,7 +605,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           flex-direction: column;
           gap: 15px;
           margin-bottom: 20px;
-          z-index: 3;
+          z-index: 11;
         }
 
         .slider-group {
@@ -639,9 +643,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .playback-controls {
+          position: relative;
           display: flex;
           gap: 10px;
           justify-content: center;
+          z-index: 11;
         }
 
         .old-tv input[type="range"] {
@@ -1316,7 +1322,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         @media (max-width: 1200px) {
           .old-tv {
             transform: scale(0.55);
-            bottom: 325px;
+            bottom: 280px;
           }
           .old-tv.closeup-mode {
             transform: scale(1.2);
@@ -1324,7 +1330,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           }
           #table-tv {
             transform: scale(1.4);
-            bottom: 70px;
+            bottom: 85px;
           }
           #table-tv.closeup-mode {
             transform: scale(2.0);
