@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useRef, useState, useCallback } from 'react';
-import RetroTV, { type RetroEnvironment, type RetroTVRef } from '@/components/screensavy/RetroTV';
+import RetroTV, { RetroTVRef } from '@/components/screensavy/RetroTV';
 import MainExperience from '@/components/screensavy/MainExperience';
 
 export default function RetroTVPage() {

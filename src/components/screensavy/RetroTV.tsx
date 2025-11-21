@@ -1,19 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
-import type { CSSProperties } from 'react';
-
-export type RetroEnvironment =
-  | 'loft-brick'
-  | 'forest-hideout'
-  | 'lakeside-night'
-  | 'rooftop-city'
-  | 'junkyard-stack'
-  | 'neon-arcade';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle, type CSSProperties } from 'react';
+import { RETRO_ENVIRONMENTS, type RetroEnvironmentId } from '@/lib/retroEnvironments';
 
 export interface RetroTVRef {
   setVideoId: (id: string) => void;
   setViewMode: (mode: 'full' | 'closeup') => void;
+  setEnvironment: (id: RetroEnvironmentId) => void;
 }
 
 interface RetroTVProps {
@@ -21,98 +14,175 @@ interface RetroTVProps {
   environment?: RetroEnvironment;
 }
 
-const ENVIRONMENT_STYLES: Record<RetroEnvironment, {
-  wallTexture: string;
-  wallOverlay?: string;
+type EnvironmentStyle = {
+  wallBaseColor: string;
+  wallBackground: string;
   wallSize?: string;
   wallPosition?: string;
+  wallRepeat?: string;
+  wallShadow?: string;
   wallFilter?: string;
-  graffiti?: string;
-  graffitiOpacity?: number;
-  floorTexture: string;
-  floorOverlay?: string;
+  graffitiText?: string;
+  graffitiColor?: string;
+  graffitiShadow?: string;
+  graffitiRotation?: string;
+  baseboardBackground?: string;
+  baseboardOpacity?: string;
+  floorBackground: string;
   floorSize?: string;
   floorPosition?: string;
-  ambientGlow?: string;
-}> = {
+  floorFilter?: string;
+  floorOpacity?: string;
+};
+
+const environmentStyles: Record<RetroEnvironmentId, EnvironmentStyle> = {
   'loft-brick': {
-    wallTexture: 'url(https://images.unsplash.com/photo-1472220625704-91e1462799b2?auto=format&fit=crop&w=1600&q=80)',
-    wallOverlay:
-      'linear-gradient(180deg, rgba(34, 18, 10, 0.6) 0%, rgba(18, 10, 6, 0.8) 55%, rgba(8, 5, 3, 0.9) 100%)',
-    wallSize: 'cover',
-    wallFilter: 'saturate(0.9)',
-    graffiti:
-      'url(https://images.unsplash.com/photo-1526991903337-208bec623a3b?auto=format&fit=crop&w=900&q=60)',
-    graffitiOpacity: 0.35,
-    floorTexture: 'url(https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&w=1600&q=80)',
-    floorOverlay:
-      'linear-gradient(180deg, rgba(14, 8, 5, 0) 0%, rgba(14, 8, 5, 0.85) 80%, rgba(14, 8, 5, 0.95) 100%)',
+    wallBaseColor: '#20100c',
+    wallBackground: `
+      linear-gradient(180deg, rgba(12, 8, 6, 0.82), rgba(12, 8, 6, 0.55)),
+      url('https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80'),
+      repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 62px,
+        rgba(34, 16, 10, 0.6) 62px,
+        rgba(34, 16, 10, 0.6) 66px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(184, 104, 70, 0.75) 0px,
+        rgba(184, 104, 70, 0.75) 10px,
+        rgba(126, 61, 38, 0.85) 10px,
+        rgba(126, 61, 38, 0.85) 135px,
+        rgba(184, 104, 70, 0.75) 135px,
+        rgba(184, 104, 70, 0.75) 142px,
+        rgba(90, 44, 30, 0.8) 142px,
+        rgba(90, 44, 30, 0.8) 146px
+      )
+    `,
+    wallSize: '100% 100%, cover, 260px 70px, 140px 72px',
+    wallPosition: '0 0, center, 0 0, 0 36px',
+    graffitiText: `'RETRO WAVE'`,
+    graffitiColor: 'rgba(255, 255, 255, 0.18)',
+    graffitiShadow: '2px 2px 6px rgba(0, 0, 0, 0.7)',
+    graffitiRotation: '-8deg',
+    baseboardBackground:
+      'linear-gradient(90deg, #4a3428 0%, #3d2a1f 50%, #4a3428 100%), repeating-linear-gradient(90deg, #5a4438 0px, #5a4438 100px, #4a3428 100px, #4a3428 102px)',
+    floorBackground: `
+      linear-gradient(180deg, rgba(40, 24, 16, 0.9), rgba(16, 10, 6, 0.95)),
+      url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=70')
+    `,
+    floorSize: '120% 120%, cover',
+    floorFilter: 'saturate(0.9)',
   },
-  'forest-hideout': {
-    wallTexture: 'url(https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80)',
-    wallOverlay:
-      'linear-gradient(180deg, rgba(5, 10, 6, 0.6) 0%, rgba(6, 8, 7, 0.85) 60%, rgba(5, 6, 6, 0.95) 100%)',
-    wallPosition: 'center center',
-    floorTexture: 'url(https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80)',
-    floorOverlay:
-      'linear-gradient(180deg, rgba(6, 12, 6, 0.35) 0%, rgba(6, 10, 6, 0.85) 75%, rgba(6, 10, 8, 0.95) 100%)',
-    ambientGlow:
-      'radial-gradient(ellipse at 50% 45%, rgba(124, 179, 66, 0.15) 0%, transparent 40%)',
+  'forest-night': {
+    wallBaseColor: '#0a0f15',
+    wallBackground: `
+      linear-gradient(180deg, rgba(4, 8, 12, 0.82), rgba(4, 8, 12, 0.45)),
+      url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80')
+    `,
+    wallSize: '100% 100%, cover',
+    wallPosition: 'center',
+    wallShadow: '0 10px 20px rgba(0, 0, 0, 0.85)',
+    wallFilter: 'saturate(0.95)',
+    graffitiText: `''`,
+    baseboardOpacity: '0',
+    floorBackground: `
+      linear-gradient(180deg, rgba(9, 16, 12, 0.85), rgba(3, 6, 5, 0.95)),
+      url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=70')
+    `,
+    floorSize: 'cover',
+    floorFilter: 'saturate(0.8)',
   },
-  'lakeside-night': {
-    wallTexture: 'url(https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1600&q=80)',
-    wallOverlay:
-      'linear-gradient(180deg, rgba(4, 6, 12, 0.75) 0%, rgba(8, 10, 18, 0.92) 70%, rgba(2, 3, 6, 0.96) 100%)',
-    wallPosition: 'center center',
-    floorTexture: 'url(https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80)',
-    floorOverlay:
-      'linear-gradient(180deg, rgba(10, 12, 22, 0.35) 0%, rgba(8, 10, 18, 0.9) 75%, rgba(4, 6, 12, 0.96) 100%)',
-    ambientGlow:
-      'radial-gradient(ellipse at 60% 35%, rgba(66, 135, 245, 0.25) 0%, transparent 55%)',
+  'lake-moonlight': {
+    wallBaseColor: '#0b1019',
+    wallBackground: `
+      linear-gradient(180deg, rgba(7, 11, 20, 0.82), rgba(7, 11, 20, 0.5)),
+      url('https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1600&q=80')
+    `,
+    wallSize: '100% 100%, cover',
+    wallPosition: 'center',
+    graffitiText: `'chillwave'`,
+    graffitiColor: 'rgba(173, 216, 230, 0.22)',
+    graffitiShadow: '1px 1px 8px rgba(0, 0, 0, 0.9)',
+    graffitiRotation: '-2deg',
+    baseboardOpacity: '0.2',
+    floorBackground: `
+      linear-gradient(180deg, rgba(10, 14, 22, 0.92), rgba(6, 8, 14, 0.97)),
+      url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1400&q=70')
+    `,
+    floorSize: '110% 110%, cover',
+    floorFilter: 'saturate(0.75)',
   },
-  'rooftop-city': {
-    wallTexture: 'url(https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=80)',
-    wallOverlay:
-      'linear-gradient(180deg, rgba(10, 10, 12, 0.6) 0%, rgba(8, 8, 10, 0.92) 70%, rgba(6, 6, 8, 0.97) 100%)',
-    wallPosition: 'center center',
-    floorTexture: 'url(https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80)',
-    floorOverlay:
-      'linear-gradient(180deg, rgba(10, 10, 12, 0.45) 0%, rgba(6, 6, 8, 0.9) 78%, rgba(2, 2, 3, 0.96) 100%)',
-    ambientGlow:
-      'radial-gradient(ellipse at 50% 40%, rgba(255, 196, 118, 0.15) 0%, transparent 45%)',
+  'city-rooftop': {
+    wallBaseColor: '#0e0d12',
+    wallBackground: `
+      linear-gradient(180deg, rgba(8, 7, 12, 0.8), rgba(8, 7, 12, 0.55)),
+      url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80')
+    `,
+    wallSize: '100% 100%, cover',
+    wallPosition: 'center',
+    wallShadow: '0 12px 18px rgba(0, 0, 0, 0.9)',
+    graffitiText: `'CITY LIGHTS'`,
+    graffitiColor: 'rgba(255, 255, 255, 0.14)',
+    graffitiRotation: '-10deg',
+    baseboardOpacity: '0.25',
+    floorBackground: `
+      linear-gradient(180deg, rgba(22, 22, 26, 0.92), rgba(8, 8, 10, 0.98)),
+      url('https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1400&q=70')
+    `,
+    floorSize: '120% 120%, cover',
+    floorFilter: 'saturate(0.7)',
   },
   'junkyard-stack': {
-    wallTexture: 'url(https://images.unsplash.com/photo-1501534661647-b77c7c1e21b7?auto=format&fit=crop&w=1600&q=80)',
-    wallOverlay:
-      'linear-gradient(180deg, rgba(10, 8, 7, 0.8) 0%, rgba(8, 6, 5, 0.9) 65%, rgba(5, 4, 4, 0.95) 100%)',
-    wallSize: 'cover',
-    wallPosition: 'center center',
-    graffiti:
-      'url(https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=900&q=60)',
-    graffitiOpacity: 0.25,
-    floorTexture: 'url(https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80)',
-    floorOverlay:
-      'linear-gradient(180deg, rgba(16, 14, 12, 0.45) 0%, rgba(12, 10, 9, 0.9) 75%, rgba(8, 7, 7, 0.96) 100%)',
-    ambientGlow:
-      'radial-gradient(ellipse at 45% 40%, rgba(255, 255, 255, 0.08) 0%, transparent 40%)',
+    wallBaseColor: '#120d0a',
+    wallBackground: `
+      linear-gradient(180deg, rgba(14, 10, 8, 0.8), rgba(14, 10, 8, 0.55)),
+      url('https://images.unsplash.com/photo-1529429617124-aee35369a5c2?auto=format&fit=crop&w=1600&q=80')
+    `,
+    wallSize: '100% 100%, cover',
+    wallPosition: 'center',
+    wallShadow: '0 12px 22px rgba(0, 0, 0, 0.85)',
+    graffitiText: `'TV GRAVEYARD'`,
+    graffitiColor: 'rgba(255, 255, 255, 0.12)',
+    graffitiShadow: '2px 2px 10px rgba(0, 0, 0, 0.9)',
+    graffitiRotation: '-4deg',
+    baseboardOpacity: '0.15',
+    floorBackground: `
+      linear-gradient(180deg, rgba(22, 16, 12, 0.9), rgba(8, 6, 5, 0.97)),
+      url('https://images.unsplash.com/photo-1493655430214-3dd771846cfd?auto=format&fit=crop&w=1400&q=70')
+    `,
+    floorSize: '110% 110%, cover',
+    floorFilter: 'saturate(0.65)',
   },
   'neon-arcade': {
-    wallTexture: 'url(https://images.unsplash.com/photo-1527443224154-dc2c1eac9575?auto=format&fit=crop&w=1600&q=80)',
-    wallOverlay:
-      'linear-gradient(180deg, rgba(6, 6, 14, 0.65) 0%, rgba(6, 6, 10, 0.92) 70%, rgba(4, 4, 8, 0.97) 100%)',
-    wallPosition: 'center center',
-    graffiti:
-      'url(https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=800&q=60)',
-    graffitiOpacity: 0.15,
-    floorTexture: 'url(https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80)',
-    floorOverlay:
-      'linear-gradient(180deg, rgba(8, 6, 18, 0.45) 0%, rgba(6, 4, 14, 0.88) 78%, rgba(4, 3, 10, 0.96) 100%)',
-    ambientGlow:
-      'radial-gradient(ellipse at 50% 45%, rgba(255, 105, 180, 0.25) 0%, transparent 55%)',
+    wallBaseColor: '#0d0613',
+    wallBackground: `
+      linear-gradient(180deg, rgba(10, 4, 18, 0.85), rgba(10, 4, 18, 0.55)),
+      url('https://images.unsplash.com/photo-1527863280616-35ae4851d2c3?auto=format&fit=crop&w=1600&q=80')
+    `,
+    wallSize: '100% 100%, cover',
+    wallPosition: 'center',
+    wallFilter: 'saturate(1.15)',
+    graffitiText: `'NEON DREAMS'`,
+    graffitiColor: 'rgba(255, 111, 210, 0.3)',
+    graffitiShadow: '0 0 12px rgba(255, 0, 110, 0.4)',
+    graffitiRotation: '6deg',
+    baseboardOpacity: '0.3',
+    floorBackground: `
+      radial-gradient(circle at 50% 0%, rgba(255, 0, 110, 0.25), transparent 45%),
+      linear-gradient(180deg, rgba(6, 4, 10, 0.92), rgba(5, 3, 8, 0.98)),
+      repeating-linear-gradient(90deg, rgba(0, 255, 200, 0.12) 0px, rgba(0, 255, 200, 0.12) 2px, transparent 2px, transparent 24px)
+    `,
+    floorSize: '100% 100%, 100% 100%, 22px 22px',
+    floorPosition: 'center',
+    floorFilter: 'saturate(1.1)',
   },
 };
 
-const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', environment = 'loft-brick' }, ref) => {
+const defaultEnvironment: RetroEnvironmentId = RETRO_ENVIRONMENTS[0].id;
+
+const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref) => {
   const [currentVideoId, setCurrentVideoId] = useState('jfKfPfyJRdk');
   const [isPoweredOn, setIsPoweredOn] = useState(true);
   const [internalViewMode, setInternalViewMode] = useState<'full' | 'closeup'>(viewMode);
@@ -120,35 +190,41 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', envir
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
   const [volume, setVolume] = useState(50);
+  const [environment, setEnvironment] = useState<RetroEnvironmentId>(defaultEnvironment);
   const playerRef = useRef<any>(null);
 
-  const activeEnvironment = environment;
+  const fallbackEnvironment = environmentStyles[defaultEnvironment];
+  const activeEnvironment = environmentStyles[environment] || fallbackEnvironment;
 
-  const environmentStyle = useMemo(() => ENVIRONMENT_STYLES[activeEnvironment], [activeEnvironment]);
-
-  const environmentVariables = useMemo<CSSProperties>(
-    () => ({
-      '--wall-image': environmentStyle.wallTexture,
-      '--wall-overlay':
-        environmentStyle.wallOverlay ??
-        'linear-gradient(180deg, rgba(20, 12, 8, 0.7) 0%, rgba(14, 8, 6, 0.85) 60%, rgba(8, 5, 3, 0.95) 100%)',
-      '--wall-size': environmentStyle.wallSize ?? 'cover',
-      '--wall-position': environmentStyle.wallPosition ?? 'center center',
-      '--wall-filter': environmentStyle.wallFilter ?? 'none',
-      '--graffiti-image': environmentStyle.graffiti ?? 'none',
-      '--graffiti-opacity': `${environmentStyle.graffitiOpacity ?? 0.18}`,
-      '--floor-image': environmentStyle.floorTexture,
-      '--floor-overlay':
-        environmentStyle.floorOverlay ??
-        'linear-gradient(180deg, rgba(20, 12, 8, 0.15) 0%, rgba(14, 8, 6, 0.85) 75%, rgba(10, 6, 4, 0.95) 100%)',
-      '--floor-size': environmentStyle.floorSize ?? 'cover',
-      '--floor-position': environmentStyle.floorPosition ?? 'center',
-      '--ambient-glow':
-        environmentStyle.ambientGlow ??
-        'radial-gradient(ellipse at 50% 45%, rgba(255, 214, 170, 0.15) 0%, transparent 50%)',
-    }),
-    [environmentStyle]
-  );
+  const environmentCssVars: CSSProperties = {
+    ['--wall-base-color' as string]: activeEnvironment.wallBaseColor ?? fallbackEnvironment.wallBaseColor,
+    ['--wall-background' as string]: activeEnvironment.wallBackground ?? fallbackEnvironment.wallBackground,
+    ['--wall-background-size' as string]: activeEnvironment.wallSize ?? fallbackEnvironment.wallSize ?? 'cover',
+    ['--wall-background-position' as string]:
+      activeEnvironment.wallPosition ?? fallbackEnvironment.wallPosition ?? 'center',
+    ['--wall-background-repeat' as string]:
+      activeEnvironment.wallRepeat ?? fallbackEnvironment.wallRepeat ?? 'no-repeat',
+    ['--wall-shadow' as string]: activeEnvironment.wallShadow ?? '0 8px 10px rgba(0, 0, 0, 0.8)',
+    ['--wall-filter' as string]: activeEnvironment.wallFilter ?? 'none',
+    ['--wall-graffiti-text' as string]:
+      activeEnvironment.graffitiText ?? fallbackEnvironment.graffitiText ?? "''",
+    ['--wall-graffiti-color' as string]:
+      activeEnvironment.graffitiColor ?? fallbackEnvironment.graffitiColor ?? 'rgba(255, 255, 255, 0.1)',
+    ['--wall-graffiti-shadow' as string]:
+      activeEnvironment.graffitiShadow ?? fallbackEnvironment.graffitiShadow ?? '2px 2px 4px rgba(0, 0, 0, 0.6)',
+    ['--wall-graffiti-rotation' as string]:
+      activeEnvironment.graffitiRotation ?? fallbackEnvironment.graffitiRotation ?? '-6deg',
+    ['--wall-baseboard-background' as string]:
+      activeEnvironment.baseboardBackground ?? fallbackEnvironment.baseboardBackground ?? 'none',
+    ['--wall-baseboard-opacity' as string]:
+      activeEnvironment.baseboardOpacity ?? fallbackEnvironment.baseboardOpacity ?? '1',
+    ['--floor-background' as string]: activeEnvironment.floorBackground ?? fallbackEnvironment.floorBackground,
+    ['--floor-background-size' as string]: activeEnvironment.floorSize ?? fallbackEnvironment.floorSize ?? '100% 100%',
+    ['--floor-background-position' as string]:
+      activeEnvironment.floorPosition ?? fallbackEnvironment.floorPosition ?? 'center',
+    ['--floor-filter' as string]: activeEnvironment.floorFilter ?? fallbackEnvironment.floorFilter ?? 'none',
+    ['--floor-opacity' as string]: activeEnvironment.floorOpacity ?? fallbackEnvironment.floorOpacity ?? '1',
+  };
 
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
@@ -158,6 +234,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', envir
     },
     setViewMode: (mode: 'full' | 'closeup') => {
       setInternalViewMode(mode);
+    },
+    setEnvironment: (id: RetroEnvironmentId) => {
+      setEnvironment(id);
     }
   }));
 
@@ -245,11 +324,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', envir
   };
 
   return (
-    <div
-      className="retro-tv-container"
-      data-environment={activeEnvironment}
-      style={environmentVariables}
-    >
+    <div className={`retro-tv-container env-${environment}`} style={environmentCssVars}>
       <div className="gradient" />
       <div className="brick-wall" />
       <div className="wood-floor" />
@@ -401,29 +476,35 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', envir
           width: 100%;
           height: 100vh;
           background: #000;
-          --table-height: 250px;
-          --table-scale: 1;
-          --table-bottom: -12px;
-          --table-closeup-scale: 1.18;
-          --table-closeup-bottom: -80px;
+          --table-height: 320px;
+          --table-scale: 1.05;
+          --table-bottom: 10px;
+          --table-closeup-scale: 1.25;
+          --table-closeup-bottom: -70px;
           --tv-scale: 0.82;
-          --tv-lift-factor: 1.2;
-          --tv-bottom: 188px;
-          --tv-closeup-bottom: 168px;
-          --tv-closeup-scale: 1.62;
-          --tv-closeup-lift-factor: 0.95;
-          --wall-image: none;
-          --wall-overlay: linear-gradient(180deg, rgba(20, 12, 8, 0.7) 0%, rgba(14, 8, 6, 0.85) 60%, rgba(8, 5, 3, 0.95) 100%);
-          --wall-size: cover;
-          --wall-position: center center;
+          --tv-lift-factor: 1.5;
+          --tv-bottom: 190px;
+          --tv-closeup-bottom: 150px;
+          --tv-closeup-scale: 1.7;
+          --tv-closeup-lift-factor: 1.05;
+          --wall-base-color: #20100c;
+          --wall-background: none;
+          --wall-background-size: cover;
+          --wall-background-position: center;
+          --wall-background-repeat: no-repeat;
+          --wall-shadow: 0 8px 10px rgba(0, 0, 0, 0.8);
           --wall-filter: none;
-          --graffiti-image: none;
-          --graffiti-opacity: 0.18;
-          --floor-image: none;
-          --floor-overlay: linear-gradient(180deg, rgba(20, 12, 8, 0.15) 0%, rgba(14, 8, 6, 0.85) 75%, rgba(10, 6, 4, 0.95) 100%);
-          --floor-size: cover;
-          --floor-position: center;
-          --ambient-glow: radial-gradient(ellipse at 50% 45%, rgba(255, 214, 170, 0.15) 0%, transparent 50%);
+          --wall-graffiti-text: '';
+          --wall-graffiti-color: rgba(255, 255, 255, 0.14);
+          --wall-graffiti-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+          --wall-graffiti-rotation: -6deg;
+          --wall-baseboard-background: none;
+          --wall-baseboard-opacity: 1;
+          --floor-background: none;
+          --floor-background-size: 100% 100%;
+          --floor-background-position: center;
+          --floor-filter: none;
+          --floor-opacity: 1;
         }
 
         body {
@@ -477,40 +558,44 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', envir
           top: 0;
           left: 0;
           right: 0;
-          bottom: 170px;
-          background-image: var(--wall-image), var(--wall-overlay);
-          background-size: var(--wall-size, cover), cover;
-          background-position: var(--wall-position, center), center;
-          background-repeat: no-repeat;
-          filter: var(--wall-filter);
-          box-shadow: 0 8px 10px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(0, 0, 0, 0.4);
+          bottom: 140px;
+          background-color: var(--wall-base-color);
+          background-image: var(--wall-background);
+          background-size: var(--wall-background-size);
+          background-position: var(--wall-background-position);
+          background-repeat: var(--wall-background-repeat);
+          box-shadow: var(--wall-shadow, 0 8px 10px rgba(0, 0, 0, 0.8));
+          filter: var(--wall-filter, none);
           z-index: 100;
           overflow: hidden;
         }
 
-        .brick-wall::before {
+        .brick-wall::after {
+          content: var(--wall-graffiti-text);
           position: absolute;
-          content: " ";
-          inset: 0;
-          background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.55) 100%);
-          mix-blend-mode: multiply;
-          opacity: 0.75;
-          pointer-events: none;
+          top: 15%;
+          right: 20%;
+          font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+          font-size: 42px;
+          font-weight: bold;
+          color: var(--wall-graffiti-color);
+          text-shadow: var(--wall-graffiti-shadow);
+          transform: rotate(var(--wall-graffiti-rotation));
+          letter-spacing: 1px;
+          z-index: 1;
         }
 
         .brick-wall::after {
           content: "";
           position: absolute;
-          inset: 12% 8% auto 8%;
-          height: 220px;
-          background-image: var(--graffiti-image);
-          background-size: contain;
-          background-repeat: no-repeat;
-          background-position: right top;
-          opacity: var(--graffiti-opacity);
-          filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
-          pointer-events: none;
-          z-index: 2;
+          content: " ";
+          bottom: 0;
+          width: 100%;
+          height: 30px;
+          background: var(--wall-baseboard-background);
+          opacity: var(--wall-baseboard-opacity);
+          box-shadow: inset 0 2px rgba(255, 255, 255, 0.2),
+            inset 0 -5px 5px rgba(0, 0, 0, 0.2), 0 -1px 4px rgba(0, 0, 0, 0.9);
         }
 
         .wood-floor {
@@ -528,24 +613,16 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', envir
           position: absolute;
           content: " ";
           top: -100%;
-          left: -15%;
-          width: 130%;
-          height: 260%;
-          background-image: var(--floor-image);
-          background-size: var(--floor-size, cover);
-          background-repeat: no-repeat;
-          background-position: var(--floor-position, center);
-          transform: rotateX(62deg);
-          filter: saturate(0.95);
-          box-shadow: inset 0 -40px 120px rgba(0, 0, 0, 0.55);
-        }
-
-        .wood-floor::after {
-          position: absolute;
-          content: " ";
-          inset: 0;
-          background: var(--floor-overlay);
-          pointer-events: none;
+          left: -25%;
+          width: 150%;
+          height: 250%;
+          background: var(--floor-background);
+          background-size: var(--floor-background-size);
+          background-position: var(--floor-background-position);
+          transform: rotateX(60deg);
+          filter: var(--floor-filter, none);
+          opacity: var(--floor-opacity, 1);
+          box-shadow: inset 0 -50px 100px rgba(0, 0, 0, 0.5);
         }
 
         .old-tv * {

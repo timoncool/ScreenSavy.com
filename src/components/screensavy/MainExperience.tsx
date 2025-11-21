@@ -47,7 +47,8 @@ import {
   detectBrowserLanguage,
   useAnimationFrame,
 } from "./shared";
-import type { RetroEnvironment, RetroTVRef } from "./RetroTV";
+import type { RetroTVRef } from "./RetroTV";
+import { RETRO_ENVIRONMENTS, type RetroEnvironmentId } from "@/lib/retroEnvironments";
 
 type ModeKey = "oneColor" | "colorChange" | "clock" | "text";
 type ClockStyle = "modern" | "full" | "minimal";
@@ -764,8 +765,6 @@ type MainExperienceProps = {
   onEffectChange?: (effect: string) => void;
   onInterfaceVisibilityChange?: (visible: boolean) => void;
   tvRef?: React.RefObject<RetroTVRef | null>;
-  environment?: RetroEnvironment;
-  onEnvironmentChange?: (environment: RetroEnvironment) => void;
 };
 
 const MainExperience = ({
@@ -784,7 +783,7 @@ const MainExperience = ({
   onEnvironmentChange,
 }: MainExperienceProps = {}) => {
   const [tvViewMode, setTvViewMode] = useState<'full' | 'closeup'>('full');
-  const [retroEnvironment, setRetroEnvironment] = useState<RetroEnvironment>(environment ?? 'loft-brick');
+  const [tvEnvironment, setTvEnvironment] = useState<RetroEnvironmentId>('loft-brick');
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
@@ -1740,6 +1739,21 @@ const MainExperience = ({
                 active={tvViewMode === 'closeup'}
                 aria-label={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
               />
+            </div>
+            <div className="video-control-row active">
+              {RETRO_ENVIRONMENTS.map((environment) => (
+                <IconButton
+                  key={environment.id}
+                  icon={environment.icon}
+                  onClick={() => {
+                    setTvEnvironment(environment.id);
+                    tvRef.current?.setEnvironment?.(environment.id);
+                  }}
+                  title={activeLanguage === 'ru' ? environment.nameRu : environment.name}
+                  active={tvEnvironment === environment.id}
+                  aria-label={activeLanguage === 'ru' ? environment.nameRu : environment.name}
+                />
+              ))}
             </div>
           </>
         )}
