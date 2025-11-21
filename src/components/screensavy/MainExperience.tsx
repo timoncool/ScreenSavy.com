@@ -47,7 +47,8 @@ import {
   detectBrowserLanguage,
   useAnimationFrame,
 } from "./shared";
-import type { RetroScene, RetroTVRef } from "./RetroTV";
+import type { RetroTVRef } from "./RetroTV";
+import { RETRO_ENVIRONMENTS, type RetroEnvironmentId } from "@/lib/retroEnvironments";
 
 type ModeKey = "oneColor" | "colorChange" | "clock" | "text";
 type ClockStyle = "modern" | "full" | "minimal";
@@ -71,6 +72,19 @@ const fontSizeClassMap: Record<TextFontSize, string> = {
   medium: "text-medium",
   large: "text-large",
 };
+
+const RETRO_TV_ENVIRONMENTS: {
+  id: RetroEnvironment;
+  icon: string;
+  label: { en: string; ru: string };
+}[] = [
+  { id: "loft-brick", icon: "wallpaper", label: { en: "Loft brick", ru: "Кирпичный лофт" } },
+  { id: "forest-hideout", icon: "park", label: { en: "Forest", ru: "Лес" } },
+  { id: "lakeside-night", icon: "nightlight", label: { en: "Night lake", ru: "Ночное озеро" } },
+  { id: "rooftop-city", icon: "location_city", label: { en: "Rooftop", ru: "Крыша" } },
+  { id: "junkyard-stack", icon: "delete", label: { en: "TV junkyard", ru: "Свалка ТВ" } },
+  { id: "neon-arcade", icon: "casino", label: { en: "Arcade", ru: "Неон" } },
+];
 
 const fontFamilies: Record<string, string> = {
   Inter: "'Inter', sans-serif",
@@ -774,9 +788,11 @@ const MainExperience = ({
   onEffectChange,
   onInterfaceVisibilityChange,
   tvRef,
+  environment,
+  onEnvironmentChange,
 }: MainExperienceProps = {}) => {
   const [tvViewMode, setTvViewMode] = useState<'full' | 'closeup'>('full');
-  const [retroScene, setRetroScene] = useState<RetroScene>('loft');
+  const [tvEnvironment, setTvEnvironment] = useState<RetroEnvironmentId>('loft-brick');
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
@@ -838,6 +854,22 @@ const MainExperience = ({
   const transitionProgressRef = useRef(0);
   const nextColorRef = useRef<Rgb | null>(null);
   const animationFrame = useAnimationFrame();
+
+  useEffect(() => {
+    if (environment) {
+      setRetroEnvironment(environment);
+    }
+  }, [environment]);
+
+  const handleEnvironmentChange = useCallback(
+    (value: RetroEnvironment) => {
+      setRetroEnvironment(value);
+      onEnvironmentChange?.(value);
+    },
+    [onEnvironmentChange]
+  );
+
+  const activeEnvironment = environment ?? retroEnvironment;
 
   useLayoutEffect(() => {
     if (typeof window === "undefined") {
@@ -1685,18 +1717,18 @@ const MainExperience = ({
         )}
         {videoMode && !interfaceHidden && videoSlug === 'retro-tv' && tvRef && (
           <>
-            <div className="video-control-row active" style={{ marginBottom: '10px' }}>
-              {RETRO_SCENE_BUTTONS.map((scene) => (
+            <div
+              className="video-control-row active"
+              style={{ marginBottom: '8px', position: 'relative', zIndex: 2 }}
+            >
+              {RETRO_TV_ENVIRONMENTS.map((option) => (
                 <IconButton
-                  key={scene.id}
-                  icon={scene.icon}
-                  onClick={() => {
-                    setRetroScene(scene.id);
-                    tvRef.current?.setEnvironment(scene.id);
-                  }}
-                  title={activeLanguage === 'ru' ? scene.label.ru : scene.label.en}
-                  active={retroScene === scene.id}
-                  aria-label={activeLanguage === 'ru' ? scene.label.ru : scene.label.en}
+                  key={option.id}
+                  icon={option.icon}
+                  onClick={() => handleEnvironmentChange(option.id)}
+                  title={activeLanguage === 'ru' ? option.label.ru : option.label.en}
+                  active={activeEnvironment === option.id}
+                  aria-label={activeLanguage === 'ru' ? option.label.ru : option.label.en}
                 />
               ))}
             </div>
@@ -1722,6 +1754,21 @@ const MainExperience = ({
                 active={tvViewMode === 'closeup'}
                 aria-label={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
               />
+            </div>
+            <div className="video-control-row active">
+              {RETRO_ENVIRONMENTS.map((environment) => (
+                <IconButton
+                  key={environment.id}
+                  icon={environment.icon}
+                  onClick={() => {
+                    setTvEnvironment(environment.id);
+                    tvRef.current?.setEnvironment?.(environment.id);
+                  }}
+                  title={activeLanguage === 'ru' ? environment.nameRu : environment.name}
+                  active={tvEnvironment === environment.id}
+                  aria-label={activeLanguage === 'ru' ? environment.nameRu : environment.name}
+                />
+              ))}
             </div>
           </>
         )}
