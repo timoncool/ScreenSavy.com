@@ -15,7 +15,7 @@ export interface RetroTVRef {
 
 interface RetroTVProps {
   viewMode?: 'full' | 'closeup';
-  environment?: RetroEnvironment;
+  environment?: RetroEnvironmentId;
 }
 
 type EnvironmentStyle = {
