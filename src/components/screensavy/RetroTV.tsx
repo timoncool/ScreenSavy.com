@@ -364,7 +364,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           padding: 20px;
           border-radius: 8px;
           border-bottom: 4px #222 solid;
-          transform: scale(1);
           z-index: 600;
           pointer-events: auto;
           transition: box-shadow 0.5s ease;
@@ -1228,8 +1227,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .old-tv.closeup-mode {
-          transform: scale(1.3);
-          bottom: 250px;
+          transform: scale(1.2);
+          bottom: 180px;
           z-index: 800;
         }
 
@@ -1243,6 +1242,25 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .closeup-mode ~ .brick-wall {
           opacity: 0.3;
+        }
+
+        @media (max-width: 1200px) {
+          .old-tv {
+            transform: scale(0.55);
+            bottom: 325px;
+          }
+          .old-tv.closeup-mode {
+            transform: scale(1.2);
+            bottom: 180px;
+          }
+          #table-tv {
+            transform: scale(1.4);
+            bottom: 70px;
+          }
+          #table-tv.closeup-mode {
+            transform: scale(2.0);
+            bottom: 0px;
+          }
         }
       `}</style>
     </div>
