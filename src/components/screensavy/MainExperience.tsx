@@ -74,14 +74,14 @@ const fontSizeClassMap: Record<TextFontSize, string> = {
 };
 
 const RETRO_TV_ENVIRONMENTS: {
-  id: RetroEnvironment;
+  id: RetroEnvironmentId;
   icon: string;
   label: { en: string; ru: string };
 }[] = [
   { id: "loft-brick", icon: "wallpaper", label: { en: "Loft brick", ru: "Кирпичный лофт" } },
-  { id: "forest-hideout", icon: "park", label: { en: "Forest", ru: "Лес" } },
-  { id: "lakeside-night", icon: "nightlight", label: { en: "Night lake", ru: "Ночное озеро" } },
-  { id: "rooftop-city", icon: "location_city", label: { en: "Rooftop", ru: "Крыша" } },
+  { id: "forest-night", icon: "park", label: { en: "Forest", ru: "Лес" } },
+  { id: "lake-moonlight", icon: "nightlight", label: { en: "Night lake", ru: "Ночное озеро" } },
+  { id: "city-rooftop", icon: "location_city", label: { en: "Rooftop", ru: "Крыша" } },
   { id: "junkyard-stack", icon: "delete", label: { en: "TV junkyard", ru: "Свалка ТВ" } },
   { id: "neon-arcade", icon: "casino", label: { en: "Arcade", ru: "Неон" } },
 ];
@@ -774,6 +774,8 @@ type MainExperienceProps = {
   onEffectChange?: (effect: string) => void;
   onInterfaceVisibilityChange?: (visible: boolean) => void;
   tvRef?: React.RefObject<RetroTVRef | null>;
+  environment?: RetroEnvironmentId;
+  onEnvironmentChange?: (value: RetroEnvironmentId) => void;
 };
 
 const MainExperience = ({
@@ -792,6 +794,7 @@ const MainExperience = ({
   onEnvironmentChange,
 }: MainExperienceProps = {}) => {
   const [tvViewMode, setTvViewMode] = useState<'full' | 'closeup'>('full');
+  const [retroEnvironment, setRetroEnvironment] = useState<RetroEnvironmentId>('loft-brick');
   const [tvEnvironment, setTvEnvironment] = useState<RetroEnvironmentId>('loft-brick');
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
@@ -862,7 +865,7 @@ const MainExperience = ({
   }, [environment]);
 
   const handleEnvironmentChange = useCallback(
-    (value: RetroEnvironment) => {
+    (value: RetroEnvironmentId) => {
       setRetroEnvironment(value);
       onEnvironmentChange?.(value);
     },
@@ -925,9 +928,10 @@ const MainExperience = ({
 
   useEffect(() => {
     if (videoMode && videoSlug === "retro-tv" && tvRef?.current?.setEnvironment) {
-      tvRef.current.setEnvironment(retroScene);
+      tvRef.current.setEnvironment(activeEnvironment);
+      setTvEnvironment(activeEnvironment);
     }
-  }, [videoMode, videoSlug, retroScene, tvRef]);
+  }, [activeEnvironment, tvRef, videoMode, videoSlug]);
 
   const getText = useCallback(
     (key: MainTranslationKey) =>
