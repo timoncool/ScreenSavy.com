@@ -440,7 +440,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           width: 870px;
           aspect-ratio: 16 / 9;
           height: auto;
-          bottom: 405px;
+          bottom: 300px;
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -518,11 +518,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv main {
           position: absolute;
-          left: 80px;
-          top: 70px;
-          bottom: 70px;
-          width: calc(100% - 270px);
-          padding: 20px;
+          left: 70px;
+          top: 55px;
+          bottom: 55px;
+          width: calc(100% - 250px);
+          padding: 14px;
           border-radius: 8px;
           background: #444;
           border: 3px #aaa solid;
@@ -542,7 +542,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           height: 100%;
           border-radius: 8px;
           border-style: solid;
-          border-width: 70px 80px 36px 80px;
+          border-width: 50px 55px 28px 55px;
           border-color: rgba(0, 0, 0, 0.4) rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0)
             rgba(0, 0, 0, 0.2);
           z-index: 1;
