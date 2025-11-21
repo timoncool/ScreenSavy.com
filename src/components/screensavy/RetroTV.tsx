@@ -268,13 +268,13 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           background: #000;
           --table-height: 300px;
           --table-scale: 1;
-          --table-bottom: -24px;
+          --table-bottom: -12px;
           --table-closeup-scale: 1.35;
-          --table-closeup-bottom: -52px;
+          --table-closeup-bottom: -38px;
           --tv-scale: 0.8;
           --tv-lift-factor: 1.35;
-          --tv-bottom: 170px;
-          --tv-closeup-bottom: 210px;
+          --tv-bottom: 210px;
+          --tv-closeup-bottom: 250px;
           --tv-closeup-scale: 1.45;
           --tv-closeup-lift-factor: 0.95;
         }
@@ -522,12 +522,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv main {
           position: absolute;
-          left: 34px;
-          top: 50%;
-          width: calc(100% - 188px);
-          aspect-ratio: 16 / 9;
-          height: auto;
-          transform: translateY(-50%);
+          left: 38px;
+          top: 22px;
+          bottom: 24px;
+          width: calc(100% - 190px);
           padding: 6px;
           border-radius: 8px;
           background: #444;
@@ -582,14 +580,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           background-image: linear-gradient(rgba(255, 255, 255, 0.05), transparent);
           border: 2px solid #222;
           color: #ccc;
-          padding: 5px 8px;
+          padding: 6px 10px;
           border-radius: 4px;
           cursor: pointer;
           box-shadow: inset 1px 1px rgba(255, 255, 255, 0.1), inset -1px -1px rgba(0, 0, 0, 0.3), 1px 1px 2px rgba(0,0,0,0.5);
           transition: all 0.1s ease-in-out;
           font-family: 'Bebas Neue', sans-serif;
           text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
-          font-size: 12px;
+          font-size: 14px;
         }
 
         .control-button:active {
@@ -601,9 +599,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .right-panel {
           position: absolute;
           right: 20px;
-          top: 74px;
-          bottom: 74px;
-          width: 120px;
+          top: 70px;
+          bottom: 70px;
+          width: 150px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
