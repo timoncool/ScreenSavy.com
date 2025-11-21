@@ -430,7 +430,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           position: absolute;
           width: 870px;
           height: 465px;
-          bottom: 435px;
+          bottom: 405px;
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -508,10 +508,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv main {
           position: absolute;
-          left: 100px;
+          left: 80px;
           top: 20px;
           bottom: 20px;
-          width: calc(100% - 320px);
+          width: calc(100% - 280px);
           padding: 20px;
           border-radius: 8px;
           background: #444;
@@ -584,7 +584,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           right: 20px;
           top: 20px;
           bottom: 20px;
-          width: 180px;
+          width: 160px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -605,7 +605,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .control-panel {
           position: relative;
-          width: 160px;
+          width: 150px;
           display: flex;
           flex-direction: column;
           gap: 12px;
@@ -786,7 +786,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .error-noise {
           position: relative;
           width: 100%;
-          height: 100%;
+          aspect-ratio: 16 / 9;
+          height: auto;
           overflow: hidden;
           border-radius: 15px;
           z-index: 0;
@@ -1300,7 +1301,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv.closeup-mode {
           transform: scale(1.8);
-          bottom: 120px;
+          transform-origin: 50% 100%;
+          bottom: 200px;
           z-index: 800;
         }
 
@@ -1328,11 +1330,12 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         @media (max-width: 1200px) {
           .old-tv {
             transform: scale(0.55);
-            bottom: 305px;
+            bottom: 290px;
           }
           .old-tv.closeup-mode {
             transform: scale(1.5);
-            bottom: 140px;
+            transform-origin: 50% 100%;
+            bottom: 190px;
           }
           #table-tv {
             transform: scale(1.4);
