@@ -47,6 +47,7 @@ import {
   detectBrowserLanguage,
   useAnimationFrame,
 } from "./shared";
+import type { RetroScene, RetroTVRef } from "./RetroTV";
 
 type ModeKey = "oneColor" | "colorChange" | "clock" | "text";
 type ClockStyle = "modern" | "full" | "minimal";
@@ -181,6 +182,15 @@ const STYLE_PRESET_LABELS: Record<string, MainTranslationKey> = {
   retro: "presetRetro",
   cyber: "presetCyber",
 };
+
+const RETRO_SCENE_BUTTONS: { id: RetroScene; icon: string; label: { en: string; ru: string } }[] = [
+  { id: "loft", icon: "styler", label: { en: "Loft brick", ru: "Кирпичный лофт" } },
+  { id: "forest", icon: "park", label: { en: "Forest", ru: "Лес" } },
+  { id: "lake-night", icon: "night_shelter", label: { en: "Lake night", ru: "Ночной берег" } },
+  { id: "rooftop", icon: "apartment", label: { en: "Rooftop", ru: "Крыша" } },
+  { id: "junkyard", icon: "recycling", label: { en: "Junkyard", ru: "Свалка" } },
+  { id: "arcade", icon: "auto_awesome", label: { en: "Arcade", ru: "Аркада" } },
+];
 
 type ClockProps = {
   clockStyle: ClockStyle;
@@ -749,7 +759,7 @@ type MainExperienceProps = {
   videoEffect?: string;
   onEffectChange?: (effect: string) => void;
   onInterfaceVisibilityChange?: (visible: boolean) => void;
-  tvRef?: React.RefObject<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void } | null>;
+  tvRef?: React.RefObject<RetroTVRef | null>;
 };
 
 const MainExperience = ({
@@ -766,6 +776,7 @@ const MainExperience = ({
   tvRef,
 }: MainExperienceProps = {}) => {
   const [tvViewMode, setTvViewMode] = useState<'full' | 'closeup'>('full');
+  const [retroScene, setRetroScene] = useState<RetroScene>('loft');
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
@@ -1668,6 +1679,21 @@ const MainExperience = ({
         )}
         {videoMode && !interfaceHidden && videoSlug === 'retro-tv' && tvRef && (
           <>
+            <div className="video-control-row active" style={{ marginBottom: '10px' }}>
+              {RETRO_SCENE_BUTTONS.map((scene) => (
+                <IconButton
+                  key={scene.id}
+                  icon={scene.icon}
+                  onClick={() => {
+                    setRetroScene(scene.id);
+                    tvRef.current?.setEnvironment(scene.id);
+                  }}
+                  title={activeLanguage === 'ru' ? scene.label.ru : scene.label.en}
+                  active={retroScene === scene.id}
+                  aria-label={activeLanguage === 'ru' ? scene.label.ru : scene.label.en}
+                />
+              ))}
+            </div>
             {/* Retro TV View Mode Buttons */}
             <div className="video-control-row active" style={{ marginBottom: '10px' }}>
               <IconButton
