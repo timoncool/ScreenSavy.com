@@ -18,6 +18,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
+  const [volume, setVolume] = useState(50);
   const playerRef = useRef<any>(null);
 
   // Expose methods to parent
@@ -76,6 +77,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           events: {
             onReady: (event: any) => {
               event.target.playVideo();
+              event.target.setVolume(volume);
             }
           }
         });
@@ -87,7 +89,13 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
     } else {
       (window as any).onYouTubeIframeAPIReady = initPlayer;
     }
-  }, [currentVideoId, isPoweredOn]);
+  }, [currentVideoId, isPoweredOn, volume]);
+
+  useEffect(() => {
+    if (playerRef.current?.setVolume) {
+      playerRef.current.setVolume(volume);
+    }
+  }, [volume]);
 
   const handlePlay = () => {
     playerRef.current?.playVideo();
@@ -133,17 +141,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
             </div>
           </div>
         </main>
-        <div className="left-panel">
-          <div className="power-button-area">
-            <button onClick={() => setIsPoweredOn(!isPoweredOn)} type="button" className="power-button" />
-            <div className="indicator-panel">
-              <div className="indicator">
-                <div className="indicator-light power-light" data-on={isPoweredOn} />
-                <div className="indicator-label">Power</div>
-              </div>
-            </div>
-          </div>
-        </div>
         <div className="right-panel">
           <div className="speaker" />
           <div className="control-panel">
@@ -180,11 +177,31 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
                 onChange={(e) => setSaturation(Number(e.target.value))}
               />
             </div>
+            <div className="slider-group">
+              <label>Volume</label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={volume}
+                className="control-slider"
+                onChange={(e) => setVolume(Number(e.target.value))}
+              />
+            </div>
           </div>
           <div className="playback-controls">
             <button onClick={handlePlay} className="control-button">Play</button>
             <button onClick={handlePause} className="control-button">Pause</button>
             <button onClick={handleNext} className="control-button">Next</button>
+          </div>
+          <div className="power-button-area">
+            <button onClick={() => setIsPoweredOn(!isPoweredOn)} type="button" className="power-button" />
+            <div className="indicator-panel">
+              <div className="indicator">
+                <div className="indicator-light power-light" data-on={isPoweredOn} />
+                <div className="indicator-label">Power</div>
+              </div>
+            </div>
           </div>
         </div>
         <footer />
@@ -413,7 +430,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           position: absolute;
           width: 870px;
           height: 465px;
-          bottom: 410px;
+          bottom: 435px;
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -562,24 +579,12 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           transform: translateY(1px);
         }
 
-        .left-panel {
-          position: absolute;
-          left: 20px;
-          top: 20px;
-          bottom: 20px;
-          width: 80px;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-          align-items: center;
-        }
-
         .right-panel {
           position: absolute;
           right: 20px;
           top: 20px;
           bottom: 20px;
-          width: 200px;
+          width: 180px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -589,8 +594,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv .speaker {
           position: relative;
-          width: 180px;
-          height: 180px;
+          width: 120px;
+          height: 120px;
           padding: 10px;
           box-sizing: border-box;
           margin-top: 10px;
@@ -600,11 +605,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .control-panel {
           position: relative;
-          width: 180px;
+          width: 160px;
           display: flex;
           flex-direction: column;
-          gap: 15px;
-          margin-bottom: 20px;
+          gap: 12px;
+          margin-bottom: 15px;
           z-index: 11;
         }
 
@@ -645,9 +650,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .playback-controls {
           position: relative;
           display: flex;
-          gap: 10px;
-          justify-content: center;
+          gap: 8px;
+          justify-content: flex-start;
           z-index: 11;
+          margin-bottom: 15px;
         }
 
         .old-tv input[type="range"] {
@@ -714,17 +720,17 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .power-button-area {
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           align-items: center;
-          gap: 15px;
-          margin-bottom: 20px;
+          gap: 10px;
+          margin-bottom: 0;
         }
 
         .indicator-panel {
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           gap: 8px;
-          padding: 8px;
+          padding: 6px 10px;
           background: #2a2a2a;
           border-radius: 4px;
           border: 2px solid #1a1a1a;
@@ -779,11 +785,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .error-noise {
           position: relative;
-          width: 580px;
-          height: 326px;
+          width: 100%;
+          height: 100%;
           overflow: hidden;
           border-radius: 15px;
-          z-index: 3;
+          z-index: 0;
         }
 
         .error-effect {
@@ -1293,8 +1299,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .old-tv.closeup-mode {
-          transform: scale(1.2);
-          bottom: 180px;
+          transform: scale(1.8);
+          bottom: 120px;
           z-index: 800;
         }
 
@@ -1322,11 +1328,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         @media (max-width: 1200px) {
           .old-tv {
             transform: scale(0.55);
-            bottom: 280px;
+            bottom: 305px;
           }
           .old-tv.closeup-mode {
-            transform: scale(1.2);
-            bottom: 180px;
+            transform: scale(1.5);
+            bottom: 140px;
           }
           #table-tv {
             transform: scale(1.4);
