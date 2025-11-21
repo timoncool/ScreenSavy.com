@@ -116,7 +116,7 @@ const VideoAmbilight = forwardRef<VideoAmbilightRef, VideoAmbilightProps>(({ vid
                 rel: 0,
                 modestbranding: 1,
                 playsinline: 1,
-            } as const,
+            } as any,
         };
 
         const main = YouTubePlayer(mainPlayerId, playerOptions);
