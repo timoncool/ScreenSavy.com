@@ -189,17 +189,19 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
               />
             </div>
           </div>
-          <div className="playback-controls">
-            <button onClick={handlePlay} className="control-button">Play</button>
-            <button onClick={handlePause} className="control-button">Pause</button>
-            <button onClick={handleNext} className="control-button">Next</button>
-          </div>
-          <div className="power-button-area">
-            <button onClick={() => setIsPoweredOn(!isPoweredOn)} type="button" className="power-button" />
-            <div className="indicator-panel">
-              <div className="indicator">
-                <div className="indicator-light power-light" data-on={isPoweredOn} />
-                <div className="indicator-label">Power</div>
+          <div className="playback-row">
+            <div className="playback-controls">
+              <button onClick={handlePlay} className="control-button">Play</button>
+              <button onClick={handlePause} className="control-button">Pause</button>
+              <button onClick={handleNext} className="control-button">Next</button>
+            </div>
+            <div className="power-button-area">
+              <button onClick={() => setIsPoweredOn(!isPoweredOn)} type="button" className="power-button" />
+              <div className="indicator-panel">
+                <div className="indicator">
+                  <div className="indicator-light power-light" data-on={isPoweredOn} />
+                  <div className="indicator-label">Power</div>
+                </div>
               </div>
             </div>
           </div>
@@ -605,8 +607,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           width: 168px;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
+          gap: 18px;
           align-items: center;
+          justify-content: flex-start;
           z-index: 10;
         }
 
@@ -616,7 +619,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           height: 110px;
           padding: 10px;
           box-sizing: border-box;
-          margin-top: 10px;
+          margin-top: 6px;
           z-index: 1;
           pointer-events: none;
         }
@@ -627,7 +630,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           display: flex;
           flex-direction: column;
           gap: 12px;
-          margin-bottom: 15px;
+          margin-bottom: 10px;
           z-index: 11;
         }
 
@@ -665,13 +668,21 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           z-index: 2;
         }
 
+        .playback-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          justify-content: center;
+          z-index: 11;
+          margin-top: 2px;
+        }
+
         .playback-controls {
           position: relative;
           display: flex;
           gap: 4px;
           justify-content: flex-start;
           z-index: 11;
-          margin-bottom: 15px;
         }
 
         .old-tv input[type="range"] {
@@ -713,7 +724,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .power-button {
           width: 44px;
-          height: 44px;
+          height: 42px;
           background-color: #444;
           background-image: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
           border-radius: 50%;
@@ -740,7 +751,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           margin-bottom: 0;
         }
 
@@ -788,8 +799,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .old-tv footer {
           position: absolute;
-          height: 18px;
-          bottom: -12px;
+          height: 16px;
+          bottom: -20px;
           left: 15px;
           right: 15px;
           background: #222;
