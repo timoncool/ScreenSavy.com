@@ -523,9 +523,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .old-tv main {
           position: absolute;
           left: 38px;
-          top: 22px;
-          bottom: 24px;
+          top: 32px;
           width: calc(100% - 190px);
+          aspect-ratio: 16 / 9;
+          height: auto;
           padding: 6px;
           border-radius: 8px;
           background: #444;
