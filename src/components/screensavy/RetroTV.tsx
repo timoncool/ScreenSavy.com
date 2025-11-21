@@ -429,7 +429,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .old-tv {
           position: absolute;
           width: 870px;
-          height: 465px;
+          aspect-ratio: 16 / 9;
+          height: auto;
           bottom: 405px;
           left: 50%;
           margin-left: -435px;
@@ -509,14 +510,17 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .old-tv main {
           position: absolute;
           left: 80px;
-          top: 20px;
-          bottom: 20px;
-          width: calc(100% - 280px);
+          top: 70px;
+          bottom: 70px;
+          width: calc(100% - 270px);
           padding: 20px;
           border-radius: 8px;
           background: #444;
           border: 3px #aaa solid;
           box-shadow: 0 10px 8px rgba(0, 0, 0, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .old-tv main::before {
@@ -529,7 +533,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           height: 100%;
           border-radius: 8px;
           border-style: solid;
-          border-width: 80px 90px 40px 90px;
+          border-width: 70px 80px 36px 80px;
           border-color: rgba(0, 0, 0, 0.4) rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0)
             rgba(0, 0, 0, 0.2);
           z-index: 1;
@@ -582,8 +586,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         .right-panel {
           position: absolute;
           right: 20px;
-          top: 20px;
-          bottom: 20px;
+          top: 70px;
+          bottom: 70px;
           width: 160px;
           display: flex;
           flex-direction: column;
@@ -788,6 +792,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           width: 100%;
           aspect-ratio: 16 / 9;
           height: auto;
+          max-height: 100%;
           overflow: hidden;
           border-radius: 15px;
           z-index: 0;
