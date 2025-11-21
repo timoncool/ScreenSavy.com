@@ -189,21 +189,21 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
               />
             </div>
           </div>
-          <div className="playback-row">
-            <div className="playback-controls">
-              <button onClick={handlePlay} className="control-button">Play</button>
-              <button onClick={handlePause} className="control-button">Pause</button>
-              <button onClick={handleNext} className="control-button">Next</button>
-            </div>
-            <div className="power-button-area">
-              <button onClick={() => setIsPoweredOn(!isPoweredOn)} type="button" className="power-button" />
-              <div className="indicator-panel">
-                <div className="indicator">
-                  <div className="indicator-light power-light" data-on={isPoweredOn} />
-                  <div className="indicator-label">Power</div>
-                </div>
+        </div>
+        <div className="playback-row">
+          <div className="power-button-area">
+            <button onClick={() => setIsPoweredOn(!isPoweredOn)} type="button" className="power-button" />
+            <div className="indicator-panel">
+              <div className="indicator">
+                <div className="indicator-light power-light" data-on={isPoweredOn} />
+                <div className="indicator-label">Power</div>
               </div>
             </div>
+          </div>
+          <div className="playback-controls">
+            <button onClick={handlePlay} className="control-button">Play</button>
+            <button onClick={handlePause} className="control-button">Pause</button>
+            <button onClick={handleNext} className="control-button">Next</button>
           </div>
         </div>
         <footer />
@@ -273,10 +273,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           --table-bottom: -12px;
           --table-closeup-scale: 1.2;
           --table-closeup-bottom: -90px;
-          --tv-scale: 0.82;
+          --tv-scale: 0.8;
           --tv-lift-factor: 1.35;
-          --tv-bottom: 198px;
-          --tv-closeup-bottom: 140px;
+          --tv-bottom: 140px;
+          --tv-closeup-bottom: 120px;
           --tv-closeup-scale: 1.7;
           --tv-closeup-lift-factor: 0.95;
         }
@@ -669,18 +669,20 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .playback-row {
+          position: absolute;
+          left: 36px;
+          bottom: 24px;
           display: flex;
           align-items: center;
-          gap: 10px;
-          justify-content: center;
+          justify-content: flex-start;
+          gap: 14px;
           z-index: 11;
-          margin-top: 2px;
         }
 
         .playback-controls {
           position: relative;
           display: flex;
-          gap: 4px;
+          gap: 6px;
           justify-content: flex-start;
           z-index: 11;
         }
@@ -751,7 +753,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
           margin-bottom: 0;
         }
 
@@ -759,7 +761,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           display: flex;
           flex-direction: row;
           gap: 6px;
-          padding: 5px 8px;
+          padding: 4px 7px;
           background: #2a2a2a;
           border-radius: 4px;
           border: 2px solid #1a1a1a;
