@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle, type CSSProperties } from 'react';
 import { RETRO_ENVIRONMENTS, type RetroEnvironmentId } from '@/lib/retroEnvironments';
 
+export type RetroScene = 'loft' | 'forest' | 'lake-night' | 'rooftop' | 'junkyard' | 'arcade';
+
 export interface RetroTVRef {
   setVideoId: (id: string) => void;
   setViewMode: (mode: 'full' | 'closeup') => void;
@@ -326,7 +328,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
   return (
     <div className={`retro-tv-container env-${environment}`} style={environmentCssVars}>
       <div className="gradient" />
-      <div className="brick-wall" />
+      <div className="scene-backdrop" />
       <div className="wood-floor" />
 
       <div
@@ -553,7 +555,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           background: radial-gradient(rgba(0, 0, 0, 0.6) 30%, transparent 50%);
         }
 
-        .brick-wall {
+        .scene-backdrop {
           position: absolute;
           top: 0;
           left: 0;
@@ -576,7 +578,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           top: 15%;
           right: 20%;
           font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
-          font-size: 42px;
+          font-size: 46px;
           font-weight: bold;
           color: var(--wall-graffiti-color);
           text-shadow: var(--wall-graffiti-shadow);
@@ -1552,11 +1554,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           opacity: 0;
         }
 
-        .brick-wall {
+        .scene-backdrop {
           transition: opacity 0.5s ease;
         }
 
-        .closeup-mode ~ .brick-wall {
+        .closeup-mode ~ .scene-backdrop {
           opacity: 0.3;
         }
 

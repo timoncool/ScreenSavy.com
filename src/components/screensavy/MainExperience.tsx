@@ -197,6 +197,15 @@ const STYLE_PRESET_LABELS: Record<string, MainTranslationKey> = {
   cyber: "presetCyber",
 };
 
+const RETRO_SCENE_BUTTONS: { id: RetroScene; icon: string; label: { en: string; ru: string } }[] = [
+  { id: "loft", icon: "styler", label: { en: "Loft brick", ru: "Кирпичный лофт" } },
+  { id: "forest", icon: "park", label: { en: "Forest", ru: "Лес" } },
+  { id: "lake-night", icon: "night_shelter", label: { en: "Lake night", ru: "Ночной берег" } },
+  { id: "rooftop", icon: "apartment", label: { en: "Rooftop", ru: "Крыша" } },
+  { id: "junkyard", icon: "recycling", label: { en: "Junkyard", ru: "Свалка" } },
+  { id: "arcade", icon: "auto_awesome", label: { en: "Arcade", ru: "Аркада" } },
+];
+
 type ClockProps = {
   clockStyle: ClockStyle;
   language: Language;
@@ -913,6 +922,12 @@ const MainExperience = ({
       setUiHydrated(true);
     }
   }, [initialMode]);
+
+  useEffect(() => {
+    if (videoMode && videoSlug === "retro-tv" && tvRef?.current?.setEnvironment) {
+      tvRef.current.setEnvironment(retroScene);
+    }
+  }, [videoMode, videoSlug, retroScene, tvRef]);
 
   const getText = useCallback(
     (key: MainTranslationKey) =>
