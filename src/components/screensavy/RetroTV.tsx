@@ -266,6 +266,15 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           width: 100%;
           height: 100vh;
           background: #000;
+          --table-height: 300px;
+          --table-scale: 1;
+          --table-bottom: 0px;
+          --table-closeup-scale: 1.35;
+          --table-closeup-bottom: -10px;
+          --tv-scale: 0.8;
+          --tv-lift-factor: 1.35;
+          --tv-closeup-scale: 1.45;
+          --tv-closeup-lift-factor: 0.95;
         }
 
         body {
@@ -430,7 +439,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           position: absolute;
           width: 870px;
           height: 465px;
-          bottom: 405px;
+          --active-table-scale: var(--table-scale);
+          --active-table-bottom: var(--table-bottom);
+          --active-tv-lift-factor: var(--tv-lift-factor);
+          --active-tv-scale: var(--tv-scale);
+          bottom: calc(
+            var(--table-height) * var(--active-table-scale) * var(--active-tv-lift-factor) +
+              var(--active-table-bottom)
+          );
           left: 50%;
           margin-left: -435px;
           background: #333;
@@ -438,10 +454,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           padding: 20px;
           border-radius: 8px;
           border-bottom: 4px #222 solid;
-          transform: scale(0.8);
+          transform: scale(var(--active-tv-scale));
           z-index: 600;
           pointer-events: auto;
-          transition: box-shadow 0.5s ease;
+          transition: box-shadow 0.5s ease, transform 0.5s ease, bottom 0.5s ease;
         }
 
         .old-tv::after {
@@ -1007,12 +1023,15 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           width: 600px;
           height: 300px;
           left: 50%;
-          bottom: 0;
+          --active-table-scale: var(--table-scale);
+          --active-table-bottom: var(--table-bottom);
+          bottom: var(--active-table-bottom);
           margin-left: -300px;
           background: transparent;
           font-size: 250%;
           z-index: 500;
           pointer-events: none;
+          transform: scale(var(--active-table-scale));
           transition: transform 0.5s ease, bottom 0.5s ease;
         }
 
@@ -1300,9 +1319,12 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .old-tv.closeup-mode {
-          transform: scale(1.8);
+          --active-table-scale: var(--table-closeup-scale);
+          --active-table-bottom: var(--table-closeup-bottom);
+          --active-tv-lift-factor: var(--tv-closeup-lift-factor);
+          --active-tv-scale: var(--tv-closeup-scale);
+          transform: scale(var(--active-tv-scale));
           transform-origin: 50% 100%;
-          bottom: 200px;
           z-index: 800;
         }
 
@@ -1316,7 +1338,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         #table-tv.closeup-mode {
-          display: none;
+          --active-table-scale: var(--table-closeup-scale);
+          --active-table-bottom: var(--table-closeup-bottom);
+          transform: scale(var(--active-table-scale));
+          bottom: var(--active-table-bottom);
         }
 
         .brick-wall {
@@ -1328,22 +1353,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         @media (max-width: 1200px) {
-          .old-tv {
-            transform: scale(0.55);
-            bottom: 290px;
-          }
-          .old-tv.closeup-mode {
-            transform: scale(1.5);
-            transform-origin: 50% 100%;
-            bottom: 190px;
-          }
-          #table-tv {
-            transform: scale(1.4);
-            bottom: 85px;
-          }
-          #table-tv.closeup-mode {
-            transform: scale(2.0);
-            bottom: 0px;
+          .retro-tv-container {
+            --table-scale: 1.05;
+            --table-closeup-scale: 1.45;
+            --table-closeup-bottom: -10px;
+            --tv-scale: 0.55;
+            --tv-lift-factor: 0.92;
+            --tv-closeup-scale: 1.35;
+            --tv-closeup-lift-factor: 0.45;
           }
         }
       `}</style>
