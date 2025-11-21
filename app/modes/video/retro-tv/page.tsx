@@ -134,7 +134,7 @@ export default function RetroTVPage() {
         )}
 
         {/* MainExperience overlay - highest z-index but pointer-events only on specific elements */}
-        {/* <div
+        <div
           style={{
             position: 'absolute',
             top: 0,
@@ -153,7 +153,7 @@ export default function RetroTVPage() {
             }}
             tvRef={tvRef}
           />
-        </div> */}
+        </div>
       </div>
     </Suspense>
   );
