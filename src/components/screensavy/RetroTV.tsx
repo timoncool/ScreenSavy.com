@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
-import VideoAmbilight, { VideoAmbilightRef } from '../common/VideoAmbilight';
 
 export interface RetroTVRef {
   setVideoId: (id: string) => void;
@@ -19,7 +18,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
-  const playerRef = useRef<VideoAmbilightRef>(null);
+  const playerRef = useRef<any>(null);
 
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
@@ -32,6 +31,64 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
     }
   }));
 
+  // Load YouTube IFrame API
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    if ((window as any).YT && (window as any).YT.Player) {
+      return;
+    }
+
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+  }, []);
+
+  // Initialize YouTube player
+  useEffect(() => {
+    if (!currentVideoId || typeof window === 'undefined' || !isPoweredOn) {
+      if (playerRef.current && !isPoweredOn) {
+        playerRef.current.pauseVideo?.();
+      }
+      return;
+    }
+
+    const initPlayer = () => {
+      if (playerRef.current) {
+        playerRef.current.loadVideoById(currentVideoId);
+        playerRef.current.playVideo?.();
+        return;
+      }
+
+      if ((window as any).YT && (window as any).YT.Player) {
+        playerRef.current = new (window as any).YT.Player('youtube-player', {
+          videoId: currentVideoId,
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            modestbranding: 1,
+            rel: 0,
+            showinfo: 0,
+            iv_load_policy: 3,
+            disablekb: 1,
+          },
+          events: {
+            onReady: (event: any) => {
+              event.target.playVideo();
+            }
+          }
+        });
+      }
+    };
+
+    if ((window as any).YT && (window as any).YT.Player) {
+      initPlayer();
+    } else {
+      (window as any).onYouTubeIframeAPIReady = initPlayer;
+    }
+  }, [currentVideoId, isPoweredOn]);
+
   const handlePlay = () => {
     playerRef.current?.playVideo();
   };
@@ -41,7 +98,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
   };
 
   const handleNext = () => {
-    (playerRef.current as any)?.nextVideo?.();
+    playerRef.current?.playVideo();
   };
 
   // Calculate effects based on sliders
@@ -68,7 +125,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
                 style={filterStyle}
               >
                 {currentVideoId && isPoweredOn ? (
-                  <VideoAmbilight ref={playerRef} videoId={currentVideoId} />
+                  <div id="youtube-player" className="youtube-container" />
                 ) : (
                   <div className="static-noise" />
                 )}
@@ -364,7 +421,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           padding: 20px;
           border-radius: 8px;
           border-bottom: 4px #222 solid;
-          transform: scale(1);
           z-index: 600;
           pointer-events: auto;
           transition: box-shadow 0.5s ease;
@@ -1228,8 +1284,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
         }
 
         .old-tv.closeup-mode {
-          transform: scale(1.3);
-          bottom: 250px;
+          transform: scale(1.2);
+          bottom: 180px;
           z-index: 800;
         }
 
@@ -1243,6 +1299,25 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
 
         .closeup-mode ~ .brick-wall {
           opacity: 0.3;
+        }
+
+        @media (max-width: 1200px) {
+          .old-tv {
+            transform: scale(0.55);
+            bottom: 325px;
+          }
+          .old-tv.closeup-mode {
+            transform: scale(1.2);
+            bottom: 180px;
+          }
+          #table-tv {
+            transform: scale(1.4);
+            bottom: 70px;
+          }
+          #table-tv.closeup-mode {
+            transform: scale(2.0);
+            bottom: 0px;
+          }
         }
       `}</style>
     </div>
