@@ -47,7 +47,7 @@ import {
   detectBrowserLanguage,
   useAnimationFrame,
 } from "./shared";
-import type { RetroTVRef } from "./RetroTV";
+import type { RetroScene, RetroTVRef } from "./RetroTV";
 import { RETRO_ENVIRONMENTS, type RetroEnvironmentId } from "@/lib/retroEnvironments";
 
 type ModeKey = "oneColor" | "colorChange" | "clock" | "text";
