@@ -1,0 +1,201 @@
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #000000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.preloader.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.preloader-logo {
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.preloader-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  font-family: var(--font-inter), sans-serif;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.preloader-title-main {
+  background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.preloader-title-domain {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.preloader-animation {
+  width: 200px;
+  height: 4px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.color-wave {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.wave-segment {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.wave-segment::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  animation: waveSlide 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.wave-red::before {
+  background: linear-gradient(90deg, transparent 0%, #FF5252 50%, transparent 100%);
+  animation-delay: 0s;
+}
+
+.wave-green::before {
+  background: linear-gradient(90deg, transparent 0%, #4CAF50 50%, transparent 100%);
+  animation-delay: 0.15s;
+}
+
+.wave-blue::before {
+  background: linear-gradient(90deg, transparent 0%, #2196F3 50%, transparent 100%);
+  animation-delay: 0.3s;
+}
+
+@keyframes waveSlide {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+.preloader-tagline {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-inter), sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .preloader-title {
+    font-size: 2rem;
+  }
+
+  .preloader-animation {
+    width: 150px;
+  }
+
+  .preloader-tagline {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .preloader-title {
+    font-size: 1.5rem;
+  }
+
+  .preloader-animation {
+    width: 120px;
+  }
+}
+
+/* Высокая контрастность и уменьшение движения */
+@media (prefers-reduced-motion: reduce) {
+  .preloader-logo,
+  .preloader-tagline,
+  .wave-segment::before {
+    animation: none;
+  }
+
+  .preloader-content {
+    animation: none;
+  }
+
+  .color-wave {
+    background: linear-gradient(90deg, #FF5252 0%, #4CAF50 50%, #2196F3 100%);
+  }
+
+  .wave-segment::before {
+    display: none;
+  }
+}
