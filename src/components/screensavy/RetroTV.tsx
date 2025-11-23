@@ -1712,7 +1712,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           height: 100%;
           background-color: transparent;
           border-radius: 15px;
-          animation: crt-image 20ms alternate infinite;
           transition: filter 0.2s ease;
           overflow: hidden;
         }
@@ -1872,10 +1871,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         .old-tv.effects-disabled .error-effect::before,
         .old-tv.effects-disabled .error-effect::after {
           display: none !important;
-        }
-
-        .old-tv.effects-disabled .old-tv-content {
-          animation: none !important;
         }
 
         .old-tv.effects-disabled .old-tv-content::after {
