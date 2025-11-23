@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { videoPlayers, videoEffects } from "@/lib/videoPlayers";
+import type { BackgroundScene } from "./RetroTV";
 import {
   SPEED_MAX,
   SPEED_MIN,
@@ -749,7 +750,7 @@ type MainExperienceProps = {
   videoEffect?: string;
   onEffectChange?: (effect: string) => void;
   onInterfaceVisibilityChange?: (visible: boolean) => void;
-  tvRef?: React.RefObject<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void; setBackground?: (scene: string) => void } | null>;
+  tvRef?: React.RefObject<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void; setBackground?: (scene: BackgroundScene) => void } | null>;
 };
 
 const MainExperience = ({
@@ -766,7 +767,7 @@ const MainExperience = ({
   tvRef,
 }: MainExperienceProps = {}) => {
   const [tvViewMode, setTvViewMode] = useState<'full' | 'closeup'>('full');
-  const [tvBackground, setTvBackground] = useState<string>('loft');
+  const [tvBackground, setTvBackground] = useState<BackgroundScene>('loft');
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
