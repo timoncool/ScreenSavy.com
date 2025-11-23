@@ -60,10 +60,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
   // Initialize YouTube player
   useEffect(() => {
-    if (!currentVideoId || typeof window === 'undefined' || !isPoweredOn) {
-      if (playerRef.current && !isPoweredOn) {
-        playerRef.current.pauseVideo?.();
-      }
+    if (!currentVideoId || typeof window === 'undefined') {
       return;
     }
 
@@ -204,8 +201,47 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         }
       }
     };
-  }, [currentVideoId, isPoweredOn, volume]);
+  }, [currentVideoId, volume]);
 
+  // Handle power state changes
+  useEffect(() => {
+    if (!playerRef.current) return;
+
+    const iframe = document.querySelector('#youtube-player iframe');
+    if (!iframe) return;
+
+    try {
+      if (isPoweredOn) {
+        // TV turned on - play video
+        if (typeof playerRef.current.playVideo === 'function') {
+          playerRef.current.playVideo();
+        }
+        // Also play ambilight
+        if (ambilightPlayerRef.current && typeof ambilightPlayerRef.current.playVideo === 'function') {
+          const ambilightIframe = document.querySelector('#youtube-player-ambilight iframe');
+          if (ambilightIframe) {
+            ambilightPlayerRef.current.playVideo();
+          }
+        }
+      } else {
+        // TV turned off - pause video
+        if (typeof playerRef.current.pauseVideo === 'function') {
+          playerRef.current.pauseVideo();
+        }
+        // Also pause ambilight
+        if (ambilightPlayerRef.current && typeof ambilightPlayerRef.current.pauseVideo === 'function') {
+          const ambilightIframe = document.querySelector('#youtube-player-ambilight iframe');
+          if (ambilightIframe) {
+            ambilightPlayerRef.current.pauseVideo();
+          }
+        }
+      }
+    } catch (e) {
+      // Silent fail - player might not be ready
+    }
+  }, [isPoweredOn]);
+
+  // Handle volume changes
   useEffect(() => {
     if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
       const iframe = document.querySelector('#youtube-player iframe');
@@ -277,7 +313,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           className="ambilight-glow-behind-tv"
           style={{
             filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: ambilightEnabled && isPoweredOn ? Math.min(ambilightIntensity / 100, 0.8) : 0,
+            opacity: ambilightEnabled && isPoweredOn ? 0.7 : 0,
             pointerEvents: 'none',
             display: isPoweredOn ? 'block' : 'none',
           }}
