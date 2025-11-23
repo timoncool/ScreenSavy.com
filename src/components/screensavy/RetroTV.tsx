@@ -115,8 +115,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
               };
 
               try {
-                // Check if ambilight player is ready
+                // Check if ambilight player iframe exists before calling methods
+                const ambilightIframe = document.querySelector('#youtube-player-ambilight iframe');
+                if (!ambilightIframe) return;
+
+                // Check if ambilight player methods are ready
                 if (typeof ambilightPlayerRef.current.seekTo !== 'function') return;
+                if (typeof ambilightPlayerRef.current.playVideo !== 'function') return;
+                if (typeof ambilightPlayerRef.current.pauseVideo !== 'function') return;
 
                 const currentTime = event.target.getCurrentTime();
                 if (typeof currentTime !== 'number' || isNaN(currentTime)) return;
