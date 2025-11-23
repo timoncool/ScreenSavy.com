@@ -344,66 +344,85 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           transition: opacity 0.5s ease;
         }
 
-        /* LOFT - Improved brick wall */
+        /* LOFT - Improved brick wall with cracks and details */
         .background-wall.loft {
           background-color: #6b3d2e;
           background-image:
+            /* Cracks and imperfections */
+            radial-gradient(circle at 25% 35%, rgba(0, 0, 0, 0.3) 0.5%, transparent 1%),
+            radial-gradient(circle at 72% 58%, rgba(0, 0, 0, 0.25) 0.3%, transparent 0.8%),
+            radial-gradient(circle at 45% 75%, rgba(0, 0, 0, 0.2) 0.4%, transparent 0.9%),
+            radial-gradient(circle at 88% 22%, rgba(0, 0, 0, 0.3) 0.6%, transparent 1.2%),
+            /* Mortar lines horizontal */
             repeating-linear-gradient(
               0deg,
               transparent 0px,
               transparent 58px,
-              #2a1810 58px,
-              #2a1810 62px
+              rgba(42, 24, 16, 0.9) 58px,
+              rgba(58, 35, 24, 0.7) 60px,
+              rgba(42, 24, 16, 0.9) 62px
             ),
+            /* Bricks with variation */
             repeating-linear-gradient(
               90deg,
-              #8b4d3a 0px,
-              #8b4d3a 10px,
+              #9b5d4a 0px,
+              #8b4d3a 5px,
               #7a3d2a 10px,
-              #7a3d2a 115px,
+              #8b4d3a 50px,
+              #9b5d4a 57px,
+              #7a3d2a 58px,
+              #6b3d2e 60px,
+              #7a3d2a 62px,
               #8b4d3a 115px,
-              #8b4d3a 125px,
+              #9b5d4a 120px,
               #5a2d1e 125px,
+              rgba(42, 24, 16, 0.9) 126px,
               #5a2d1e 127px
             ),
+            /* Mortar lines vertical */
             repeating-linear-gradient(
               90deg,
               transparent 0px,
               transparent 63px,
-              #2a1810 63px,
-              #2a1810 65px,
+              rgba(42, 24, 16, 0.8) 63px,
+              rgba(58, 35, 24, 0.6) 64px,
+              rgba(42, 24, 16, 0.8) 65px,
               transparent 65px,
               transparent 127px
             ),
+            /* Overall lighting and depth */
             linear-gradient(
               135deg,
-              rgba(139, 77, 58, 0.4) 0%,
-              rgba(107, 61, 46, 0.6) 50%,
-              rgba(58, 35, 24, 0.8) 100%
+              rgba(139, 77, 58, 0.5) 0%,
+              rgba(107, 61, 46, 0.7) 40%,
+              rgba(74, 45, 35, 0.85) 70%,
+              rgba(58, 35, 24, 0.9) 100%
             );
-          background-size: 100% 100%, 254px 62px, 127px 62px, 100% 100%;
-          background-position: 0 0, 0 0, 0 31px, 0 0;
+          background-size: 100% 100%, 100% 100%, 254px 62px, 127px 62px, 100% 100%;
+          background-position: 0 0, 0 0, 0 0, 0 31px, 0 0;
           box-shadow:
-            0 10px 15px rgba(0, 0, 0, 0.9),
-            inset 0 0 150px rgba(0, 0, 0, 0.4),
-            inset 20px 0 50px rgba(0, 0, 0, 0.3),
-            inset -20px 0 50px rgba(0, 0, 0, 0.3);
+            0 15px 25px rgba(0, 0, 0, 0.95),
+            inset 0 0 180px rgba(0, 0, 0, 0.5),
+            inset 30px 0 60px rgba(0, 0, 0, 0.4),
+            inset -30px 0 60px rgba(0, 0, 0, 0.4),
+            inset 0 -20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .background-wall.loft::after {
-          content: "LOFT 97";
+          content: "URBAN";
           position: absolute;
-          top: 18%;
-          right: 15%;
+          top: 20%;
+          right: 12%;
           font-family: 'Impact', 'Arial Black', sans-serif;
-          font-size: 120px;
+          font-size: 140px;
           font-weight: 900;
-          color: rgba(0, 0, 0, 0.15);
+          color: rgba(0, 0, 0, 0.2);
           text-shadow:
-            3px 3px 8px rgba(0, 0, 0, 0.9),
-            -2px -2px 3px rgba(255, 255, 255, 0.05);
-          transform: rotate(-5deg);
-          letter-spacing: -4px;
+            4px 4px 12px rgba(0, 0, 0, 0.95),
+            -3px -3px 4px rgba(255, 255, 255, 0.08),
+            0 0 30px rgba(139, 77, 58, 0.3);
+          transform: rotate(-7deg);
+          letter-spacing: -6px;
           z-index: 1;
         }
 
@@ -422,13 +441,20 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
             0 -2px 6px rgba(0, 0, 0, 0.95);
         }
 
-        /* FOREST */
+        /* FOREST - Dense dark forest with moonlight */
         .background-wall.forest {
           background:
-            radial-gradient(ellipse at 30% 20%, rgba(40, 60, 30, 0.3) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 40%, rgba(30, 50, 25, 0.4) 0%, transparent 60%),
-            linear-gradient(180deg, #1a3a2e 0%, #0d2620 40%, #0a1f1a 100%);
-          box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.6);
+            /* Moonlight rays */
+            radial-gradient(ellipse at 50% 15%, rgba(180, 200, 220, 0.08) 0%, transparent 35%),
+            radial-gradient(ellipse at 30% 20%, rgba(60, 80, 70, 0.15) 0%, transparent 40%),
+            radial-gradient(ellipse at 70% 25%, rgba(50, 70, 60, 0.12) 0%, transparent 45%),
+            /* Fog layers */
+            linear-gradient(90deg, transparent 0%, rgba(40, 60, 50, 0.15) 20%, transparent 40%, rgba(50, 70, 60, 0.12) 60%, transparent 80%),
+            /* Base gradient */
+            linear-gradient(180deg, #1a3a2e 0%, #143228 20%, #0f2a22 50%, #0a1f1a 100%);
+          box-shadow:
+            inset 0 0 250px rgba(0, 0, 0, 0.7),
+            inset 0 100px 150px rgba(0, 0, 0, 0.5);
         }
 
         .background-wall.forest::before {
@@ -436,68 +462,128 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           position: absolute;
           inset: 0;
           background-image:
-            radial-gradient(circle at 25% 30%, rgba(20, 40, 20, 0.8) 2%, transparent 3%),
-            radial-gradient(circle at 45% 25%, rgba(15, 35, 15, 0.9) 1.5%, transparent 2%),
-            radial-gradient(circle at 65% 35%, rgba(25, 45, 25, 0.7) 2.5%, transparent 3%),
-            radial-gradient(circle at 80% 28%, rgba(18, 38, 18, 0.8) 1.8%, transparent 2.5%),
-            radial-gradient(circle at 35% 50%, rgba(22, 42, 22, 0.85) 3%, transparent 4%),
-            radial-gradient(circle at 55% 45%, rgba(16, 36, 16, 0.9) 2.2%, transparent 3%),
-            radial-gradient(circle at 75% 55%, rgba(20, 40, 20, 0.75) 2.8%, transparent 3.5%);
+            /* Tree trunks - more detailed */
+            radial-gradient(ellipse at 18% 35%, rgba(20, 30, 20, 0.95) 1%, rgba(15, 25, 15, 0.7) 2%, transparent 3.5%),
+            radial-gradient(ellipse at 25% 30%, rgba(25, 35, 25, 0.9) 1.5%, rgba(20, 30, 20, 0.6) 2.5%, transparent 4%),
+            radial-gradient(ellipse at 42% 28%, rgba(18, 28, 18, 0.9) 1.2%, rgba(15, 25, 15, 0.65) 2%, transparent 3.2%),
+            radial-gradient(ellipse at 58% 32%, rgba(22, 32, 22, 0.85) 1.3%, rgba(18, 28, 18, 0.6) 2.2%, transparent 3.8%),
+            radial-gradient(ellipse at 72% 26%, rgba(20, 30, 20, 0.9) 1.4%, rgba(16, 26, 16, 0.65) 2.3%, transparent 3.5%),
+            radial-gradient(ellipse at 85% 30%, rgba(25, 35, 25, 0.88) 1.1%, rgba(20, 30, 20, 0.6) 2%, transparent 3.3%),
+            /* Mid-ground trees */
+            radial-gradient(ellipse at 12% 45%, rgba(25, 40, 30, 0.75) 2%, rgba(20, 35, 25, 0.5) 3.5%, transparent 5%),
+            radial-gradient(ellipse at 35% 48%, rgba(22, 38, 28, 0.8) 2.5%, rgba(18, 32, 24, 0.52) 4%, transparent 6%),
+            radial-gradient(ellipse at 62% 42%, rgba(28, 42, 32, 0.7) 2.2%, rgba(22, 36, 26, 0.48) 3.8%, transparent 5.5%),
+            radial-gradient(ellipse at 88% 46%, rgba(24, 39, 29, 0.78) 2.4%, rgba(20, 34, 25, 0.5) 3.9%, transparent 5.8%),
+            /* Branches and foliage */
+            radial-gradient(circle at 30% 18%, rgba(35, 55, 40, 0.6) 3%, transparent 6%),
+            radial-gradient(circle at 50% 22%, rgba(30, 50, 35, 0.55) 3.5%, transparent 7%),
+            radial-gradient(circle at 75% 20%, rgba(32, 52, 37, 0.58) 4%, transparent 7.5%);
           background-size: 100% 100%;
-          opacity: 0.6;
+          opacity: 0.85;
         }
 
         .background-wall.forest::after {
-          content: "🌲";
+          content: "";
           position: absolute;
-          top: 50%;
+          top: 15%;
           left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 200px;
-          opacity: 0.03;
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          transform: translateX(-50%);
+          background: radial-gradient(circle, rgba(220, 230, 240, 0.15) 0%, rgba(180, 200, 220, 0.08) 40%, transparent 70%);
+          box-shadow: 0 0 60px rgba(220, 230, 240, 0.12);
+          opacity: 0.6;
         }
 
-        /* LAKE NIGHT */
+        /* LAKE NIGHT - Starry night with moon reflection */
         .background-wall.lake-night {
           background:
-            radial-gradient(ellipse at 50% 5%, rgba(100, 120, 150, 0.2) 0%, transparent 30%),
-            linear-gradient(180deg, #0a1628 0%, #162038 30%, #0d1420 60%, #08090d 100%);
-          box-shadow: inset 0 100px 150px rgba(0, 0, 0, 0.5);
+            /* Stars - scattered across the sky */
+            radial-gradient(circle at 15% 12%, rgba(255, 255, 255, 0.9) 0.08%, transparent 0.15%),
+            radial-gradient(circle at 28% 8%, rgba(255, 255, 255, 0.8) 0.06%, transparent 0.12%),
+            radial-gradient(circle at 42% 15%, rgba(255, 255, 255, 0.85) 0.07%, transparent 0.14%),
+            radial-gradient(circle at 58% 10%, rgba(255, 255, 255, 0.75) 0.05%, transparent 0.1%),
+            radial-gradient(circle at 72% 14%, rgba(255, 255, 255, 0.9) 0.09%, transparent 0.16%),
+            radial-gradient(circle at 85% 9%, rgba(255, 255, 255, 0.7) 0.06%, transparent 0.11%),
+            radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.65) 0.05%, transparent 0.09%),
+            radial-gradient(circle at 35% 22%, rgba(255, 255, 255, 0.8) 0.07%, transparent 0.13%),
+            radial-gradient(circle at 65% 18%, rgba(255, 255, 255, 0.75) 0.06%, transparent 0.12%),
+            radial-gradient(circle at 78% 25%, rgba(255, 255, 255, 0.7) 0.05%, transparent 0.1%),
+            radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.85) 0.08%, transparent 0.14%),
+            /* Moon glow */
+            radial-gradient(ellipse at 62% 8%, rgba(150, 170, 200, 0.15) 0%, transparent 25%),
+            radial-gradient(ellipse at 62% 8%, rgba(120, 145, 180, 0.12) 0%, transparent 35%),
+            /* Atmospheric layers */
+            linear-gradient(180deg,
+              #0c1a30 0%,
+              #12233e 15%,
+              #162845 30%,
+              #0f1f38 50%,
+              #0b1628 70%,
+              #08090d 100%
+            );
+          box-shadow:
+            inset 0 150px 200px rgba(0, 0, 0, 0.6),
+            inset 0 0 300px rgba(8, 12, 28, 0.5);
         }
 
         .background-wall.lake-night::before {
           content: "";
           position: absolute;
           top: 8%;
-          left: 60%;
-          width: 50px;
-          height: 50px;
+          left: 62%;
+          width: 65px;
+          height: 65px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(240, 240, 200, 0.9) 0%, rgba(200, 200, 180, 0.6) 40%, transparent 70%);
-          box-shadow: 0 0 40px rgba(240, 240, 200, 0.5), 0 0 80px rgba(200, 200, 180, 0.3);
+          background:
+            radial-gradient(circle at 35% 35%, rgba(255, 255, 245, 0.95) 0%, rgba(240, 240, 230, 0.85) 30%, rgba(220, 225, 235, 0.7) 50%, rgba(200, 210, 225, 0.4) 70%, transparent 100%);
+          box-shadow:
+            0 0 50px rgba(240, 240, 230, 0.6),
+            0 0 100px rgba(220, 225, 235, 0.4),
+            inset -8px -8px 20px rgba(180, 190, 210, 0.3);
         }
 
         .background-wall.lake-night::after {
-          content: "✦";
+          content: "";
           position: absolute;
-          top: 15%;
-          left: 30%;
-          font-size: 20px;
-          color: rgba(255, 255, 255, 0.6);
-          text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-          animation: twinkle 3s ease-in-out infinite;
+          inset: 0;
+          background-image:
+            /* Twinkling stars */
+            radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.6) 0.04%, transparent 0.08%),
+            radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.7) 0.05%, transparent 0.1%),
+            radial-gradient(circle at 75% 28%, rgba(255, 255, 255, 0.5) 0.03%, transparent 0.07%),
+            radial-gradient(circle at 12% 40%, rgba(255, 255, 255, 0.65) 0.04%, transparent 0.09%),
+            radial-gradient(circle at 88% 38%, rgba(255, 255, 255, 0.6) 0.05%, transparent 0.08%);
+          animation: twinkle 4s ease-in-out infinite;
+          opacity: 0.8;
         }
 
         @keyframes twinkle {
-          0%, 100% { opacity: 0.3; }
+          0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }
         }
 
-        /* ROOFTOP - Night city view */
+        /* ROOFTOP - Night city view with detailed buildings */
         .background-wall.rooftop {
           background:
-            linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f1420 100%);
-          box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.5);
+            /* Distant stars */
+            radial-gradient(circle at 22% 15%, rgba(255, 255, 255, 0.6) 0.06%, transparent 0.1%),
+            radial-gradient(circle at 45% 12%, rgba(255, 255, 255, 0.7) 0.07%, transparent 0.12%),
+            radial-gradient(circle at 68% 18%, rgba(255, 255, 255, 0.5) 0.05%, transparent 0.09%),
+            radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.65) 0.06%, transparent 0.11%),
+            /* City glow */
+            radial-gradient(ellipse at 50% 100%, rgba(255, 180, 80, 0.12) 0%, transparent 50%),
+            linear-gradient(180deg,
+              #1a1a2e 0%,
+              #16213e 30%,
+              #14203a 50%,
+              #111c32 70%,
+              #0f1420 100%
+            );
+          box-shadow:
+            inset 0 0 200px rgba(0, 0, 0, 0.6),
+            inset 0 -100px 150px rgba(255, 150, 60, 0.08);
         }
 
         .background-wall.rooftop::before {
@@ -506,40 +592,106 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           bottom: 0;
           left: 0;
           right: 0;
-          height: 40%;
+          height: 45%;
           background-image:
-            linear-gradient(0deg, transparent 0%, transparent 60%, rgba(255, 200, 100, 0.1) 70%, transparent 72%),
-            linear-gradient(0deg, transparent 0%, transparent 65%, rgba(255, 150, 80, 0.15) 75%, transparent 77%),
-            linear-gradient(0deg, transparent 0%, transparent 70%, rgba(200, 180, 120, 0.12) 80%, transparent 82%);
-          background-size: 100% 100%;
+            /* Building windows - detailed pattern */
+            repeating-linear-gradient(90deg,
+              transparent 0px,
+              transparent 8px,
+              rgba(255, 220, 120, 0.4) 8.5px,
+              rgba(255, 220, 120, 0.4) 9px,
+              transparent 9.5px,
+              transparent 15px,
+              rgba(255, 180, 90, 0.35) 15.5px,
+              rgba(255, 180, 90, 0.35) 16px,
+              transparent 16.5px,
+              transparent 22px,
+              rgba(255, 200, 100, 0.42) 22.5px,
+              rgba(255, 200, 100, 0.42) 23px,
+              transparent 23.5px,
+              transparent 30px
+            ),
+            repeating-linear-gradient(90deg,
+              transparent 0px,
+              transparent 12px,
+              rgba(100, 150, 255, 0.25) 12.5px,
+              rgba(100, 150, 255, 0.25) 13px,
+              transparent 13.5px,
+              transparent 25px,
+              rgba(120, 180, 255, 0.3) 25.5px,
+              rgba(120, 180, 255, 0.3) 26px,
+              transparent 26.5px,
+              transparent 40px
+            ),
+            /* Building heights variation */
+            linear-gradient(0deg,
+              transparent 0%,
+              transparent 45%,
+              rgba(255, 200, 100, 0.15) 50%,
+              transparent 52%,
+              transparent 60%,
+              rgba(255, 180, 80, 0.18) 65%,
+              transparent 68%,
+              transparent 75%,
+              rgba(200, 180, 120, 0.12) 80%,
+              transparent 83%
+            );
+          background-size: 30px 100%, 40px 100%, 100% 100%;
         }
 
         .background-wall.rooftop::after {
           content: "";
           position: absolute;
-          bottom: 25%;
+          bottom: 22%;
           left: 0;
           right: 0;
-          height: 15%;
+          height: 20%;
           background-image:
+            /* Lit windows pattern */
             repeating-linear-gradient(90deg,
               transparent 0px,
-              transparent 30px,
-              rgba(255, 200, 100, 0.4) 31px,
-              rgba(255, 200, 100, 0.4) 32px,
+              transparent 28px,
+              rgba(255, 210, 110, 0.5) 29px,
+              rgba(255, 210, 110, 0.5) 30.5px,
+              transparent 31.5px,
               transparent 33px,
-              transparent 35px,
-              rgba(255, 150, 80, 0.3) 36px,
-              rgba(255, 150, 80, 0.3) 37px
+              rgba(255, 190, 95, 0.45) 34px,
+              rgba(255, 190, 95, 0.45) 35.5px,
+              transparent 36.5px,
+              transparent 60px
+            ),
+            repeating-linear-gradient(90deg,
+              transparent 0px,
+              transparent 15px,
+              rgba(150, 200, 255, 0.35) 16px,
+              rgba(150, 200, 255, 0.35) 17px,
+              transparent 18px,
+              transparent 42px,
+              rgba(180, 220, 255, 0.3) 43px,
+              rgba(180, 220, 255, 0.3) 44px,
+              transparent 45px,
+              transparent 50px
             );
-          box-shadow: 0 -20px 40px rgba(255, 180, 80, 0.1);
+          box-shadow: 0 -30px 60px rgba(255, 180, 80, 0.15);
         }
 
-        /* TV DUMP - Junkyard */
+        /* TV DUMP - Detailed junkyard with old TVs */
         .background-wall.tv-dump {
           background:
-            linear-gradient(135deg, #2a2520 0%, #1a1510 50%, #0a0805 100%);
-          box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.7);
+            /* Rust spots */
+            radial-gradient(ellipse at 15% 20%, rgba(120, 60, 30, 0.15) 0%, transparent 8%),
+            radial-gradient(ellipse at 75% 35%, rgba(110, 55, 25, 0.12) 0%, transparent 6%),
+            radial-gradient(ellipse at 40% 65%, rgba(130, 65, 35, 0.14) 0%, transparent 7%),
+            linear-gradient(135deg,
+              #2a2520 0%,
+              #221f1a 25%,
+              #1a1510 60%,
+              #120f0a 85%,
+              #0a0805 100%
+            );
+          box-shadow:
+            inset 0 0 250px rgba(0, 0, 0, 0.8),
+            inset 30px 30px 100px rgba(0, 0, 0, 0.5);
         }
 
         .background-wall.tv-dump::before {
@@ -547,89 +699,201 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           position: absolute;
           inset: 0;
           background-image:
-            radial-gradient(ellipse at 20% 30%, rgba(60, 60, 55, 0.3) 5%, transparent 8%),
-            radial-gradient(ellipse at 45% 25%, rgba(50, 45, 40, 0.4) 4%, transparent 7%),
-            radial-gradient(ellipse at 70% 40%, rgba(55, 50, 45, 0.35) 6%, transparent 9%),
-            radial-gradient(ellipse at 30% 60%, rgba(65, 60, 55, 0.3) 7%, transparent 10%),
-            radial-gradient(ellipse at 60% 70%, rgba(50, 45, 40, 0.4) 5%, transparent 8%),
-            radial-gradient(ellipse at 80% 65%, rgba(60, 55, 50, 0.35) 4%, transparent 7%);
-          opacity: 0.5;
+            /* Old TV sets shapes */
+            radial-gradient(ellipse at 18% 28%, rgba(65, 60, 55, 0.45) 3%, rgba(50, 45, 40, 0.25) 5%, transparent 8%),
+            radial-gradient(rect at 25% 35%, rgba(55, 50, 45, 0.5) 2.5%, rgba(45, 40, 35, 0.3) 4.5%, transparent 7%),
+            radial-gradient(ellipse at 42% 25%, rgba(60, 55, 50, 0.4) 3.5%, rgba(48, 43, 38, 0.22) 5.5%, transparent 9%),
+            radial-gradient(ellipse at 68% 38%, rgba(70, 65, 60, 0.48) 4%, rgba(55, 50, 45, 0.28) 6%, transparent 10%),
+            radial-gradient(ellipse at 32% 58%, rgba(62, 57, 52, 0.42) 3.8%, rgba(50, 45, 40, 0.24) 5.8%, transparent 9.5%),
+            radial-gradient(ellipse at 58% 68%, rgba(58, 53, 48, 0.46) 3.2%, rgba(46, 41, 36, 0.26) 5.2%, transparent 8.5%),
+            radial-gradient(ellipse at 78% 62%, rgba(64, 59, 54, 0.44) 2.8%, rgba(52, 47, 42, 0.25) 4.8%, transparent 7.8%),
+            radial-gradient(ellipse at 88% 30%, rgba(56, 51, 46, 0.38) 3%, rgba(44, 39, 34, 0.2) 5%, transparent 8%),
+            /* Debris and metal scraps */
+            radial-gradient(circle at 12% 45%, rgba(80, 75, 70, 0.25) 1%, transparent 2.5%),
+            radial-gradient(circle at 48% 52%, rgba(75, 70, 65, 0.3) 1.2%, transparent 2.8%),
+            radial-gradient(circle at 72% 55%, rgba(78, 73, 68, 0.28) 0.8%, transparent 2.2%);
+          opacity: 0.75;
         }
 
         .background-wall.tv-dump::after {
-          content: "📺";
+          content: "";
           position: absolute;
-          top: 35%;
-          left: 25%;
-          font-size: 80px;
-          opacity: 0.15;
-          transform: rotate(-15deg);
+          top: 30%;
+          left: 22%;
+          width: 100px;
+          height: 75px;
+          background:
+            linear-gradient(135deg, rgba(40, 35, 30, 0.6) 0%, rgba(25, 20, 15, 0.4) 100%);
+          border: 2px solid rgba(60, 55, 50, 0.3);
+          border-radius: 8px;
+          box-shadow:
+            inset 5px 5px 15px rgba(0, 0, 0, 0.5),
+            3px 3px 10px rgba(0, 0, 0, 0.6);
+          transform: rotate(-12deg);
+          opacity: 0.4;
         }
 
-        /* DESERT */
+        /* DESERT - Hot desert with sand dunes */
         .background-wall.desert {
           background:
-            radial-gradient(ellipse at 50% 100%, rgba(139, 90, 43, 0.3) 0%, transparent 50%),
-            linear-gradient(180deg, #d4a574 0%, #c9994d 40%, #a67c52 70%, #8b6f47 100%);
-          box-shadow: inset 0 0 150px rgba(139, 90, 43, 0.3);
+            /* Heat haze effect */
+            radial-gradient(ellipse at 50% 40%, rgba(255, 220, 180, 0.08) 0%, transparent 40%),
+            /* Sand dunes - layers */
+            radial-gradient(ellipse at 20% 85%, rgba(200, 160, 110, 0.35) 0%, transparent 45%),
+            radial-gradient(ellipse at 50% 90%, rgba(190, 150, 100, 0.4) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 88%, rgba(210, 170, 120, 0.32) 0%, transparent 48%),
+            /* Horizon heat shimmer */
+            radial-gradient(ellipse at 50% 100%, rgba(139, 90, 43, 0.35) 0%, transparent 55%),
+            /* Sky to sand gradient */
+            linear-gradient(180deg,
+              #e8c896 0%,
+              #dcb882 15%,
+              #d4a574 30%,
+              #c9994d 50%,
+              #b8885a 65%,
+              #a67c52 80%,
+              #8b6f47 100%
+            );
+          box-shadow:
+            inset 0 0 180px rgba(139, 90, 43, 0.4),
+            inset 0 100px 120px rgba(255, 200, 120, 0.15);
         }
 
         .background-wall.desert::before {
           content: "";
           position: absolute;
-          top: 15%;
-          right: 25%;
-          width: 100px;
-          height: 100px;
+          top: 12%;
+          right: 28%;
+          width: 110px;
+          height: 110px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(255, 200, 100, 0.8) 0%, rgba(255, 160, 60, 0.6) 50%, transparent 70%);
-          box-shadow: 0 0 60px rgba(255, 200, 100, 0.4);
+          background:
+            radial-gradient(circle at 40% 40%,
+              rgba(255, 230, 140, 0.95) 0%,
+              rgba(255, 210, 120, 0.85) 25%,
+              rgba(255, 190, 100, 0.75) 45%,
+              rgba(255, 170, 80, 0.6) 65%,
+              rgba(255, 150, 60, 0.4) 80%,
+              transparent 100%
+            );
+          box-shadow:
+            0 0 70px rgba(255, 210, 120, 0.5),
+            0 0 130px rgba(255, 190, 100, 0.3),
+            inset -15px -15px 30px rgba(255, 150, 60, 0.3);
         }
 
         .background-wall.desert::after {
-          content: "🌵";
+          content: "";
           position: absolute;
-          bottom: 20%;
-          right: 15%;
-          font-size: 120px;
-          opacity: 0.2;
+          bottom: 28%;
+          right: 18%;
+          width: 80px;
+          height: 140px;
+          background:
+            linear-gradient(180deg, transparent 0%, rgba(80, 100, 60, 0.5) 15%, rgba(70, 90, 50, 0.6) 40%, rgba(60, 80, 45, 0.55) 100%);
+          clip-path: polygon(50% 0%, 55% 20%, 65% 25%, 60% 45%, 70% 50%, 65% 75%, 55% 80%, 50% 100%, 45% 80%, 35% 75%, 30% 50%, 40% 45%, 35% 25%, 45% 20%);
+          filter: drop-shadow(3px 3px 8px rgba(0, 0, 0, 0.4));
+          opacity: 0.6;
         }
 
-        /* CITY ALLEY */
+        /* CITY ALLEY - Dark alley with neon lights and graffiti */
         .background-wall.city-alley {
           background:
-            linear-gradient(90deg, rgba(20, 20, 25, 0.8) 0%, transparent 20%, transparent 80%, rgba(20, 20, 25, 0.8) 100%),
-            linear-gradient(180deg, #2a2a35 0%, #1a1a25 100%);
+            /* Brick texture hints */
+            repeating-linear-gradient(
+              0deg,
+              transparent 0px,
+              transparent 48px,
+              rgba(35, 35, 40, 0.3) 48px,
+              rgba(35, 35, 40, 0.3) 50px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              transparent 0px,
+              transparent 80px,
+              rgba(30, 30, 35, 0.25) 80px,
+              rgba(30, 30, 35, 0.25) 82px
+            ),
+            /* Side wall shadows */
+            linear-gradient(90deg,
+              rgba(15, 15, 20, 0.95) 0%,
+              rgba(20, 20, 25, 0.85) 8%,
+              transparent 25%,
+              transparent 75%,
+              rgba(20, 20, 25, 0.85) 92%,
+              rgba(15, 15, 20, 0.95) 100%
+            ),
+            /* Main gradient */
+            linear-gradient(180deg,
+              #2a2a35 0%,
+              #252530 20%,
+              #1f1f2a 40%,
+              #1a1a25 70%,
+              #151520 100%
+            );
           box-shadow:
-            inset 40px 0 80px rgba(0, 0, 0, 0.8),
-            inset -40px 0 80px rgba(0, 0, 0, 0.8),
-            inset 0 0 100px rgba(0, 0, 0, 0.5);
+            inset 50px 0 100px rgba(0, 0, 0, 0.85),
+            inset -50px 0 100px rgba(0, 0, 0, 0.85),
+            inset 0 0 150px rgba(0, 0, 0, 0.6),
+            inset 0 50px 80px rgba(0, 0, 0, 0.4);
         }
 
         .background-wall.city-alley::before {
           content: "";
           position: absolute;
-          top: 20%;
-          right: 10%;
-          width: 60px;
-          height: 120px;
-          background:
-            linear-gradient(180deg, transparent 0%, rgba(100, 200, 255, 0.3) 50%, transparent 100%);
-          box-shadow: 0 0 40px rgba(100, 200, 255, 0.2);
-          transform: skewY(-5deg);
+          inset: 0;
+          background-image:
+            /* Blue neon sign - right side */
+            radial-gradient(ellipse at 88% 18%, rgba(120, 200, 255, 0.4) 0%, transparent 8%),
+            linear-gradient(180deg,
+              transparent 0%,
+              transparent 15%,
+              rgba(100, 180, 255, 0.35) 18%,
+              rgba(100, 180, 255, 0.35) 22%,
+              transparent 25%,
+              transparent 100%
+            ),
+            /* Red/pink neon - left side */
+            radial-gradient(ellipse at 12% 28%, rgba(255, 100, 120, 0.35) 0%, transparent 7%),
+            linear-gradient(180deg,
+              transparent 0%,
+              transparent 25%,
+              rgba(255, 80, 110, 0.3) 28%,
+              rgba(255, 80, 110, 0.3) 35%,
+              transparent 38%,
+              transparent 100%
+            ),
+            /* Purple neon glow - middle distance */
+            radial-gradient(ellipse at 50% 45%, rgba(180, 100, 255, 0.15) 0%, transparent 15%),
+            /* Green neon - far left */
+            radial-gradient(ellipse at 8% 52%, rgba(100, 255, 150, 0.25) 0%, transparent 5%);
+          background-size: 100% 100%;
         }
 
         .background-wall.city-alley::after {
-          content: "";
+          content: "NEON";
           position: absolute;
-          top: 30%;
-          left: 8%;
-          width: 50px;
-          height: 100px;
-          background:
-            linear-gradient(180deg, transparent 0%, rgba(255, 100, 100, 0.25) 50%, transparent 100%);
-          box-shadow: 0 0 30px rgba(255, 100, 100, 0.15);
-          transform: skewY(5deg);
+          top: 22%;
+          right: 8%;
+          font-family: 'Impact', sans-serif;
+          font-size: 32px;
+          font-weight: 700;
+          color: rgba(120, 200, 255, 0.7);
+          text-shadow:
+            0 0 10px rgba(120, 200, 255, 0.9),
+            0 0 20px rgba(100, 180, 255, 0.6),
+            0 0 30px rgba(80, 160, 255, 0.4),
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+          letter-spacing: 3px;
+          transform: rotate(-3deg);
+          opacity: 0.85;
+          animation: neonFlicker 5s ease-in-out infinite;
+        }
+
+        @keyframes neonFlicker {
+          0%, 100% { opacity: 0.85; }
+          50% { opacity: 0.95; }
+          75% { opacity: 0.75; }
         }
 
         .background-floor {
