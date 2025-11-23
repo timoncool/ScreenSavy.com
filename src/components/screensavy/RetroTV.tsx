@@ -115,8 +115,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
               };
 
               try {
-                // Check if ambilight player is ready
+                // Check if ambilight player iframe exists before calling methods
+                const ambilightIframe = document.querySelector('#youtube-player-ambilight iframe');
+                if (!ambilightIframe) return;
+
+                // Check if ambilight player methods are ready
                 if (typeof ambilightPlayerRef.current.seekTo !== 'function') return;
+                if (typeof ambilightPlayerRef.current.playVideo !== 'function') return;
+                if (typeof ambilightPlayerRef.current.pauseVideo !== 'function') return;
 
                 const currentTime = event.target.getCurrentTime();
                 if (typeof currentTime !== 'number' || isNaN(currentTime)) return;
@@ -1732,30 +1738,33 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           border: none;
         }
 
-        /* Ambilight glow effect - positioned behind TV SCREEN (not whole TV body) */
+        /* Ambilight glow effect - positioned behind TV SCREEN */
         .ambilight-glow-behind-tv {
           position: absolute;
-          /* TV screen is 690px wide (890px - 200px panel), positioned 20px from TV left */
-          /* TV center is at margin-left: -445px, screen starts at -445px + 20px = -425px */
-          /* Screen center: -425px + 345px (half of 690) = -80px */
+          /* Match screen dimensions: 690px wide (890px TV - 200px panel) */
           width: 690px;
           aspect-ratio: 16 / 9;
           height: auto;
-          bottom: var(--tv-bottom);
+          /* Screen is centered horizontally inside TV at offset 20px from TV left edge */
+          /* TV center: -445px, screen center: -445px + 20px + 345px = -80px */
           left: 50%;
-          margin-left: -80px; /* Screen center position */
+          margin-left: -80px;
+          /* Screen is 14px from top of TV body */
+          /* TV height: 501px, screen height: 388px, top offset: 14px */
+          /* Screen bottom: TV bottom + (TV height - screen height - top offset) = TV bottom + 99px */
+          bottom: calc(var(--tv-bottom) + 99px);
           z-index: 500; /* Below TV (600) */
           pointer-events: none;
-          /* Match TV transform + screen top offset (14px) scaled */
-          transform: scale(calc(var(--tv-scale) * 1.2)) translateY(calc(100% * var(--tv-lift-factor) + (14px / var(--tv-scale))));
+          /* Scale 1.2x for glow effect spread */
+          transform: scale(calc(var(--tv-scale) * 1.2));
           transform-origin: 50% 100%;
           transition: transform 0.5s ease, bottom 0.5s ease, filter 0.3s ease, opacity 0.3s ease;
         }
 
         /* Closeup mode for ambilight */
         .retro-tv-container:has(.old-tv.closeup-mode) .ambilight-glow-behind-tv {
-          bottom: var(--tv-closeup-bottom);
-          transform: scale(calc(var(--tv-closeup-scale) * 1.2)) translateY(calc(100% * var(--tv-closeup-lift-factor) + (14px / var(--tv-closeup-scale))));
+          bottom: calc(var(--tv-closeup-bottom) + 99px);
+          transform: scale(calc(var(--tv-closeup-scale) * 1.2));
         }
 
         .ambilight-glow-behind-tv :global(iframe) {
