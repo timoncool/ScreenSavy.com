@@ -24,7 +24,10 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
   const [volume, setVolume] = useState(50);
+  const [ambilightEnabled, setAmbilightEnabled] = useState(true);
+  const [ambilightIntensity, setAmbilightIntensity] = useState(60);
   const playerRef = useRef<any>(null);
+  const ambilightPlayerRef = useRef<any>(null);
 
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
@@ -71,6 +74,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
       }
 
       if ((window as any).YT && (window as any).YT.Player) {
+        // Create main player
         playerRef.current = new (window as any).YT.Player('youtube-player', {
           videoId: currentVideoId,
           playerVars: {
@@ -86,9 +90,74 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
             onReady: (event: any) => {
               event.target.playVideo();
               event.target.setVolume(volume);
+            },
+            onStateChange: (event: any) => {
+              // Sync ambilight player with main player
+              if (!ambilightPlayerRef.current) return;
+
+              const PlayerState = {
+                UNSTARTED: -1,
+                ENDED: 0,
+                PLAYING: 1,
+                PAUSED: 2,
+                BUFFERING: 3,
+                CUED: 5,
+              };
+
+              try {
+                const currentTime = event.target.getCurrentTime();
+
+                if (event.data === PlayerState.PLAYING) {
+                  ambilightPlayerRef.current.seekTo(currentTime, true);
+                  ambilightPlayerRef.current.playVideo();
+                } else if (event.data === PlayerState.PAUSED) {
+                  ambilightPlayerRef.current.seekTo(currentTime, true);
+                  ambilightPlayerRef.current.pauseVideo();
+                } else if (event.data === PlayerState.ENDED) {
+                  ambilightPlayerRef.current.seekTo(0, true);
+                  ambilightPlayerRef.current.pauseVideo();
+                }
+              } catch (e) {
+                console.warn('Ambilight sync error:', e);
+              }
             }
           }
         });
+
+        // Create ambilight player (hidden, for glow effect)
+        if (ambilightEnabled) {
+          setTimeout(() => {
+            ambilightPlayerRef.current = new (window as any).YT.Player('youtube-player-ambilight', {
+              videoId: currentVideoId,
+              playerVars: {
+                autoplay: 1,
+                controls: 0,
+                modestbranding: 1,
+                rel: 0,
+                showinfo: 0,
+                iv_load_policy: 3,
+                disablekb: 1,
+                mute: 1,
+              },
+              events: {
+                onReady: (event: any) => {
+                  event.target.mute();
+                  event.target.setPlaybackQuality('small');
+                  // Sync with main player
+                  if (playerRef.current) {
+                    try {
+                      const currentTime = playerRef.current.getCurrentTime();
+                      event.target.seekTo(currentTime, true);
+                      event.target.playVideo();
+                    } catch (e) {
+                      event.target.playVideo();
+                    }
+                  }
+                }
+              }
+            });
+          }, 100);
+        }
       }
     };
 
@@ -97,7 +166,25 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
     } else {
       (window as any).onYouTubeIframeAPIReady = initPlayer;
     }
-  }, [currentVideoId, isPoweredOn, volume]);
+
+    return () => {
+      // Cleanup both players
+      if (playerRef.current && typeof playerRef.current.destroy === 'function') {
+        try {
+          playerRef.current.destroy();
+        } catch (e) {
+          console.warn('Error destroying main player:', e);
+        }
+      }
+      if (ambilightPlayerRef.current && typeof ambilightPlayerRef.current.destroy === 'function') {
+        try {
+          ambilightPlayerRef.current.destroy();
+        } catch (e) {
+          console.warn('Error destroying ambilight player:', e);
+        }
+      }
+    };
+  }, [currentVideoId, isPoweredOn, volume, ambilightEnabled]);
 
   useEffect(() => {
     if (playerRef.current?.setVolume) {
@@ -140,6 +227,18 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 className="old-tv-content"
                 style={filterStyle}
               >
+                {/* Ambilight glow layer */}
+                {currentVideoId && isPoweredOn && ambilightEnabled && (
+                  <div
+                    id="youtube-player-ambilight"
+                    className="ambilight-glow"
+                    style={{
+                      filter: `blur(${ambilightIntensity}px) brightness(1.3) saturate(1.5)`,
+                      opacity: ambilightIntensity / 100,
+                    }}
+                  />
+                )}
+
                 {currentVideoId && isPoweredOn ? (
                   <div id="youtube-player" className="youtube-container" />
                 ) : (
@@ -194,6 +293,34 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 value={volume}
                 className="control-slider"
                 onChange={(e) => setVolume(Number(e.target.value))}
+              />
+            </div>
+            <div className="slider-group">
+              <label>
+                Ambilight
+                <input
+                  type="checkbox"
+                  checked={ambilightEnabled}
+                  onChange={(e) => setAmbilightEnabled(e.target.checked)}
+                  style={{
+                    marginLeft: '8px',
+                    cursor: 'pointer',
+                    width: '16px',
+                    height: '16px',
+                  }}
+                />
+              </label>
+              <input
+                type="range"
+                min="20"
+                max="100"
+                value={ambilightIntensity}
+                className="control-slider"
+                onChange={(e) => setAmbilightIntensity(Number(e.target.value))}
+                disabled={!ambilightEnabled}
+                style={{
+                  opacity: ambilightEnabled ? 1 : 0.5,
+                }}
               />
             </div>
           </div>
@@ -1453,12 +1580,40 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           top: 0;
           left: 0;
           overflow: hidden;
+          z-index: 2;
         }
 
         .youtube-container :global(iframe) {
           width: 100%;
           height: 100%;
           border: none;
+        }
+
+        /* Ambilight glow effect */
+        .ambilight-glow {
+          position: absolute;
+          top: -15%;
+          left: -15%;
+          width: 130%;
+          height: 130%;
+          z-index: 1;
+          pointer-events: none;
+          transform: scale(1.1) translateZ(0);
+          transform-origin: center center;
+          border-radius: 15px;
+          transition: filter 0.3s ease, opacity 0.3s ease;
+        }
+
+        .ambilight-glow :global(iframe) {
+          width: 100%;
+          height: 100%;
+          border: none;
+          pointer-events: none;
+        }
+
+        /* Hide ambilight when TV is off */
+        .old-tv.powered-off .ambilight-glow {
+          display: none;
         }
 
         .static-noise {
