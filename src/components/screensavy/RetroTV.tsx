@@ -309,32 +309,30 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
               />
             </div>
             <div className="slider-group">
-              <label>
-                Ambilight
+              <label>Ambilight</label>
+              <div className="ambilight-controls">
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={ambilightEnabled}
+                    onChange={(e) => setAmbilightEnabled(e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
                 <input
-                  type="checkbox"
-                  checked={ambilightEnabled}
-                  onChange={(e) => setAmbilightEnabled(e.target.checked)}
+                  type="range"
+                  min="20"
+                  max="100"
+                  value={ambilightIntensity}
+                  className="control-slider"
+                  onChange={(e) => setAmbilightIntensity(Number(e.target.value))}
+                  disabled={!ambilightEnabled}
                   style={{
-                    marginLeft: '8px',
-                    cursor: 'pointer',
-                    width: '16px',
-                    height: '16px',
+                    opacity: ambilightEnabled ? 1 : 0.5,
+                    flex: 1,
                   }}
                 />
-              </label>
-              <input
-                type="range"
-                min="20"
-                max="100"
-                value={ambilightIntensity}
-                className="control-slider"
-                onChange={(e) => setAmbilightIntensity(Number(e.target.value))}
-                disabled={!ambilightEnabled}
-                style={{
-                  opacity: ambilightEnabled ? 1 : 0.5,
-                }}
-              />
+              </div>
             </div>
           </div>
         </div>
@@ -1413,6 +1411,99 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
         .control-slider {
           margin: 4px 0;
+        }
+
+        /* Ambilight controls layout */
+        .ambilight-controls {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: 4px;
+        }
+
+        /* Retro toggle switch */
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 44px;
+          height: 22px;
+          flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+          border: 2px solid #444;
+          border-radius: 22px;
+          transition: all 0.3s ease;
+          box-shadow:
+            inset 0 2px 4px rgba(0, 0, 0, 0.8),
+            inset 0 -1px 2px rgba(255, 255, 255, 0.1),
+            0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .toggle-slider:before {
+          position: absolute;
+          content: "";
+          height: 16px;
+          width: 16px;
+          left: 2px;
+          bottom: 2px;
+          background: linear-gradient(135deg, #555 0%, #333 100%);
+          border: 1px solid #666;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+          box-shadow:
+            0 2px 4px rgba(0, 0, 0, 0.6),
+            inset 0 1px 1px rgba(255, 255, 255, 0.2),
+            inset 0 -1px 1px rgba(0, 0, 0, 0.5);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+          background: linear-gradient(180deg, #00c853 0%, #00a844 100%);
+          border-color: #00ff6a;
+          box-shadow:
+            inset 0 2px 4px rgba(0, 0, 0, 0.4),
+            inset 0 -1px 2px rgba(255, 255, 255, 0.2),
+            0 0 8px rgba(0, 255, 106, 0.4),
+            0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+          transform: translateX(22px);
+          background: linear-gradient(135deg, #88ff88 0%, #66dd66 100%);
+          border-color: #aaffaa;
+          box-shadow:
+            0 2px 6px rgba(0, 255, 106, 0.5),
+            inset 0 1px 2px rgba(255, 255, 255, 0.4),
+            inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-switch input:focus + .toggle-slider {
+          box-shadow:
+            inset 0 2px 4px rgba(0, 0, 0, 0.8),
+            inset 0 -1px 2px rgba(255, 255, 255, 0.1),
+            0 0 4px rgba(255, 255, 255, 0.3),
+            0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .toggle-slider:hover {
+          border-color: #666;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:hover {
+          border-color: #22ff7a;
         }
 
         .old-tv input[type="range"]::-webkit-slider-runnable-track {
