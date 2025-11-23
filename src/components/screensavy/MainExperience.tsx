@@ -1560,7 +1560,10 @@ const MainExperience = ({
                 "textOptions",
               ].includes(key);
 
-              if (hideInVisualizerMode || hideInVideoMode) return null;
+              // In retro-tv mode, render help button at the end (after view mode buttons)
+              const renderAtEndInRetroTV = videoMode && videoSlug === 'retro-tv' && key === 'toggleHints';
+
+              if (hideInVisualizerMode || hideInVideoMode || renderAtEndInRetroTV) return null;
 
               return (
                 <IconButton
@@ -1599,6 +1602,14 @@ const MainExperience = ({
                   title={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
                   active={tvViewMode === 'closeup'}
                   aria-label={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
+                />
+                {/* Help button at the end in retro-tv mode */}
+                <IconButton
+                  icon={toolbarButtons.toggleHints.icon}
+                  onClick={toolbarButtons.toggleHints.onClick}
+                  title={toolbarButtons.toggleHints.title}
+                  active={toolbarButtons.toggleHints.active}
+                  aria-label={toolbarButtons.toggleHints.title}
                 />
               </>
             )}
@@ -1767,6 +1778,46 @@ const MainExperience = ({
                 title={activeLanguage === 'ru' ? 'Переулок' : 'City Alley'}
                 active={tvBackground === 'city-alley'}
                 aria-label={activeLanguage === 'ru' ? 'Переулок' : 'City Alley'}
+              />
+              <IconButton
+                icon="landscape"
+                onClick={() => {
+                  setTvBackground('mountain-view');
+                  tvRef.current?.setBackground?.('mountain-view');
+                }}
+                title={activeLanguage === 'ru' ? 'Горы' : 'Mountains'}
+                active={tvBackground === 'mountain-view'}
+                aria-label={activeLanguage === 'ru' ? 'Горы' : 'Mountains'}
+              />
+              <IconButton
+                icon="waves"
+                onClick={() => {
+                  setTvBackground('ocean-sunset');
+                  tvRef.current?.setBackground?.('ocean-sunset');
+                }}
+                title={activeLanguage === 'ru' ? 'Океан' : 'Ocean'}
+                active={tvBackground === 'ocean-sunset'}
+                aria-label={activeLanguage === 'ru' ? 'Океан' : 'Ocean'}
+              />
+              <IconButton
+                icon="night_sight_auto"
+                onClick={() => {
+                  setTvBackground('city-skyline');
+                  tvRef.current?.setBackground?.('city-skyline');
+                }}
+                title={activeLanguage === 'ru' ? 'Город' : 'City'}
+                active={tvBackground === 'city-skyline'}
+                aria-label={activeLanguage === 'ru' ? 'Город' : 'City'}
+              />
+              <IconButton
+                icon="brightness_2"
+                onClick={() => {
+                  setTvBackground('space-stars');
+                  tvRef.current?.setBackground?.('space-stars');
+                }}
+                title={activeLanguage === 'ru' ? 'Космос' : 'Space'}
+                active={tvBackground === 'space-stars'}
+                aria-label={activeLanguage === 'ru' ? 'Космос' : 'Space'}
               />
             </div>
           </>
