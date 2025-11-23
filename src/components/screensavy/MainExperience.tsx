@@ -1576,6 +1576,32 @@ const MainExperience = ({
                 />
               );
             })}
+
+            {/* Retro TV View Mode Buttons - moved to top row */}
+            {videoMode && videoSlug === 'retro-tv' && tvRef && (
+              <>
+                <IconButton
+                  icon="fit_screen"
+                  onClick={() => {
+                    setTvViewMode('full');
+                    tvRef.current?.setViewMode('full');
+                  }}
+                  title={activeLanguage === 'ru' ? 'Полный вид' : 'Full View'}
+                  active={tvViewMode === 'full'}
+                  aria-label={activeLanguage === 'ru' ? 'Полный вид' : 'Full View'}
+                />
+                <IconButton
+                  icon="zoom_in"
+                  onClick={() => {
+                    setTvViewMode('closeup');
+                    tvRef.current?.setViewMode('closeup');
+                  }}
+                  title={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
+                  active={tvViewMode === 'closeup'}
+                  aria-label={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
+                />
+              </>
+            )}
           </div>
         </div>
         <div className="right-buttons">
@@ -1670,30 +1696,6 @@ const MainExperience = ({
         )}
         {videoMode && !interfaceHidden && videoSlug === 'retro-tv' && tvRef && (
           <>
-            {/* Retro TV View Mode Buttons */}
-            <div className="video-control-row active" style={{ marginBottom: '10px' }}>
-              <IconButton
-                icon="fit_screen"
-                onClick={() => {
-                  setTvViewMode('full');
-                  tvRef.current?.setViewMode('full');
-                }}
-                title={activeLanguage === 'ru' ? 'Полный вид' : 'Full View'}
-                active={tvViewMode === 'full'}
-                aria-label={activeLanguage === 'ru' ? 'Полный вид' : 'Full View'}
-              />
-              <IconButton
-                icon="fullscreen"
-                onClick={() => {
-                  setTvViewMode('closeup');
-                  tvRef.current?.setViewMode('closeup');
-                }}
-                title={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
-                active={tvViewMode === 'closeup'}
-                aria-label={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
-              />
-            </div>
-
             {/* Retro TV Background Scene Buttons */}
             <div className="video-control-row active" style={{ marginBottom: '10px' }}>
               <IconButton
