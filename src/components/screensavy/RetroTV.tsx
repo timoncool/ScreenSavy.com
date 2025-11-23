@@ -1732,33 +1732,30 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           border: none;
         }
 
-        /* Ambilight glow effect - positioned EXACTLY behind TV */
+        /* Ambilight glow effect - positioned behind TV SCREEN (not whole TV body) */
         .ambilight-glow-behind-tv {
           position: absolute;
-          width: 890px;
+          /* TV screen is 690px wide (890px - 200px panel), positioned 20px from TV left */
+          /* TV center is at margin-left: -445px, screen starts at -445px + 20px = -425px */
+          /* Screen center: -425px + 345px (half of 690) = -80px */
+          width: 690px;
           aspect-ratio: 16 / 9;
           height: auto;
-          bottom: var(--tv-bottom); /* Same as TV */
+          bottom: var(--tv-bottom);
           left: 50%;
-          margin-left: -445px;
-          background: #333;
-          box-shadow:
-            inset 0 0 20px rgba(0, 0, 0, 0.8),
-            0 5px 40px rgba(0, 0, 0, 0.9);
-          padding: 12px 14px 10px;
-          border-radius: 8px;
-          border-bottom: 2px #222 solid;
-          transform: scale(calc(var(--tv-scale) * 1.15)) translateY(calc(100% * var(--tv-lift-factor))); /* Same as TV but 15% larger */
+          margin-left: -80px; /* Screen center position */
           z-index: 500; /* Below TV (600) */
           pointer-events: none;
-          transition: box-shadow 0.5s ease, transform 0.5s ease, bottom 0.5s ease, filter 0.3s ease, opacity 0.3s ease;
+          /* Match TV transform + screen top offset (14px) scaled */
+          transform: scale(calc(var(--tv-scale) * 1.2)) translateY(calc(100% * var(--tv-lift-factor) + (14px / var(--tv-scale))));
           transform-origin: 50% 100%;
+          transition: transform 0.5s ease, bottom 0.5s ease, filter 0.3s ease, opacity 0.3s ease;
         }
 
         /* Closeup mode for ambilight */
         .retro-tv-container:has(.old-tv.closeup-mode) .ambilight-glow-behind-tv {
           bottom: var(--tv-closeup-bottom);
-          transform: scale(calc(var(--tv-closeup-scale) * 1.15)) translateY(calc(100% * var(--tv-closeup-lift-factor)));
+          transform: scale(calc(var(--tv-closeup-scale) * 1.2)) translateY(calc(100% * var(--tv-closeup-lift-factor) + (14px / var(--tv-closeup-scale))));
         }
 
         .ambilight-glow-behind-tv :global(iframe) {
