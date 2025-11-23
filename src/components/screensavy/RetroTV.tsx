@@ -217,18 +217,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
     }
   }, [volume]);
 
-  // Cleanup ambilight player when disabled to prevent removeChild errors
-  useEffect(() => {
-    if (!ambilightEnabled && ambilightPlayerRef.current) {
-      try {
-        ambilightPlayerRef.current.destroy();
-      } catch (e) {
-        // Silent fail
-      }
-      ambilightPlayerRef.current = null;
-    }
-  }, [ambilightEnabled]);
-
   const handlePlay = () => {
     playerRef.current?.playVideo();
   };
@@ -253,14 +241,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
       <div className={`background-wall ${currentBackground}`} />
       <div className={`background-floor ${currentBackground}`} />
 
-      {/* Ambilight glow behind TV - projects onto wall */}
-      {currentVideoId && isPoweredOn && ambilightEnabled && (
+      {/* Ambilight glow behind TV - always render when video exists to prevent removeChild errors */}
+      {currentVideoId && isPoweredOn && (
         <div
           id="youtube-player-ambilight"
           className="ambilight-glow-behind-tv"
           style={{
             filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: Math.max(0.3, ambilightIntensity / 100),
+            opacity: ambilightEnabled ? Math.max(0.3, ambilightIntensity / 100) : 0,
             pointerEvents: 'none',
           }}
         />
