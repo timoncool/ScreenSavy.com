@@ -201,7 +201,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         }
       }
     };
-  }, [currentVideoId, volume]);
+  }, [currentVideoId]);
 
   // Handle power state changes
   useEffect(() => {
@@ -313,7 +313,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           className="ambilight-glow-behind-tv"
           style={{
             filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: ambilightEnabled && isPoweredOn ? 0.7 : 0,
+            opacity: ambilightEnabled && isPoweredOn ? Math.max(0.3, (ambilightIntensity / 100) * 0.9) : 0,
             pointerEvents: 'none',
             display: isPoweredOn ? 'block' : 'none',
           }}
