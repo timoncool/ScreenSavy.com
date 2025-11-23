@@ -247,9 +247,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           id="youtube-player-ambilight"
           className="ambilight-glow-behind-tv"
           style={{
-            filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: ambilightEnabled ? Math.max(0.3, ambilightIntensity / 100) : 0,
+            filter: `blur(${ambilightIntensity}px) brightness(${1 + ambilightIntensity / 100}) saturate(${1.5 + ambilightIntensity / 100})`,
+            opacity: ambilightEnabled ? (ambilightIntensity / 100) : 0,
+            visibility: ambilightEnabled ? 'visible' : 'hidden',
             pointerEvents: 'none',
+            transition: 'filter 0.1s ease, opacity 0.1s ease, visibility 0.1s ease',
           }}
         />
       )}
