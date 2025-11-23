@@ -33,8 +33,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
     setVideoId: (id: string) => {
+      console.log('RetroTV.setVideoId called with:', id);
+      console.log('Current videoId before:', currentVideoId);
       setCurrentVideoId(id);
       setIsPoweredOn(true);
+      console.log('State updated - new videoId:', id, 'isPoweredOn: true');
     },
     setViewMode: (mode: 'full' | 'closeup') => {
       setInternalViewMode(mode);
@@ -60,27 +63,41 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
   // Initialize YouTube player
   useEffect(() => {
+    console.log('Player init useEffect triggered. currentVideoId:', currentVideoId);
+
     if (!currentVideoId || typeof window === 'undefined') {
+      console.log('Skipping player init - no videoId or not in browser');
       return;
     }
 
     const initPlayer = () => {
+      console.log('initPlayer called');
+
       if (playerRef.current) {
         // Player already exists, just load new video
-        // Only call if iframe exists
+        console.log('Player exists, loading new video:', currentVideoId);
         const iframe = document.querySelector('#youtube-player iframe');
+        console.log('Iframe exists:', !!iframe);
+
         if (iframe) {
           try {
             playerRef.current.loadVideoById(currentVideoId);
             playerRef.current.playVideo();
+            console.log('loadVideoById called successfully');
           } catch (e) {
-            // Silent fail - player not ready
+            console.error('Error loading video:', e);
           }
+        } else {
+          console.warn('No iframe found, cannot load video');
         }
         return;
       }
 
+      console.log('Creating new player...');
+
       if ((window as any).YT && (window as any).YT.Player) {
+        console.log('YouTube API available, creating player with videoId:', currentVideoId);
+
         // Create main player
         playerRef.current = new (window as any).YT.Player('youtube-player', {
           videoId: currentVideoId,
@@ -95,6 +112,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           },
           events: {
             onReady: (event: any) => {
+              console.log('Main player ready! Playing video...');
               event.target.playVideo();
               event.target.setVolume(volume);
             },
@@ -243,16 +261,31 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
   // Handle volume changes
   useEffect(() => {
-    if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
-      const iframe = document.querySelector('#youtube-player iframe');
-      if (iframe) {
-        try {
-          playerRef.current.setVolume(volume);
-        } catch (e) {
-          // Player not ready yet
+    const updateVolume = () => {
+      if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
+        const iframe = document.querySelector('#youtube-player iframe');
+        if (iframe) {
+          try {
+            playerRef.current.setVolume(volume);
+            console.log('Volume set to:', volume);
+          } catch (e) {
+            console.warn('Failed to set volume:', e);
+          }
+        } else {
+          console.warn('No iframe found for volume update');
         }
+      } else {
+        console.warn('Player not ready for volume update');
       }
-    }
+    };
+
+    // Try immediate update
+    updateVolume();
+
+    // Also retry after small delay to ensure player is ready
+    const timeoutId = setTimeout(updateVolume, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [volume]);
 
   const handlePlay = () => {
@@ -311,11 +344,13 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         <div
           id="youtube-player-ambilight"
           className="ambilight-glow-behind-tv"
+          data-enabled={ambilightEnabled}
+          data-intensity={ambilightIntensity}
           style={{
             filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: ambilightEnabled && isPoweredOn ? Math.max(0.3, (ambilightIntensity / 100) * 0.9) : 0,
+            opacity: ambilightEnabled && isPoweredOn ? (ambilightIntensity / 100) * 0.8 : 0,
             pointerEvents: 'none',
-            display: isPoweredOn ? 'block' : 'none',
+            visibility: isPoweredOn ? 'visible' : 'hidden',
           }}
         />
       )}
@@ -1830,7 +1865,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           /* Center horizontally and scale 1.2x for glow effect spread */
           transform: translateX(-50%) scale(calc(var(--tv-scale) * 1.2));
           transform-origin: 50% 100%;
-          transition: transform 0.5s ease, bottom 0.5s ease, filter 0.3s ease, opacity 0.3s ease, display 0.3s ease;
+          transition: transform 0.5s ease, bottom 0.5s ease, filter 0.2s ease, opacity 0.2s ease, visibility 0.2s ease;
         }
 
         /* Closeup mode for ambilight */

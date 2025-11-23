@@ -26,9 +26,21 @@ export default function RetroTVPage() {
   // Handle video ID submission
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handleSubmit called with inputValue:', inputValue);
     const videoId = extractVideoId(inputValue);
+    console.log('Extracted video ID:', videoId);
+    console.log('tvRef.current exists:', !!tvRef.current);
+
     if (videoId && tvRef.current) {
+      console.log('Calling setVideoId with:', videoId);
       tvRef.current.setVideoId(videoId);
+      console.log('setVideoId called successfully');
+    } else {
+      console.error('Cannot play video:', {
+        hasVideoId: !!videoId,
+        hasTvRef: !!tvRef.current,
+        inputValue
+      });
     }
   }, [inputValue, extractVideoId]);
 
