@@ -68,8 +68,16 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
     const initPlayer = () => {
       if (playerRef.current) {
-        playerRef.current.loadVideoById(currentVideoId);
-        playerRef.current.playVideo?.();
+        try {
+          if (typeof playerRef.current.loadVideoById === 'function') {
+            playerRef.current.loadVideoById(currentVideoId);
+          }
+          if (typeof playerRef.current.playVideo === 'function') {
+            playerRef.current.playVideo();
+          }
+        } catch (e) {
+          console.warn('Error loading video:', e);
+        }
         return;
       }
 
@@ -105,7 +113,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
               };
 
               try {
+                // Check if ambilight player is ready
+                if (typeof ambilightPlayerRef.current.seekTo !== 'function') return;
+
                 const currentTime = event.target.getCurrentTime();
+                if (typeof currentTime !== 'number' || isNaN(currentTime)) return;
 
                 if (event.data === PlayerState.PLAYING) {
                   ambilightPlayerRef.current.seekTo(currentTime, true);
@@ -118,7 +130,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                   ambilightPlayerRef.current.pauseVideo();
                 }
               } catch (e) {
-                console.warn('Ambilight sync error:', e);
+                // Silently fail - ambilight is decorative, shouldn't break main player
               }
             }
           }
@@ -217,6 +229,18 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
       <div className={`background-wall ${currentBackground}`} />
       <div className={`background-floor ${currentBackground}`} />
 
+      {/* Ambilight glow behind TV - projects onto wall */}
+      {currentVideoId && isPoweredOn && ambilightEnabled && (
+        <div
+          id="youtube-player-ambilight"
+          className="ambilight-glow-behind-tv"
+          style={{
+            filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
+            opacity: Math.min(ambilightIntensity / 100, 0.8),
+          }}
+        />
+      )}
+
       <div
         className={`old-tv ${!isPoweredOn ? 'powered-off' : ''} ${isCloseup ? 'closeup-mode' : ''}`}
       >
@@ -228,18 +252,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 className="old-tv-content"
                 style={filterStyle}
               >
-                {/* Ambilight glow layer */}
-                {currentVideoId && isPoweredOn && ambilightEnabled && (
-                  <div
-                    id="youtube-player-ambilight"
-                    className="ambilight-glow"
-                    style={{
-                      filter: `blur(${ambilightIntensity}px) brightness(1.3) saturate(1.5)`,
-                      opacity: ambilightIntensity / 100,
-                    }}
-                  />
-                )}
-
                 {currentVideoId && isPoweredOn ? (
                   <div id="youtube-player" className="youtube-container" />
                 ) : (
@@ -1590,31 +1602,27 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           border: none;
         }
 
-        /* Ambilight glow effect */
-        .ambilight-glow {
+        /* Ambilight glow effect - positioned behind TV, projects onto wall */
+        .ambilight-glow-behind-tv {
           position: absolute;
-          top: -15%;
-          left: -15%;
-          width: 130%;
-          height: 130%;
-          z-index: 1;
+          width: 890px;
+          aspect-ratio: 16 / 9;
+          height: auto;
+          bottom: var(--active-tv-bottom);
+          left: 50%;
+          margin-left: -445px;
+          z-index: 500; /* Below TV (800) but above background */
           pointer-events: none;
-          transform: scale(1.1) translateZ(0);
+          transform: scale(1.15) translateZ(0); /* Slightly larger than TV */
           transform-origin: center center;
-          border-radius: 15px;
-          transition: filter 0.3s ease, opacity 0.3s ease;
+          transition: filter 0.3s ease, opacity 0.3s ease, transform 0.5s ease;
         }
 
-        .ambilight-glow :global(iframe) {
+        .ambilight-glow-behind-tv :global(iframe) {
           width: 100%;
           height: 100%;
           border: none;
           pointer-events: none;
-        }
-
-        /* Hide ambilight when TV is off */
-        .old-tv.powered-off .ambilight-glow {
-          display: none;
         }
 
         .static-noise {
