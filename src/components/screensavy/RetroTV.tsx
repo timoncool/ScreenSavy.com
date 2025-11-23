@@ -139,39 +139,38 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
         // Create ambilight player (hidden, for glow effect)
         // Uses 'small' quality (360p-480p) - standard for ambilight implementations
-        if (ambilightEnabled) {
-          setTimeout(() => {
-            ambilightPlayerRef.current = new (window as any).YT.Player('youtube-player-ambilight', {
-              videoId: currentVideoId,
-              playerVars: {
-                autoplay: 1,
-                controls: 0,
-                modestbranding: 1,
-                rel: 0,
-                showinfo: 0,
-                iv_load_policy: 3,
-                disablekb: 1,
-                mute: 1,
-              },
-              events: {
-                onReady: (event: any) => {
-                  event.target.mute();
-                  event.target.setPlaybackQuality('small');
-                  // Sync with main player
-                  if (playerRef.current) {
-                    try {
-                      const currentTime = playerRef.current.getCurrentTime();
-                      event.target.seekTo(currentTime, true);
-                      event.target.playVideo();
-                    } catch (e) {
-                      event.target.playVideo();
-                    }
+        // Always create it (visibility controlled by CSS opacity)
+        setTimeout(() => {
+          ambilightPlayerRef.current = new (window as any).YT.Player('youtube-player-ambilight', {
+            videoId: currentVideoId,
+            playerVars: {
+              autoplay: 1,
+              controls: 0,
+              modestbranding: 1,
+              rel: 0,
+              showinfo: 0,
+              iv_load_policy: 3,
+              disablekb: 1,
+              mute: 1,
+            },
+            events: {
+              onReady: (event: any) => {
+                event.target.mute();
+                event.target.setPlaybackQuality('small');
+                // Sync with main player
+                if (playerRef.current) {
+                  try {
+                    const currentTime = playerRef.current.getCurrentTime();
+                    event.target.seekTo(currentTime, true);
+                    event.target.playVideo();
+                  } catch (e) {
+                    event.target.playVideo();
                   }
                 }
               }
-            });
-          }, 100);
-        }
+            }
+          });
+        }, 100);
       }
     };
 
@@ -198,11 +197,15 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         }
       }
     };
-  }, [currentVideoId, isPoweredOn, volume, ambilightEnabled]);
+  }, [currentVideoId, isPoweredOn, volume]);
 
   useEffect(() => {
-    if (playerRef.current?.setVolume) {
-      playerRef.current.setVolume(volume);
+    if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
+      try {
+        playerRef.current.setVolume(volume);
+      } catch (e) {
+        // Player not ready yet
+      }
     }
   }, [volume]);
 
@@ -231,13 +234,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
       <div className={`background-floor ${currentBackground}`} />
 
       {/* Ambilight glow behind TV - projects onto wall */}
-      {currentVideoId && isPoweredOn && ambilightEnabled && (
+      {currentVideoId && isPoweredOn && (
         <div
           id="youtube-player-ambilight"
           className="ambilight-glow-behind-tv"
           style={{
             filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: Math.min(ambilightIntensity / 100, 0.8),
+            opacity: ambilightEnabled ? Math.min(ambilightIntensity / 100, 0.8) : 0,
+            pointerEvents: 'none',
           }}
         />
       )}
@@ -300,22 +304,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
               />
             </div>
 
-            {/* Divider */}
-            <div className="control-divider" />
-
-            {/* Audio controls */}
-            <div className="slider-group">
-              <label>Volume</label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={volume}
-                className="control-slider"
-                onChange={(e) => setVolume(Number(e.target.value))}
-              />
-            </div>
-
             {/* Effects controls */}
             <div className="slider-group">
               <label>Ambilight</label>
@@ -353,6 +341,22 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 />
                 <span className="toggle-slider"></span>
               </label>
+            </div>
+
+            {/* Divider */}
+            <div className="control-divider" />
+
+            {/* Audio controls */}
+            <div className="slider-group">
+              <label>Volume</label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={volume}
+                className="control-slider"
+                onChange={(e) => setVolume(Number(e.target.value))}
+              />
             </div>
           </div>
         </div>
@@ -1506,22 +1510,22 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         }
 
         .toggle-switch input:checked + .toggle-slider {
-          background: linear-gradient(180deg, #00c853 0%, #00a844 100%);
-          border-color: #00ff6a;
+          background: linear-gradient(180deg, #555 0%, #444 100%);
+          border-color: #777;
           box-shadow:
             inset 0 2px 4px rgba(0, 0, 0, 0.4),
-            inset 0 -1px 2px rgba(255, 255, 255, 0.2),
-            0 0 8px rgba(0, 255, 106, 0.4),
+            inset 0 -1px 2px rgba(255, 255, 255, 0.3),
+            0 0 6px rgba(255, 255, 255, 0.2),
             0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .toggle-switch input:checked + .toggle-slider:before {
           transform: translateX(22px);
-          background: linear-gradient(135deg, #88ff88 0%, #66dd66 100%);
-          border-color: #aaffaa;
+          background: linear-gradient(135deg, #ddd 0%, #bbb 100%);
+          border-color: #eee;
           box-shadow:
-            0 2px 6px rgba(0, 255, 106, 0.5),
-            inset 0 1px 2px rgba(255, 255, 255, 0.4),
+            0 2px 6px rgba(255, 255, 255, 0.3),
+            inset 0 1px 2px rgba(255, 255, 255, 0.5),
             inset 0 -1px 1px rgba(0, 0, 0, 0.3);
         }
 
@@ -1538,7 +1542,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         }
 
         .toggle-switch input:checked + .toggle-slider:hover {
-          border-color: #22ff7a;
+          border-color: #999;
         }
 
         .old-tv input[type="range"]::-webkit-slider-runnable-track {
@@ -1734,14 +1738,17 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           width: 890px;
           aspect-ratio: 16 / 9;
           height: auto;
+          --active-tv-bottom: var(--tv-bottom);
+          --active-tv-scale: var(--tv-scale);
           bottom: var(--active-tv-bottom);
           left: 50%;
           margin-left: -445px;
-          z-index: 500; /* Below TV (800) but above background */
+          z-index: 500; /* Below TV (600) but above background */
           pointer-events: none;
-          transform: scale(1.15) translateZ(0); /* Slightly larger than TV */
-          transform-origin: center center;
-          transition: filter 0.3s ease, opacity 0.3s ease, transform 0.5s ease;
+          /* Match TV transform exactly, then scale slightly larger */
+          transform: scale(calc(var(--active-tv-scale) * 1.15)) translateY(calc(100% * var(--tv-lift-factor)));
+          transform-origin: 50% 100%;
+          transition: filter 0.3s ease, opacity 0.3s ease, transform 0.5s ease, bottom 0.5s ease;
         }
 
         .ambilight-glow-behind-tv :global(iframe) {
@@ -1851,8 +1858,17 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           animation: none !important;
         }
 
+        .old-tv.effects-disabled .error-effect::before,
+        .old-tv.effects-disabled .error-effect::after {
+          display: none !important;
+        }
+
+        .old-tv.effects-disabled .old-tv-content {
+          animation: none !important;
+        }
+
         .old-tv.effects-disabled .old-tv-content::after {
-          display: none;
+          display: none !important;
         }
 
         @keyframes crt-image {
