@@ -70,8 +70,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
     const initPlayer = () => {
       if (playerRef.current) {
         // Player already exists, just load new video
-        playerRef.current.loadVideoById(currentVideoId);
-        playerRef.current.playVideo?.();
+        try {
+          playerRef.current.loadVideoById(currentVideoId);
+          playerRef.current.playVideo?.();
+        } catch (e) {
+          // If error, destroy and recreate
+          playerRef.current.destroy();
+          playerRef.current = null;
+        }
 
         // Also update ambilight player
         if (ambilightPlayerRef.current) {
@@ -79,10 +85,15 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
             ambilightPlayerRef.current.loadVideoById(currentVideoId);
             ambilightPlayerRef.current.playVideo?.();
           } catch (e) {
-            // Silent fail
+            // If error, destroy and recreate
+            try {
+              ambilightPlayerRef.current.destroy();
+            } catch {}
+            ambilightPlayerRef.current = null;
           }
         }
-        return;
+
+        if (playerRef.current) return; // If still exists, we're done
       }
 
       if ((window as any).YT && (window as any).YT.Player) {
@@ -206,6 +217,18 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
     }
   }, [volume]);
 
+  // Cleanup ambilight player when disabled to prevent removeChild errors
+  useEffect(() => {
+    if (!ambilightEnabled && ambilightPlayerRef.current) {
+      try {
+        ambilightPlayerRef.current.destroy();
+      } catch (e) {
+        // Silent fail
+      }
+      ambilightPlayerRef.current = null;
+    }
+  }, [ambilightEnabled]);
+
   const handlePlay = () => {
     playerRef.current?.playVideo();
   };
@@ -230,16 +253,15 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
       <div className={`background-wall ${currentBackground}`} />
       <div className={`background-floor ${currentBackground}`} />
 
-      {/* Ambilight glow behind TV - projects onto wall - always render to prevent removeChild errors */}
-      {currentVideoId && (
+      {/* Ambilight glow behind TV - projects onto wall */}
+      {currentVideoId && isPoweredOn && ambilightEnabled && (
         <div
           id="youtube-player-ambilight"
           className="ambilight-glow-behind-tv"
           style={{
             filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: ambilightEnabled && isPoweredOn ? ambilightIntensity / 100 : 0,
+            opacity: Math.max(0.3, ambilightIntensity / 100),
             pointerEvents: 'none',
-            visibility: ambilightEnabled && isPoweredOn ? 'visible' : 'hidden',
           }}
         />
       )}
@@ -255,16 +277,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 className="old-tv-content"
                 style={filterStyle}
               >
-                {/* Always render player div to prevent removeChild errors */}
-                {currentVideoId && (
-                  <div
-                    id="youtube-player"
-                    className="youtube-container"
-                    style={{ display: isPoweredOn ? 'block' : 'none' }}
-                  />
-                )}
-                {/* Show static noise when powered off or no video */}
-                {(!currentVideoId || !isPoweredOn) && (
+                {currentVideoId && isPoweredOn ? (
+                  <div id="youtube-player" className="youtube-container" />
+                ) : (
                   <div className="static-noise" />
                 )}
               </div>
