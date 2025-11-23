@@ -243,16 +243,31 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
   // Handle volume changes
   useEffect(() => {
-    if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
-      const iframe = document.querySelector('#youtube-player iframe');
-      if (iframe) {
-        try {
-          playerRef.current.setVolume(volume);
-        } catch (e) {
-          // Player not ready yet
+    const updateVolume = () => {
+      if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
+        const iframe = document.querySelector('#youtube-player iframe');
+        if (iframe) {
+          try {
+            playerRef.current.setVolume(volume);
+            console.log('Volume set to:', volume);
+          } catch (e) {
+            console.warn('Failed to set volume:', e);
+          }
+        } else {
+          console.warn('No iframe found for volume update');
         }
+      } else {
+        console.warn('Player not ready for volume update');
       }
-    }
+    };
+
+    // Try immediate update
+    updateVolume();
+
+    // Also retry after small delay to ensure player is ready
+    const timeoutId = setTimeout(updateVolume, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [volume]);
 
   const handlePlay = () => {
@@ -311,11 +326,13 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         <div
           id="youtube-player-ambilight"
           className="ambilight-glow-behind-tv"
+          data-enabled={ambilightEnabled}
+          data-intensity={ambilightIntensity}
           style={{
             filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: ambilightEnabled && isPoweredOn ? Math.max(0.3, (ambilightIntensity / 100) * 0.9) : 0,
+            opacity: ambilightEnabled && isPoweredOn ? (ambilightIntensity / 100) * 0.8 : 0,
             pointerEvents: 'none',
-            display: isPoweredOn ? 'block' : 'none',
+            visibility: isPoweredOn ? 'visible' : 'hidden',
           }}
         />
       )}
@@ -1830,7 +1847,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           /* Center horizontally and scale 1.2x for glow effect spread */
           transform: translateX(-50%) scale(calc(var(--tv-scale) * 1.2));
           transform-origin: 50% 100%;
-          transition: transform 0.5s ease, bottom 0.5s ease, filter 0.3s ease, opacity 0.3s ease, display 0.3s ease;
+          transition: transform 0.5s ease, bottom 0.5s ease, filter 0.2s ease, opacity 0.2s ease, visibility 0.2s ease;
         }
 
         /* Closeup mode for ambilight */
