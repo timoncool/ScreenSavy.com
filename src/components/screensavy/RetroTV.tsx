@@ -125,6 +125,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         });
 
         // Create ambilight player (hidden, for glow effect)
+        // Uses lowest quality (144p-240p) to minimize bandwidth/CPU - blur effect doesn't need high resolution
         if (ambilightEnabled) {
           setTimeout(() => {
             ambilightPlayerRef.current = new (window as any).YT.Player('youtube-player-ambilight', {
@@ -138,11 +139,21 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 iv_load_policy: 3,
                 disablekb: 1,
                 mute: 1,
+                // Force lowest quality for performance
+                hd: 0,
+                vq: 'tiny',
               },
               events: {
                 onReady: (event: any) => {
                   event.target.mute();
-                  event.target.setPlaybackQuality('small');
+                  // Force lowest available quality (144p or 240p)
+                  // Try 'tiny' first, fallback to 'small' if not available
+                  try {
+                    event.target.setPlaybackQuality('tiny');
+                  } catch (e) {
+                    event.target.setPlaybackQuality('small');
+                  }
+
                   // Sync with main player
                   if (playerRef.current) {
                     try {
@@ -152,6 +163,18 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                     } catch (e) {
                       event.target.playVideo();
                     }
+                  }
+                },
+                // Continuously enforce low quality if YouTube tries to auto-upgrade
+                onStateChange: (event: any) => {
+                  if (event.data === 1) { // Playing
+                    setTimeout(() => {
+                      try {
+                        event.target.setPlaybackQuality('tiny');
+                      } catch (e) {
+                        event.target.setPlaybackQuality('small');
+                      }
+                    }, 500);
                   }
                 }
               }
