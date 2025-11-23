@@ -69,15 +69,16 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
     const initPlayer = () => {
       if (playerRef.current) {
-        try {
-          if (typeof playerRef.current.loadVideoById === 'function') {
+        // Player already exists, just load new video
+        // Only call if iframe exists
+        const iframe = document.querySelector('#youtube-player iframe');
+        if (iframe) {
+          try {
             playerRef.current.loadVideoById(currentVideoId);
-          }
-          if (typeof playerRef.current.playVideo === 'function') {
             playerRef.current.playVideo();
+          } catch (e) {
+            // Silent fail - player not ready
           }
-        } catch (e) {
-          console.warn('Error loading video:', e);
         }
         return;
       }
@@ -1711,7 +1712,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           height: 100%;
           background-color: transparent;
           border-radius: 15px;
-          animation: crt-image 20ms alternate infinite;
           transition: filter 0.2s ease;
           overflow: hidden;
         }
@@ -1732,23 +1732,33 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           border: none;
         }
 
-        /* Ambilight glow effect - positioned behind TV, projects onto wall */
+        /* Ambilight glow effect - positioned EXACTLY behind TV */
         .ambilight-glow-behind-tv {
           position: absolute;
           width: 890px;
           aspect-ratio: 16 / 9;
           height: auto;
-          --active-tv-bottom: var(--tv-bottom);
-          --active-tv-scale: var(--tv-scale);
-          bottom: var(--active-tv-bottom);
+          bottom: var(--tv-bottom); /* Same as TV */
           left: 50%;
           margin-left: -445px;
-          z-index: 500; /* Below TV (600) but above background */
+          background: #333;
+          box-shadow:
+            inset 0 0 20px rgba(0, 0, 0, 0.8),
+            0 5px 40px rgba(0, 0, 0, 0.9);
+          padding: 12px 14px 10px;
+          border-radius: 8px;
+          border-bottom: 2px #222 solid;
+          transform: scale(calc(var(--tv-scale) * 1.15)) translateY(calc(100% * var(--tv-lift-factor))); /* Same as TV but 15% larger */
+          z-index: 500; /* Below TV (600) */
           pointer-events: none;
-          /* Match TV transform exactly, then scale slightly larger */
-          transform: scale(calc(var(--active-tv-scale) * 1.15)) translateY(calc(100% * var(--tv-lift-factor)));
+          transition: box-shadow 0.5s ease, transform 0.5s ease, bottom 0.5s ease, filter 0.3s ease, opacity 0.3s ease;
           transform-origin: 50% 100%;
-          transition: filter 0.3s ease, opacity 0.3s ease, transform 0.5s ease, bottom 0.5s ease;
+        }
+
+        /* Closeup mode for ambilight */
+        .retro-tv-container:has(.old-tv.closeup-mode) .ambilight-glow-behind-tv {
+          bottom: var(--tv-closeup-bottom);
+          transform: scale(calc(var(--tv-closeup-scale) * 1.15)) translateY(calc(100% * var(--tv-closeup-lift-factor)));
         }
 
         .ambilight-glow-behind-tv :global(iframe) {
@@ -1861,10 +1871,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         .old-tv.effects-disabled .error-effect::before,
         .old-tv.effects-disabled .error-effect::after {
           display: none !important;
-        }
-
-        .old-tv.effects-disabled .old-tv-content {
-          animation: none !important;
         }
 
         .old-tv.effects-disabled .old-tv-content::after {
