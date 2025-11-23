@@ -26,6 +26,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
   const [volume, setVolume] = useState(50);
   const [ambilightEnabled, setAmbilightEnabled] = useState(true);
   const [ambilightIntensity, setAmbilightIntensity] = useState(60);
+  const [screenEffectsEnabled, setScreenEffectsEnabled] = useState(true);
   const playerRef = useRef<any>(null);
   const ambilightPlayerRef = useRef<any>(null);
 
@@ -242,7 +243,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
       )}
 
       <div
-        className={`old-tv ${!isPoweredOn ? 'powered-off' : ''} ${isCloseup ? 'closeup-mode' : ''}`}
+        className={`old-tv ${!isPoweredOn ? 'powered-off' : ''} ${isCloseup ? 'closeup-mode' : ''} ${!screenEffectsEnabled ? 'effects-disabled' : ''}`}
       >
         <div className="antenna" />
         <main>
@@ -264,6 +265,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         <div className="right-panel">
           <div className="speaker" />
           <div className="control-panel">
+            {/* Picture controls */}
             <div className="slider-group">
               <label>Brightness</label>
               <input
@@ -297,6 +299,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 onChange={(e) => setSaturation(Number(e.target.value))}
               />
             </div>
+
+            {/* Divider */}
+            <div className="control-divider" />
+
+            {/* Audio controls */}
             <div className="slider-group">
               <label>Volume</label>
               <input
@@ -308,6 +315,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 onChange={(e) => setVolume(Number(e.target.value))}
               />
             </div>
+
+            {/* Effects controls */}
             <div className="slider-group">
               <label>Ambilight</label>
               <div className="ambilight-controls">
@@ -333,6 +342,17 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                   }}
                 />
               </div>
+            </div>
+            <div className="slider-group">
+              <label>Screen FX</label>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={screenEffectsEnabled}
+                  onChange={(e) => setScreenEffectsEnabled(e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
             </div>
           </div>
         </div>
@@ -1413,6 +1433,21 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           margin: 4px 0;
         }
 
+        /* Control groups divider */
+        .control-divider {
+          height: 1px;
+          margin: 12px 0;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(100, 100, 100, 0.3) 20%,
+            rgba(100, 100, 100, 0.6) 50%,
+            rgba(100, 100, 100, 0.3) 80%,
+            transparent 100%
+          );
+          box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
         /* Ambilight controls layout */
         .ambilight-controls {
           display: flex;
@@ -1808,6 +1843,16 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           border-radius: 15px;
           animation: crt-pixels 20ms alternate infinite;
           pointer-events: none;
+        }
+
+        /* Disable screen effects when toggle is off */
+        .old-tv.effects-disabled .error-effect {
+          background: #111 !important;
+          animation: none !important;
+        }
+
+        .old-tv.effects-disabled .old-tv-content::after {
+          display: none;
         }
 
         @keyframes crt-image {
