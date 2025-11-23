@@ -749,7 +749,7 @@ type MainExperienceProps = {
   videoEffect?: string;
   onEffectChange?: (effect: string) => void;
   onInterfaceVisibilityChange?: (visible: boolean) => void;
-  tvRef?: React.RefObject<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void } | null>;
+  tvRef?: React.RefObject<{ setVideoId: (id: string) => void; setViewMode: (mode: 'full' | 'closeup') => void; setBackground?: (scene: string) => void } | null>;
 };
 
 const MainExperience = ({
@@ -766,6 +766,7 @@ const MainExperience = ({
   tvRef,
 }: MainExperienceProps = {}) => {
   const [tvViewMode, setTvViewMode] = useState<'full' | 'closeup'>('full');
+  const [tvBackground, setTvBackground] = useState<string>('loft');
   const router = useRouter();
   const [languageSetting, setLanguageSetting] =
     useState<LanguageSetting>("auto");
@@ -1689,6 +1690,80 @@ const MainExperience = ({
                 title={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
                 active={tvViewMode === 'closeup'}
                 aria-label={activeLanguage === 'ru' ? 'Крупный план' : 'Closeup'}
+              />
+            </div>
+
+            {/* Retro TV Background Scene Buttons */}
+            <div className="video-control-row active" style={{ marginBottom: '10px' }}>
+              <IconButton
+                icon="domain"
+                onClick={() => {
+                  setTvBackground('loft');
+                  tvRef.current?.setBackground?.('loft');
+                }}
+                title={activeLanguage === 'ru' ? 'Лофт' : 'Loft'}
+                active={tvBackground === 'loft'}
+                aria-label={activeLanguage === 'ru' ? 'Лофт' : 'Loft'}
+              />
+              <IconButton
+                icon="forest"
+                onClick={() => {
+                  setTvBackground('forest');
+                  tvRef.current?.setBackground?.('forest');
+                }}
+                title={activeLanguage === 'ru' ? 'Лес' : 'Forest'}
+                active={tvBackground === 'forest'}
+                aria-label={activeLanguage === 'ru' ? 'Лес' : 'Forest'}
+              />
+              <IconButton
+                icon="water"
+                onClick={() => {
+                  setTvBackground('lake-night');
+                  tvRef.current?.setBackground?.('lake-night');
+                }}
+                title={activeLanguage === 'ru' ? 'Озеро ночью' : 'Lake Night'}
+                active={tvBackground === 'lake-night'}
+                aria-label={activeLanguage === 'ru' ? 'Озеро ночью' : 'Lake Night'}
+              />
+              <IconButton
+                icon="apartment"
+                onClick={() => {
+                  setTvBackground('rooftop');
+                  tvRef.current?.setBackground?.('rooftop');
+                }}
+                title={activeLanguage === 'ru' ? 'Крыша' : 'Rooftop'}
+                active={tvBackground === 'rooftop'}
+                aria-label={activeLanguage === 'ru' ? 'Крыша' : 'Rooftop'}
+              />
+              <IconButton
+                icon="tv"
+                onClick={() => {
+                  setTvBackground('tv-dump');
+                  tvRef.current?.setBackground?.('tv-dump');
+                }}
+                title={activeLanguage === 'ru' ? 'Свалка ТВ' : 'TV Dump'}
+                active={tvBackground === 'tv-dump'}
+                aria-label={activeLanguage === 'ru' ? 'Свалка ТВ' : 'TV Dump'}
+              />
+              <IconButton
+                icon="wb_sunny"
+                onClick={() => {
+                  setTvBackground('desert');
+                  tvRef.current?.setBackground?.('desert');
+                }}
+                title={activeLanguage === 'ru' ? 'Пустыня' : 'Desert'}
+                active={tvBackground === 'desert'}
+                aria-label={activeLanguage === 'ru' ? 'Пустыня' : 'Desert'}
+              />
+              <IconButton
+                icon="location_city"
+                onClick={() => {
+                  setTvBackground('city-alley');
+                  tvRef.current?.setBackground?.('city-alley');
+                }}
+                title={activeLanguage === 'ru' ? 'Переулок' : 'City Alley'}
+                active={tvBackground === 'city-alley'}
+                aria-label={activeLanguage === 'ru' ? 'Переулок' : 'City Alley'}
               />
             </div>
           </>

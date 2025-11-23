@@ -2,19 +2,24 @@
 
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
+export type BackgroundScene = 'loft' | 'forest' | 'lake-night' | 'rooftop' | 'tv-dump' | 'desert' | 'city-alley';
+
 export interface RetroTVRef {
   setVideoId: (id: string) => void;
   setViewMode: (mode: 'full' | 'closeup') => void;
+  setBackground: (scene: BackgroundScene) => void;
 }
 
 interface RetroTVProps {
   viewMode?: 'full' | 'closeup';
+  initialBackground?: BackgroundScene;
 }
 
-const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref) => {
+const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initialBackground = 'loft' }, ref) => {
   const [currentVideoId, setCurrentVideoId] = useState('jfKfPfyJRdk');
   const [isPoweredOn, setIsPoweredOn] = useState(true);
   const [internalViewMode, setInternalViewMode] = useState<'full' | 'closeup'>(viewMode);
+  const [currentBackground, setCurrentBackground] = useState<BackgroundScene>(initialBackground);
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
@@ -29,6 +34,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
     },
     setViewMode: (mode: 'full' | 'closeup') => {
       setInternalViewMode(mode);
+    },
+    setBackground: (scene: BackgroundScene) => {
+      setCurrentBackground(scene);
     }
   }));
 
@@ -118,8 +126,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
   return (
     <div className="retro-tv-container">
       <div className="gradient" />
-      <div className="brick-wall" />
-      <div className="wood-floor" />
+      <div className={`background-wall ${currentBackground}`} />
+      <div className={`background-floor ${currentBackground}`} />
 
       <div
         className={`old-tv ${!isPoweredOn ? 'powered-off' : ''} ${isCloseup ? 'closeup-mode' : ''}`}
@@ -275,8 +283,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           --table-closeup-bottom: -90px;
           --tv-scale: 0.8;
           --tv-lift-factor: 1.35;
-          --tv-bottom: 140px;
-          --tv-closeup-bottom: 120px;
+          --tv-bottom: 190px;
+          --tv-closeup-bottom: 170px;
           --tv-closeup-scale: 1.7;
           --tv-closeup-lift-factor: 0.95;
         }
@@ -326,84 +334,305 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           background: radial-gradient(rgba(0, 0, 0, 0.6) 30%, transparent 50%);
         }
 
-        .brick-wall {
+        .background-wall {
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 140px;
-          background-color: #8b4d3a;
+          z-index: 100;
+          transition: opacity 0.5s ease;
+        }
+
+        /* LOFT - Improved brick wall */
+        .background-wall.loft {
+          background-color: #6b3d2e;
           background-image:
             repeating-linear-gradient(
               0deg,
               transparent 0px,
-              transparent 60px,
-              #3a2318 60px,
-              #3a2318 64px
+              transparent 58px,
+              #2a1810 58px,
+              #2a1810 62px
             ),
             repeating-linear-gradient(
               90deg,
-              #a0522d 0px,
-              #a0522d 8px,
-              #8b4513 8px,
-              #8b4513 120px,
-              #a0522d 120px,
-              #a0522d 128px,
-              #6b3d2e 128px,
-              #6b3d2e 130px
+              #8b4d3a 0px,
+              #8b4d3a 10px,
+              #7a3d2a 10px,
+              #7a3d2a 115px,
+              #8b4d3a 115px,
+              #8b4d3a 125px,
+              #5a2d1e 125px,
+              #5a2d1e 127px
             ),
             repeating-linear-gradient(
               90deg,
               transparent 0px,
+              transparent 63px,
+              #2a1810 63px,
+              #2a1810 65px,
               transparent 65px,
-              #3a2318 65px,
-              #3a2318 68px,
-              transparent 68px,
-              transparent 130px
+              transparent 127px
             ),
             linear-gradient(
-              180deg,
-              rgba(139, 69, 19, 0.3) 0%,
-              rgba(107, 61, 46, 0.5) 50%,
-              rgba(74, 38, 24, 0.7) 100%
+              135deg,
+              rgba(139, 77, 58, 0.4) 0%,
+              rgba(107, 61, 46, 0.6) 50%,
+              rgba(58, 35, 24, 0.8) 100%
             );
-          background-size: 100% 100%, 260px 64px, 130px 64px, 100% 100%;
-          background-position: 0 0, 0 0, 0 32px, 0 0;
-          box-shadow: 0 8px 10px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(0, 0, 0, 0.3);
-          z-index: 100;
+          background-size: 100% 100%, 254px 62px, 127px 62px, 100% 100%;
+          background-position: 0 0, 0 0, 0 31px, 0 0;
+          box-shadow:
+            0 10px 15px rgba(0, 0, 0, 0.9),
+            inset 0 0 150px rgba(0, 0, 0, 0.4),
+            inset 20px 0 50px rgba(0, 0, 0, 0.3),
+            inset -20px 0 50px rgba(0, 0, 0, 0.3);
         }
 
-        .brick-wall::after {
-          content: "nerual dreming 👾";
+        .background-wall.loft::after {
+          content: "LOFT 97";
           position: absolute;
-          top: 15%;
-          right: 20%;
-          font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
-          font-size: 42px;
-          font-weight: bold;
-          color: rgba(255, 255, 255, 0.18);
+          top: 18%;
+          right: 15%;
+          font-family: 'Impact', 'Arial Black', sans-serif;
+          font-size: 120px;
+          font-weight: 900;
+          color: rgba(0, 0, 0, 0.15);
           text-shadow:
-            2px 2px 4px rgba(0, 0, 0, 0.8),
-            -1px -1px 2px rgba(255, 255, 255, 0.1);
-          transform: rotate(-8deg);
-          letter-spacing: 1px;
+            3px 3px 8px rgba(0, 0, 0, 0.9),
+            -2px -2px 3px rgba(255, 255, 255, 0.05);
+          transform: rotate(-5deg);
+          letter-spacing: -4px;
           z-index: 1;
         }
 
-        .brick-wall::before {
+        .background-wall.loft::before {
           position: absolute;
           content: " ";
           bottom: 0;
           width: 100%;
-          height: 30px;
+          height: 35px;
           background:
-            linear-gradient(90deg, #4a3428 0%, #3d2a1f 50%, #4a3428 100%),
-            repeating-linear-gradient(90deg, #5a4438 0px, #5a4438 100px, #4a3428 100px, #4a3428 102px);
-          box-shadow: inset 0 2px rgba(255, 255, 255, 0.2),
-            inset 0 -5px 5px rgba(0, 0, 0, 0.2), 0 -1px 4px rgba(0, 0, 0, 0.9);
+            linear-gradient(90deg, #3a2318 0%, #2d1a10 50%, #3a2318 100%),
+            repeating-linear-gradient(90deg, #4a3428 0px, #4a3428 100px, #3a2318 100px, #3a2318 102px);
+          box-shadow:
+            inset 0 3px rgba(255, 255, 255, 0.15),
+            inset 0 -8px 8px rgba(0, 0, 0, 0.3),
+            0 -2px 6px rgba(0, 0, 0, 0.95);
         }
 
-        .wood-floor {
+        /* FOREST */
+        .background-wall.forest {
+          background:
+            radial-gradient(ellipse at 30% 20%, rgba(40, 60, 30, 0.3) 0%, transparent 50%),
+            radial-gradient(ellipse at 70% 40%, rgba(30, 50, 25, 0.4) 0%, transparent 60%),
+            linear-gradient(180deg, #1a3a2e 0%, #0d2620 40%, #0a1f1a 100%);
+          box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.6);
+        }
+
+        .background-wall.forest::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-image:
+            radial-gradient(circle at 25% 30%, rgba(20, 40, 20, 0.8) 2%, transparent 3%),
+            radial-gradient(circle at 45% 25%, rgba(15, 35, 15, 0.9) 1.5%, transparent 2%),
+            radial-gradient(circle at 65% 35%, rgba(25, 45, 25, 0.7) 2.5%, transparent 3%),
+            radial-gradient(circle at 80% 28%, rgba(18, 38, 18, 0.8) 1.8%, transparent 2.5%),
+            radial-gradient(circle at 35% 50%, rgba(22, 42, 22, 0.85) 3%, transparent 4%),
+            radial-gradient(circle at 55% 45%, rgba(16, 36, 16, 0.9) 2.2%, transparent 3%),
+            radial-gradient(circle at 75% 55%, rgba(20, 40, 20, 0.75) 2.8%, transparent 3.5%);
+          background-size: 100% 100%;
+          opacity: 0.6;
+        }
+
+        .background-wall.forest::after {
+          content: "🌲";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 200px;
+          opacity: 0.03;
+        }
+
+        /* LAKE NIGHT */
+        .background-wall.lake-night {
+          background:
+            radial-gradient(ellipse at 50% 5%, rgba(100, 120, 150, 0.2) 0%, transparent 30%),
+            linear-gradient(180deg, #0a1628 0%, #162038 30%, #0d1420 60%, #08090d 100%);
+          box-shadow: inset 0 100px 150px rgba(0, 0, 0, 0.5);
+        }
+
+        .background-wall.lake-night::before {
+          content: "";
+          position: absolute;
+          top: 8%;
+          left: 60%;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(240, 240, 200, 0.9) 0%, rgba(200, 200, 180, 0.6) 40%, transparent 70%);
+          box-shadow: 0 0 40px rgba(240, 240, 200, 0.5), 0 0 80px rgba(200, 200, 180, 0.3);
+        }
+
+        .background-wall.lake-night::after {
+          content: "✦";
+          position: absolute;
+          top: 15%;
+          left: 30%;
+          font-size: 20px;
+          color: rgba(255, 255, 255, 0.6);
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+          animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 1; }
+        }
+
+        /* ROOFTOP - Night city view */
+        .background-wall.rooftop {
+          background:
+            linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f1420 100%);
+          box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.5);
+        }
+
+        .background-wall.rooftop::before {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 40%;
+          background-image:
+            linear-gradient(0deg, transparent 0%, transparent 60%, rgba(255, 200, 100, 0.1) 70%, transparent 72%),
+            linear-gradient(0deg, transparent 0%, transparent 65%, rgba(255, 150, 80, 0.15) 75%, transparent 77%),
+            linear-gradient(0deg, transparent 0%, transparent 70%, rgba(200, 180, 120, 0.12) 80%, transparent 82%);
+          background-size: 100% 100%;
+        }
+
+        .background-wall.rooftop::after {
+          content: "";
+          position: absolute;
+          bottom: 25%;
+          left: 0;
+          right: 0;
+          height: 15%;
+          background-image:
+            repeating-linear-gradient(90deg,
+              transparent 0px,
+              transparent 30px,
+              rgba(255, 200, 100, 0.4) 31px,
+              rgba(255, 200, 100, 0.4) 32px,
+              transparent 33px,
+              transparent 35px,
+              rgba(255, 150, 80, 0.3) 36px,
+              rgba(255, 150, 80, 0.3) 37px
+            );
+          box-shadow: 0 -20px 40px rgba(255, 180, 80, 0.1);
+        }
+
+        /* TV DUMP - Junkyard */
+        .background-wall.tv-dump {
+          background:
+            linear-gradient(135deg, #2a2520 0%, #1a1510 50%, #0a0805 100%);
+          box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.7);
+        }
+
+        .background-wall.tv-dump::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-image:
+            radial-gradient(ellipse at 20% 30%, rgba(60, 60, 55, 0.3) 5%, transparent 8%),
+            radial-gradient(ellipse at 45% 25%, rgba(50, 45, 40, 0.4) 4%, transparent 7%),
+            radial-gradient(ellipse at 70% 40%, rgba(55, 50, 45, 0.35) 6%, transparent 9%),
+            radial-gradient(ellipse at 30% 60%, rgba(65, 60, 55, 0.3) 7%, transparent 10%),
+            radial-gradient(ellipse at 60% 70%, rgba(50, 45, 40, 0.4) 5%, transparent 8%),
+            radial-gradient(ellipse at 80% 65%, rgba(60, 55, 50, 0.35) 4%, transparent 7%);
+          opacity: 0.5;
+        }
+
+        .background-wall.tv-dump::after {
+          content: "📺";
+          position: absolute;
+          top: 35%;
+          left: 25%;
+          font-size: 80px;
+          opacity: 0.15;
+          transform: rotate(-15deg);
+        }
+
+        /* DESERT */
+        .background-wall.desert {
+          background:
+            radial-gradient(ellipse at 50% 100%, rgba(139, 90, 43, 0.3) 0%, transparent 50%),
+            linear-gradient(180deg, #d4a574 0%, #c9994d 40%, #a67c52 70%, #8b6f47 100%);
+          box-shadow: inset 0 0 150px rgba(139, 90, 43, 0.3);
+        }
+
+        .background-wall.desert::before {
+          content: "";
+          position: absolute;
+          top: 15%;
+          right: 25%;
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255, 200, 100, 0.8) 0%, rgba(255, 160, 60, 0.6) 50%, transparent 70%);
+          box-shadow: 0 0 60px rgba(255, 200, 100, 0.4);
+        }
+
+        .background-wall.desert::after {
+          content: "🌵";
+          position: absolute;
+          bottom: 20%;
+          right: 15%;
+          font-size: 120px;
+          opacity: 0.2;
+        }
+
+        /* CITY ALLEY */
+        .background-wall.city-alley {
+          background:
+            linear-gradient(90deg, rgba(20, 20, 25, 0.8) 0%, transparent 20%, transparent 80%, rgba(20, 20, 25, 0.8) 100%),
+            linear-gradient(180deg, #2a2a35 0%, #1a1a25 100%);
+          box-shadow:
+            inset 40px 0 80px rgba(0, 0, 0, 0.8),
+            inset -40px 0 80px rgba(0, 0, 0, 0.8),
+            inset 0 0 100px rgba(0, 0, 0, 0.5);
+        }
+
+        .background-wall.city-alley::before {
+          content: "";
+          position: absolute;
+          top: 20%;
+          right: 10%;
+          width: 60px;
+          height: 120px;
+          background:
+            linear-gradient(180deg, transparent 0%, rgba(100, 200, 255, 0.3) 50%, transparent 100%);
+          box-shadow: 0 0 40px rgba(100, 200, 255, 0.2);
+          transform: skewY(-5deg);
+        }
+
+        .background-wall.city-alley::after {
+          content: "";
+          position: absolute;
+          top: 30%;
+          left: 8%;
+          width: 50px;
+          height: 100px;
+          background:
+            linear-gradient(180deg, transparent 0%, rgba(255, 100, 100, 0.25) 50%, transparent 100%);
+          box-shadow: 0 0 30px rgba(255, 100, 100, 0.15);
+          transform: skewY(5deg);
+        }
+
+        .background-floor {
           position: absolute;
           width: 100%;
           height: 140px;
@@ -412,9 +641,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           perspective: 300px;
           overflow: hidden;
           z-index: 50;
+          transition: opacity 0.5s ease;
         }
 
-        .wood-floor::before {
+        /* LOFT - Wood floor */
+        .background-floor.loft::before {
           position: absolute;
           content: " ";
           top: -100%;
@@ -433,6 +664,139 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full' }, ref
           background-size: 100% 100%;
           transform: rotateX(60deg);
           box-shadow: inset 0 -50px 100px rgba(0, 0, 0, 0.5);
+        }
+
+        /* FOREST - Grass/dirt floor */
+        .background-floor.forest::before {
+          position: absolute;
+          content: " ";
+          top: -100%;
+          left: -25%;
+          width: 150%;
+          height: 250%;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              #2a4a2a 0px,
+              #2a4a2a 100px,
+              #1a3a1a 100px,
+              #1a3a1a 102px
+            ),
+            linear-gradient(180deg, #3a5a3a 0%, #1a2a1a 100%);
+          background-size: 100% 100%;
+          transform: rotateX(60deg);
+          box-shadow: inset 0 -50px 100px rgba(0, 0, 0, 0.7);
+        }
+
+        /* LAKE NIGHT - Water reflection */
+        .background-floor.lake-night::before {
+          position: absolute;
+          content: " ";
+          top: -100%;
+          left: -25%;
+          width: 150%;
+          height: 250%;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              rgba(10, 20, 35, 0.8) 0px,
+              rgba(10, 20, 35, 0.8) 80px,
+              rgba(15, 25, 40, 0.9) 80px,
+              rgba(15, 25, 40, 0.9) 82px
+            ),
+            linear-gradient(180deg, rgba(20, 30, 45, 0.6) 0%, rgba(5, 10, 15, 0.9) 100%);
+          background-size: 100% 100%;
+          transform: rotateX(60deg);
+          box-shadow: inset 0 -50px 100px rgba(0, 0, 0, 0.8);
+          opacity: 0.7;
+        }
+
+        /* ROOFTOP - Concrete */
+        .background-floor.rooftop::before {
+          position: absolute;
+          content: " ";
+          top: -100%;
+          left: -25%;
+          width: 150%;
+          height: 250%;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              #3a3a4a 0px,
+              #3a3a4a 150px,
+              #2a2a3a 150px,
+              #2a2a3a 152px
+            ),
+            linear-gradient(180deg, #4a4a5a 0%, #2a2a3a 100%);
+          background-size: 100% 100%;
+          transform: rotateX(60deg);
+          box-shadow: inset 0 -50px 100px rgba(0, 0, 0, 0.6);
+        }
+
+        /* TV DUMP - Junk/dirt */
+        .background-floor.tv-dump::before {
+          position: absolute;
+          content: " ";
+          top: -100%;
+          left: -25%;
+          width: 150%;
+          height: 250%;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              #3a3530 0px,
+              #3a3530 90px,
+              #2a2520 90px,
+              #2a2520 92px
+            ),
+            linear-gradient(180deg, #4a4035 0%, #2a2520 100%);
+          background-size: 100% 100%;
+          transform: rotateX(60deg);
+          box-shadow: inset 0 -50px 100px rgba(0, 0, 0, 0.7);
+        }
+
+        /* DESERT - Sand */
+        .background-floor.desert::before {
+          position: absolute;
+          content: " ";
+          top: -100%;
+          left: -25%;
+          width: 150%;
+          height: 250%;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              #c9a86a 0px,
+              #c9a86a 110px,
+              #b9985a 110px,
+              #b9985a 112px
+            ),
+            linear-gradient(180deg, #d9b87a 0%, #a9886a 100%);
+          background-size: 100% 100%;
+          transform: rotateX(60deg);
+          box-shadow: inset 0 -50px 100px rgba(139, 90, 43, 0.4);
+        }
+
+        /* CITY ALLEY - Asphalt */
+        .background-floor.city-alley::before {
+          position: absolute;
+          content: " ";
+          top: -100%;
+          left: -25%;
+          width: 150%;
+          height: 250%;
+          background:
+            repeating-linear-gradient(
+              90deg,
+              #2a2a30 0px,
+              #2a2a30 200px,
+              #1a1a20 200px,
+              #1a1a20 202px
+            ),
+            linear-gradient(180deg, #3a3a40 0%, #1a1a20 100%);
+          background-size: 100% 100%;
+          transform: rotateX(60deg);
+          box-shadow: inset 0 -50px 100px rgba(0, 0, 0, 0.8);
         }
 
         .old-tv * {
