@@ -283,8 +283,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           --table-closeup-bottom: -90px;
           --tv-scale: 0.8;
           --tv-lift-factor: 1.35;
-          --tv-bottom: 215px;
-          --tv-closeup-bottom: 195px;
+          --tv-bottom: 220px;
+          --tv-closeup-bottom: 200px;
           --tv-closeup-scale: 1.7;
           --tv-closeup-lift-factor: 0.95;
         }
