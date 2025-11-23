@@ -33,11 +33,8 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
     setVideoId: (id: string) => {
-      console.log('RetroTV.setVideoId called with:', id);
-      console.log('Current videoId before:', currentVideoId);
       setCurrentVideoId(id);
       setIsPoweredOn(true);
-      console.log('State updated - new videoId:', id, 'isPoweredOn: true');
     },
     setViewMode: (mode: 'full' | 'closeup') => {
       setInternalViewMode(mode);
@@ -63,40 +60,22 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
   // Initialize YouTube player
   useEffect(() => {
-    console.log('Player init useEffect triggered. currentVideoId:', currentVideoId);
-
-    if (!currentVideoId || typeof window === 'undefined') {
-      console.log('Skipping player init - no videoId or not in browser');
+    if (!currentVideoId || typeof window === 'undefined' || !isPoweredOn) {
+      if (playerRef.current && !isPoweredOn) {
+        playerRef.current.pauseVideo?.();
+      }
       return;
     }
 
     const initPlayer = () => {
-      console.log('initPlayer called');
-
       if (playerRef.current) {
         // Player already exists, just load new video
-        console.log('Player exists, loading new video:', currentVideoId);
-        const iframe = document.querySelector('#youtube-player iframe');
-        console.log('Iframe exists:', !!iframe);
-
-        if (iframe) {
-          try {
-            playerRef.current.loadVideoById(currentVideoId);
-            playerRef.current.playVideo();
-            console.log('loadVideoById called successfully');
-          } catch (e) {
-            console.error('Error loading video:', e);
-          }
-        } else {
-          console.warn('No iframe found, cannot load video');
-        }
+        playerRef.current.loadVideoById(currentVideoId);
+        playerRef.current.playVideo?.();
         return;
       }
 
-      console.log('Creating new player...');
-
       if ((window as any).YT && (window as any).YT.Player) {
-        console.log('YouTube API available, creating player with videoId:', currentVideoId);
 
         // Create main player
         playerRef.current = new (window as any).YT.Player('youtube-player', {
@@ -112,7 +91,6 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           },
           events: {
             onReady: (event: any) => {
-              console.log('Main player ready! Playing video...');
               event.target.playVideo();
               event.target.setVolume(volume);
             },
@@ -219,112 +197,25 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
         }
       }
     };
-  }, [currentVideoId]);
-
-  // Handle power state changes
-  useEffect(() => {
-    if (!playerRef.current) return;
-
-    const iframe = document.querySelector('#youtube-player iframe');
-    if (!iframe) return;
-
-    try {
-      if (isPoweredOn) {
-        // TV turned on - play video
-        if (typeof playerRef.current.playVideo === 'function') {
-          playerRef.current.playVideo();
-        }
-        // Also play ambilight
-        if (ambilightPlayerRef.current && typeof ambilightPlayerRef.current.playVideo === 'function') {
-          const ambilightIframe = document.querySelector('#youtube-player-ambilight iframe');
-          if (ambilightIframe) {
-            ambilightPlayerRef.current.playVideo();
-          }
-        }
-      } else {
-        // TV turned off - pause video
-        if (typeof playerRef.current.pauseVideo === 'function') {
-          playerRef.current.pauseVideo();
-        }
-        // Also pause ambilight
-        if (ambilightPlayerRef.current && typeof ambilightPlayerRef.current.pauseVideo === 'function') {
-          const ambilightIframe = document.querySelector('#youtube-player-ambilight iframe');
-          if (ambilightIframe) {
-            ambilightPlayerRef.current.pauseVideo();
-          }
-        }
-      }
-    } catch (e) {
-      // Silent fail - player might not be ready
-    }
-  }, [isPoweredOn]);
+  }, [currentVideoId, isPoweredOn]);
 
   // Handle volume changes
   useEffect(() => {
-    const updateVolume = () => {
-      if (playerRef.current && typeof playerRef.current.setVolume === 'function') {
-        const iframe = document.querySelector('#youtube-player iframe');
-        if (iframe) {
-          try {
-            playerRef.current.setVolume(volume);
-            console.log('Volume set to:', volume);
-          } catch (e) {
-            console.warn('Failed to set volume:', e);
-          }
-        } else {
-          console.warn('No iframe found for volume update');
-        }
-      } else {
-        console.warn('Player not ready for volume update');
-      }
-    };
-
-    // Try immediate update
-    updateVolume();
-
-    // Also retry after small delay to ensure player is ready
-    const timeoutId = setTimeout(updateVolume, 100);
-
-    return () => clearTimeout(timeoutId);
+    if (playerRef.current?.setVolume) {
+      playerRef.current.setVolume(volume);
+    }
   }, [volume]);
 
   const handlePlay = () => {
-    if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
-      const iframe = document.querySelector('#youtube-player iframe');
-      if (iframe) {
-        try {
-          playerRef.current.playVideo();
-        } catch (e) {
-          // Player not ready
-        }
-      }
-    }
+    playerRef.current?.playVideo();
   };
 
   const handlePause = () => {
-    if (playerRef.current && typeof playerRef.current.pauseVideo === 'function') {
-      const iframe = document.querySelector('#youtube-player iframe');
-      if (iframe) {
-        try {
-          playerRef.current.pauseVideo();
-        } catch (e) {
-          // Player not ready
-        }
-      }
-    }
+    playerRef.current?.pauseVideo();
   };
 
   const handleNext = () => {
-    if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
-      const iframe = document.querySelector('#youtube-player iframe');
-      if (iframe) {
-        try {
-          playerRef.current.playVideo();
-        } catch (e) {
-          // Player not ready
-        }
-      }
-    }
+    playerRef.current?.playVideo();
   };
 
   // Calculate effects based on sliders
@@ -340,17 +231,14 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
       <div className={`background-floor ${currentBackground}`} />
 
       {/* Ambilight glow behind TV - projects onto wall */}
-      {currentVideoId && (
+      {currentVideoId && isPoweredOn && ambilightEnabled && (
         <div
           id="youtube-player-ambilight"
           className="ambilight-glow-behind-tv"
-          data-enabled={ambilightEnabled}
-          data-intensity={ambilightIntensity}
           style={{
             filter: `blur(${ambilightIntensity}px) brightness(1.5) saturate(2)`,
-            opacity: ambilightEnabled && isPoweredOn ? (ambilightIntensity / 100) * 0.8 : 0,
+            opacity: ambilightIntensity / 100,
             pointerEvents: 'none',
-            visibility: isPoweredOn ? 'visible' : 'hidden',
           }}
         />
       )}
@@ -366,16 +254,9 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
                 className="old-tv-content"
                 style={filterStyle}
               >
-                {/* Always render YouTube player div to prevent breaking iframe */}
-                {currentVideoId && (
-                  <div
-                    id="youtube-player"
-                    className="youtube-container"
-                    style={{ display: isPoweredOn ? 'block' : 'none' }}
-                  />
-                )}
-                {/* Show static noise when powered off or no video */}
-                {(!currentVideoId || !isPoweredOn) && (
+                {currentVideoId && isPoweredOn ? (
+                  <div id="youtube-player" className="youtube-container" />
+                ) : (
                   <div className="static-noise" />
                 )}
               </div>
