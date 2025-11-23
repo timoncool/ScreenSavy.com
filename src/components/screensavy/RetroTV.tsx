@@ -33,8 +33,11 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
     setVideoId: (id: string) => {
+      console.log('RetroTV.setVideoId called with:', id);
+      console.log('Current videoId before:', currentVideoId);
       setCurrentVideoId(id);
       setIsPoweredOn(true);
+      console.log('State updated - new videoId:', id, 'isPoweredOn: true');
     },
     setViewMode: (mode: 'full' | 'closeup') => {
       setInternalViewMode(mode);
@@ -60,27 +63,41 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
 
   // Initialize YouTube player
   useEffect(() => {
+    console.log('Player init useEffect triggered. currentVideoId:', currentVideoId);
+
     if (!currentVideoId || typeof window === 'undefined') {
+      console.log('Skipping player init - no videoId or not in browser');
       return;
     }
 
     const initPlayer = () => {
+      console.log('initPlayer called');
+
       if (playerRef.current) {
         // Player already exists, just load new video
-        // Only call if iframe exists
+        console.log('Player exists, loading new video:', currentVideoId);
         const iframe = document.querySelector('#youtube-player iframe');
+        console.log('Iframe exists:', !!iframe);
+
         if (iframe) {
           try {
             playerRef.current.loadVideoById(currentVideoId);
             playerRef.current.playVideo();
+            console.log('loadVideoById called successfully');
           } catch (e) {
-            // Silent fail - player not ready
+            console.error('Error loading video:', e);
           }
+        } else {
+          console.warn('No iframe found, cannot load video');
         }
         return;
       }
 
+      console.log('Creating new player...');
+
       if ((window as any).YT && (window as any).YT.Player) {
+        console.log('YouTube API available, creating player with videoId:', currentVideoId);
+
         // Create main player
         playerRef.current = new (window as any).YT.Player('youtube-player', {
           videoId: currentVideoId,
@@ -95,6 +112,7 @@ const RetroTV = forwardRef<RetroTVRef, RetroTVProps>(({ viewMode = 'full', initi
           },
           events: {
             onReady: (event: any) => {
+              console.log('Main player ready! Playing video...');
               event.target.playVideo();
               event.target.setVolume(volume);
             },
