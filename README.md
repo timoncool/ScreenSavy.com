@@ -1,13 +1,17 @@
+<div align="center">
+
 # ScreenSavy.com
 
+**Transform any display into a dynamic ambient screen — clocks, gradients, weather, visualizers.**
 
-**Transform any display into a beautiful ambient screen**
+[![Stars](https://img.shields.io/github/stars/timoncool/ScreenSavy.com?style=flat-square)](https://github.com/timoncool/ScreenSavy.com/stargazers)
+[![License](https://img.shields.io/github/license/timoncool/ScreenSavy.com?style=flat-square)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/timoncool/ScreenSavy.com?style=flat-square)](https://github.com/timoncool/ScreenSavy.com/commits)
+[![Demo](https://img.shields.io/badge/demo-screensavy.com-brightgreen?style=flat-square)](https://www.screensavy.com/)
 
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://www.screensavy.com/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+**[English](README.md)** · **[Русский](README.ru.md)**
 
-**English** | [Русский](README.ru.md)
+</div>
 
 ---
 
@@ -302,29 +306,26 @@ I build open-source software and do AI research. Most of what I create is free a
 - **USDT (TRC20):** `TQST9Lp2TjK6FiVkn4fwfGUee7NmkxEE7C`
 
 
-## 📄 License
+## Other Projects by [@timoncool](https://github.com/timoncool)
 
-This project is open-source and available under the [MIT License](LICENSE).
+| Project | Description |
+|---------|-------------|
+| [ACE-Step Studio](https://github.com/timoncool/ACE-Step-Studio) | AI music studio — songs, vocals, covers, videos |
+| [VideoSOS](https://github.com/timoncool/videosos) | AI video production in the browser |
+| [GitLife](https://github.com/timoncool/gitlife) | Your life in weeks — interactive calendar |
+| [Bulka](https://github.com/timoncool/Bulka) | Live-coding music platform |
+| [telegram-api-mcp](https://github.com/timoncool/telegram-api-mcp) | Full Telegram Bot API as MCP server |
 
----
+## Star History
 
-## 🔗 Links
+<a href="https://www.star-history.com/?repos=timoncool%2FScreenSavy.com&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=timoncool/ScreenSavy.com&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=timoncool/ScreenSavy.com&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=timoncool/ScreenSavy.com&type=date&legend=top-left" />
+ </picture>
+</a>
 
-- **Live Demo**: [https://www.screensavy.com/](https://www.screensavy.com/)
-- **GitHub**: [https://github.com/timoncool/ScreenSavy.com](https://github.com/timoncool/ScreenSavy.com)
-- **Releases**: [https://github.com/timoncool/ScreenSavy.com/releases](https://github.com/timoncool/ScreenSavy.com/releases)
-- **ProductRadar**: [https://productradar.ru/product/screensavy-com/](https://productradar.ru/product/screensavy-com/)
+## License
 
----
-
-## 💖 Support
-
-If you find ScreenSavy.com useful, please:
-- ⭐ Star the repository
-- 🐛 Report bugs and suggest features via [Issues](https://github.com/timoncool/ScreenSavy.com/issues)
-- 📢 Share with others who might find it useful
-- 👍 Endorse on [ProductRadar](https://productradar.ru/product/screensavy-com/)
-
----
-
-Made with ❤️ for creators, designers, and everyone who appreciates beautiful ambient screens.
+MIT — [LICENSE](LICENSE)
