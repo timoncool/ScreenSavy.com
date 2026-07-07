@@ -318,11 +318,11 @@ I build open-source software and do AI research. Most of what I create is free a
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=timoncool%2FScreenSavy.com&type=date&legend=top-left">
+<a href="https://github.com/timoncool/ScreenSavy.com/stargazers">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=timoncool/ScreenSavy.com&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=timoncool/ScreenSavy.com&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=timoncool/ScreenSavy.com&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="docs/stars-dark.svg" />
+   <source media="(prefers-color-scheme: light)" srcset="docs/stars-light.svg" />
+   <img alt="Star History Chart" src="docs/stars-light.svg" />
  </picture>
 </a>
 
